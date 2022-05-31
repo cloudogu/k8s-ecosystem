@@ -19,4 +19,15 @@ done
 
 echo "Making Longhorn the default StorageClass"
 kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+echo "Waiting for longhorn to start up"
+
+for (( i = 1; i <=19; i++ )); do
+    if kubectl -n longhorn-system get pods -o custom-columns=READY-true:status.containerStatuses[*].ready | grep false > /dev/null; then
+        echo "Some longhorn pods are still starting (${i})"
+        sleep 10
+    else
+        break
+    fi
+done
+
 echo "**** End installing Longhorn"

@@ -10,14 +10,7 @@
 		"iso_checksum": "sha256:28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad",
 		"main_k3s_port": "6443",
 		"k3s_server_token": "MySecretToken1!",
-		"fqdn": "k3ces.local",
-		"docker_registry_namespace": "ecosystem",
-		"dogu_registry_username": "",
-		"dogu_registry_password": "",
-		"dogu_registry_url": "",
-		"image_registry_username": "",
-		"image_registry_password": "",
-		"image_registry_email": ""
+		"fqdn": "k3ces.local"
 	},
 	"builders": [
 		{
@@ -36,7 +29,7 @@
 			"ssh_password": "{{user `password`}}",
 			"ssh_handshake_attempts": "10000",
 			"ssh_timeout": "20m",
-			"http_directory": "image/http/prod",
+			"http_directory": "http/prod",
 			"headless": false,
 			"tools_upload_flavor": "linux",
 			"disk_size": "{{user `disk_size`}}",
@@ -52,11 +45,6 @@
     ],
 	"provisioners": [
 		{
-			"type": "file",
-			"source": "image",
-			"destination": "/home/{{user `username`}}"
-		},
-		{
 			"type": "shell",
 			"expect_disconnect": false,
 			"execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
@@ -66,9 +54,10 @@
 				"K3S_TOKEN={{user `k3s_server_token`}}"
 			],
 			"scripts": [
-				"image/k3s-main.sh",
-				"image/dependencies.sh",
-				"image/longhorn_installation.sh"
+				"k3s-main.sh",
+				"dependencies.sh",
+				"longhorn_installation.sh",
+				"ssh_auth.sh"
 			]
 		}
 	],

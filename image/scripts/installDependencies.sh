@@ -1,6 +1,5 @@
 #!/bin/bash
 # This script is responsible to install all dependencies used in the process of building and operating the image.
-
 set -o errexit
 set -o nounset
 set -o pipefail

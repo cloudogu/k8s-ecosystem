@@ -100,10 +100,15 @@
       ],
       "scripts": [
         "scripts/installDependencies.sh",
+        "scripts/installGuestAdditions.sh",
+        "scripts/configureGrub.sh",
+        "scripts/configureSSHDaemon.sh",
+        "scripts/disableAutomaticUbuntuUpdates.sh",
+        "scripts/setupFail2Ban.sh",
         "scripts/kubernetes/setupMainNode.sh",
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
-        "scripts/configureSSHDaemon.sh"
+        "scripts/optimizeImageSize.sh"
       ]
     }
   ],

@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script is responsible to delete unwanted or unused packages to reduce the size of the final image.
+# This script is responsible to perform several operation to optimize the size of the final image.
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -38,8 +38,39 @@ manuallyRemoveUnusedFiles() {
   rm -rf /home/ces-admin/resources /home/ces-admin/install/
 }
 
-echo "**** Executing deleteUnwantedPackages.sh..."
+# Disables the swap partition until the machine reboots. This removes the final image size as the swap partition does not need to be included.
+disableSwapUntilReboot() {
+  echo "**** Disabling swap until reboot..."
+
+  local swapUUID
+  swapUUID=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
+  if [ "x${swapUUID}" != "x" ]; then
+    # Whiteout the swap partition to reduce box size
+    # Swap is disabled till reboot
+    local swapPart
+    swapPart=$(readlink -f "/dev/disk/by-uuid/${swapUUID}")
+    /sbin/swapoff "${swapPart}"
+    dd if=/dev/zero of="${swapPart}" bs=1M || echo "dd exit code $? is suppressed"
+    /sbin/mkswap -U "${swapUUID}" "${swapPart}"
+  fi
+}
+
+# Write zeroes to any free spaces to reduce the size of the final image.
+zeroOutFreeSpace() {
+  echo "**** Overwriting zeroes for all unused space..."
+  dd if=/dev/zero of=/EMPTY bs=1M || echo "dd exit code $? is suppressed"
+  rm -f /EMPTY
+
+  # Sync to ensure that the delete completes before this moves on.
+  sync
+  sync
+  sync
+}
+
+echo "**** Executing optimizeImageSize.sh..."
 manuallyRemoveUnusedFiles
 purgeUnwantedPackages
 aptAutoClean
-echo "**** Finished deleteUnwantedPackages.sh"
+disableSwapUntilReboot
+zeroOutFreeSpace
+echo "**** Finished optimizeImageSize.sh"

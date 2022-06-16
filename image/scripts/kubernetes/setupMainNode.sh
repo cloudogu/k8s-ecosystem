@@ -3,12 +3,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-echo "Waiting until system time is synchronized..."
-sleep 30
-systemctl status systemd-timesyncd | tail -n 1
+DEFAULT_NETWORK_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
+export DEFAULT_NETWORK_INTERFACE
 
-export DEFAULT_NETWORK_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
-export EXTERNAL_IP_ADDRESS=$(ip addr show ${DEFAULT_NETWORK_INTERFACE} | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+EXTERNAL_IP_ADDRESS=$(ip addr show "${DEFAULT_NETWORK_INTERFACE}" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+export EXTERNAL_IP_ADDRESS
 
 echo "The default network interface of this machine has been detected as: ${DEFAULT_NETWORK_INTERFACE}"
 echo "The external ip address of this machine has been detected as: ${EXTERNAL_IP_ADDRESS}"

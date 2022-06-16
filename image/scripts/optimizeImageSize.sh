@@ -15,18 +15,18 @@ purgeUnwantedPackages() {
     xargs apt-get -y purge
 
   # Delete obsolete networking
-  DEBIAN_FRONTEND=noninteractive apt -y purge ppp pppconfig pppoeconf
+  DEBIAN_FRONTEND=noninteractive apt-get -y purge ppp pppconfig pppoeconf
   # Delete oddities
-  DEBIAN_FRONTEND=noninteractive apt -y purge popularity-contest
+  DEBIAN_FRONTEND=noninteractive apt-get -y purge popularity-contest
   # Delete X11 libraries
-  DEBIAN_FRONTEND=noninteractive apt -y purge libx11-data xauth libxmuu1 libxcb1 libx11-6 libxext6
+  DEBIAN_FRONTEND=noninteractive apt-get -y purge libx11-data xauth libxmuu1 libxcb1 libx11-6 libxext6
 }
 
 # Starts the autoremove and clean procedures of apt.
 aptAutoClean() {
   echo "**** Automatically remove unused packages and dependencies using apt..."
-  DEBIAN_FRONTEND=noninteractive apt -y autoremove
-  DEBIAN_FRONTEND=noninteractive apt -y clean
+  DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
+  DEBIAN_FRONTEND=noninteractive apt-get -y clean
 }
 
 # Manually deletes obsolete or unused files from the system.

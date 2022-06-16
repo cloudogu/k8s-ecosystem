@@ -32,8 +32,8 @@ EOF
 # Installs the newest updates for the system.
 getNewestDistUpdates() {
   echo "**** Installing newest dist updates..."
-  DEBIAN_FRONTEND=noninteractive apt -y update
-  DEBIAN_FRONTEND=noninteractive apt -y upgrade -o Dpkg::Options::="--force-confnew"
+  DEBIAN_FRONTEND=noninteractive apt-get -y update
+  DEBIAN_FRONTEND=noninteractive apt-get -y upgrade -o Dpkg::Options::="--force-confnew"
 }
 
 # Reboots the system after installing the system updates.

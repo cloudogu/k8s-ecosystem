@@ -25,7 +25,7 @@
       "ssh_username": "{{user `username`}}",
       "ssh_password": "{{user `password`}}",
       "ssh_handshake_attempts": "10000",
-      "ssh_timeout": "15m",
+      "ssh_timeout": "20m",
       "http_directory": "http/prod",
       "headless": false,
       "boot_wait": "5s",
@@ -90,10 +90,17 @@
   "provisioners": [
     {
       "type": "shell",
+      "expect_disconnect": true,
+      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
+      "scripts": [
+        "scripts/disableAutomaticUbuntuUpdates.sh"
+      ]
+    },
+    {
+      "type": "shell",
       "expect_disconnect": false,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
       "environment_vars": [
-        "INSTALL_HOME=/home/{{user `username`}}",
         "HOME_DIR=/home/{{user `username`}}",
         "K3S_TOKEN={{user `k3s_server_token`}}",
         "CES_NAMESPACE={{user `ces_namespace`}}"
@@ -103,7 +110,6 @@
         "scripts/installGuestAdditions.sh",
         "scripts/configureGrub.sh",
         "scripts/configureSSHDaemon.sh",
-        "scripts/disableAutomaticUbuntuUpdates.sh",
         "scripts/setupFail2Ban.sh",
         "scripts/kubernetes/setupMainNode.sh",
         "scripts/kubernetes/createNamespace.sh",

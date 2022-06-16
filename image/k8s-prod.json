@@ -106,9 +106,11 @@
         "CES_NAMESPACE={{user `ces_namespace`}}"
       ],
       "scripts": [
+        "scripts/startInstallation.sh",
         "scripts/installDependencies.sh",
         "scripts/installGuestAdditions.sh",
         "scripts/configureGrub.sh",
+        "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
         "scripts/kubernetes/setupMainNode.sh",

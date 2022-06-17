@@ -116,6 +116,7 @@
         "scripts/kubernetes/setupMainNode.sh",
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
+        "scripts/kubernetes/installLatestK8sCesSetup.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

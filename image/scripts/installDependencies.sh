@@ -8,7 +8,7 @@ set -o pipefail
 installAptDependencies() {
   echo "**** Install dependencies..."
   DEBIAN_FRONTEND=noninteractive apt-get -y update
-  DEBIAN_FRONTEND=noninteractive apt-get install -y nfs-common jq docker.io
+  DEBIAN_FRONTEND=noninteractive apt-get install -y nfs-common jq
 }
 
 # Installs optional dependency linux-image-extra for the given kernel. This package seems to be unavailable in some environments.

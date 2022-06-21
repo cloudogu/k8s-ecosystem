@@ -20,9 +20,9 @@ installGuestAdditions() {
   esac
 }
 
-# Installs quest additions for the VirtualBox player.
+# Installs quest additions for the VirtualBox hypervisor.
 installGuestAdditionsVirtualBox() {
-  echo "**** Installing guest additions for VirtualBox player..."
+  echo "**** Installing guest additions for VirtualBox hypervisor..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
     gcc make perl
 
@@ -39,9 +39,9 @@ installGuestAdditionsVirtualBox() {
   rm -rf "${HOME_DIR}"/VBoxGuest*.iso
 }
 
-# Installs quest additions for the VMWare player.
+# Installs quest additions for the VMWare hypervisor.
 installGuestAdditionsVMWare() {
-  echo "**** Installing guest additions for VMWare player..."
+  echo "**** Installing guest additions for VMWare hypervisor..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
     open-vm-tools
 }

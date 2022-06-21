@@ -11,7 +11,7 @@ SSH_MOUNT_PATH=/etc/ces
 SSHD_CONFIG_FILE=/etc/ssh/sshd_config
 SSH_KEYS_FILE=${SSH_MOUNT_PATH}/authorized_keys
 
-# Disables the username and password authentication as we only support key based authentication.
+# Disables the username and password authentication to improve security.
 disableUserPasswordLogin() {
   echo "**** Disabling username/password authentication in ssh daemon..."
   sudo sed -i "s|^[#.*]*ChallengeResponseAuthentication yes.*|ChallengeResponseAuthentication no|g" "${SSHD_CONFIG_FILE}"
@@ -20,7 +20,7 @@ disableUserPasswordLogin() {
   sudo sed -i "s|^[#.*]*PermitRootLogin .*|PermitRootLogin prohibit-password|g" "${SSHD_CONFIG_FILE}"
 }
 
-# Configure the file at path ${SSH_KEYS_FILE} to be used as an `authorized_keys` file when authentication at the ssh daemon.
+# Configure the file at path ${SSH_KEYS_FILE} to be used as an `authorized_keys` file for the ssh daemon.
 authorizedMountedSSHKey() {
   echo "**** Enabling usage of authorized keys file ${SSH_KEYS_FILE}..."
   sudo mkdir -p ${SSH_MOUNT_PATH}

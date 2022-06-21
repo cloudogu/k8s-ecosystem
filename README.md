@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Maintainer](https://img.shields.io/badge/maintainer-Cloudogu-blue)
 
-This is the repository containing all setup scripts and resources to install a cloudogu multi node ecosystem.
+This is the repository containing all setup scripts and resources to install a Cloudogu EcoSystem MultiNode.
 
 <a href="https://docs.cloudogu.com/"><img src="https://my.cloudogu.com/images/icons/docsIcon.svg" width="50">
 Documentation</a>
@@ -18,7 +18,7 @@ Public CES</a>
 
 ## Quick start
 
-**Note:** There are currently no prebuild images for the multi node version of the ecosystem.
+**Note:** There are currently no prebuild images for the multi node version of the EcoSystem.
 
 ### Build with Packer
 

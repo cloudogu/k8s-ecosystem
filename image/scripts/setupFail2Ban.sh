@@ -6,7 +6,7 @@ set -o pipefail
 
 FAIL2BAN_VERSION=0.11.1-1
 
-# Installs quest addition based on the provided builder.
+# Installs fail2ban via apt
 installFail2Ban() {
   echo "**** Installing fail2ban..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install fail2ban=${FAIL2BAN_VERSION}

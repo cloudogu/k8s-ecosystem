@@ -68,7 +68,7 @@ zeroOutFreeSpace() {
 }
 
 echo "**** Executing optimizeImageSize.sh..."
-manuallyRemoveUnusedFiles
+removeUnusedFiles
 purgeUnwantedPackages
 aptAutoClean
 disableSwapUntilReboot

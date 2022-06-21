@@ -135,10 +135,10 @@ autoinstall:
         type: format
         volume: sda9-root
         fstype: ext4
-      - id: sda10-var-btrfs
+      - id: sda10-var-ext4
         type: format
         volume: sda10-var
-        fstype: btrfs
+        fstype: ext4
 
 
       - id: mount-sda2-boot
@@ -176,4 +176,4 @@ autoinstall:
       - id: mount-sda10-var
         type: mount
         path: /var
-        device: sda10-var-btrfs
+        device: sda10-var-ext4

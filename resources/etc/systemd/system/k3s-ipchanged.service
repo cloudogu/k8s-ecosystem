@@ -1,0 +1,12 @@
+[Unit]
+Description=Handle IP address changes for a correct K3s network configuration
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+
+[Service]
+Restart=on-failure
+LimitNOFILE=400000
+ExecStart=/usr/sbin/k3s-ipchanged.sh

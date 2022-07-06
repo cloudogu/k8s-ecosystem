@@ -61,7 +61,9 @@
     {
       "name": "ecosystem-vmware",
       "type": "vmware-iso",
-      "version": "19",
+      "version": "14",
+      "disk_type_id": "1",
+      "disk_size": "{{user `disk_size`}}",
       "vm_name": "{{user `vm_name`}}",
       "guest_os_type": "ubuntu-64",
       "cpus": "{{user `cpus`}}",
@@ -73,11 +75,10 @@
       "ssh_username": "{{user `username`}}",
       "ssh_password": "{{user `password`}}",
       "ssh_handshake_attempts": "10000",
-      "ssh_timeout": "20m",
+      "ssh_timeout": "27m",
       "http_directory": "http/prod",
       "headless": false,
       "tools_upload_flavor": "linux",
-      "disk_size": "{{user `disk_size`}}",
       "boot_wait": "5s",
       "boot_command": [
         "<enter><enter><f6><esc><wait> ",

@@ -2,6 +2,12 @@
 autoinstall:
   # Version of the autoinstall-specification
   version: 1
+  
+  # avoid unattended upgrades during VM tests: start
+  updates: security
+  apt:
+    disable_suites: [security]
+  # avoid unattended upgrades during VM tests: end
 
   # Settings for the apt repositories
   apt:

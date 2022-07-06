@@ -3,6 +3,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# re-sync VM time to avoid certificate time errors
+systemctl restart systemd-timesyncd.service
+
 DEFAULT_NETWORK_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
 export DEFAULT_NETWORK_INTERFACE
 

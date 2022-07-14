@@ -72,6 +72,7 @@
         "scripts/startInstallation.sh",
         "scripts/installDependencies.sh",
         "scripts/installGuestAdditions.sh",
+        "scripts/dev/vagrant.sh",
         "scripts/configureGrub.sh",
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",

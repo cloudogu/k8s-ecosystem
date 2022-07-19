@@ -1,6 +1,6 @@
 [Unit]
 Description=Handle IP address changes for a correct K3s network configuration
-After=network-online.target
+After=network-online.target k3s.service
 
 [Install]
 WantedBy=multi-user.target

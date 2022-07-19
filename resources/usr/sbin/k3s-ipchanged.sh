@@ -8,13 +8,17 @@ export K3S_SYSTEMD_ENV_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service.env"
 export K3S_SYSTEMD_SERVICE_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service"
 
 function runReplaceExternalIpAddress() {
+    echo "Getting external IP address..."
     externalIpAddress="$(getExternalIpAddress)"
-    assertNonEmpty "${externalIpAddress}"
-
+    echo "Waiting for non-empty IP..."
+    waitForNonEmptyIP "${externalIpAddress}"
+    echo "Replacing IP in ${K3S_SYSTEMD_ENV_FILE} with ${externalIpAddress}..."
     replaceIpAddressInK3sConfig "${K3S_SYSTEMD_ENV_FILE}" "${externalIpAddress}"
+    echo "Replacing IP in ${K3S_SYSTEMD_SERVICE_FILE} with ${externalIpAddress}..."
     replaceIpAddressInK3sService "${K3S_SYSTEMD_SERVICE_FILE}" "${externalIpAddress}"
-
+    echo "Reloading systemctl daemon..."
     systemctl daemon-reload
+    echo "Restarting k3s service..."
     systemctl restart k3s
 }
 
@@ -35,10 +39,18 @@ function replaceIpAddressInK3sService() {
     sed -i "s|\(--node[-a-z]*-ip\)=.*$|\1=${externalIpAddress}' \\\|g" "${k3sOverrideServiceFile}"
 }
 
-function assertNonEmpty() {
+function waitForNonEmptyIP() {
     local externalIpAddress="${1}"
 
-    [[ "${externalIpAddress}" != "" ]]
+    for (( i = 1; i <=24; i++ )); do
+        if [[ "${externalIpAddress}" != "" ]]; then
+            echo "IP is still empty (${i})"
+            sleep 5
+            externalIpAddress="$(getExternalIpAddress)"
+        else
+            break
+        fi
+    done
 }
 
 function getExternalIpAddress() {

@@ -1,6 +1,6 @@
 {
   "variables": {
-    "vm_name": "ces",
+    "vm_name": "ces-main",
     "username": "vagrant",
     "password": "vagrant",
     "memory": "8192",
@@ -10,7 +10,7 @@
     "iso_checksum": "sha256:28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad",
     "main_k3s_port": "6443",
     "k3s_server_token": "MySecretToken1!",
-    "fqdn": "k3ces.local",
+    "fqdn": "k3s.local",
     "ces_namespace": "ecosystem"
   },
   "builders": [
@@ -60,6 +60,16 @@
   ],
   "provisioners": [
     {
+			"type": "file",
+			"source": "../resources",
+		  "destination": "/home/{{user `username`}}/resources"
+		},
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
+      "inline": ["sed -i 's/defaultNetworkInterface=.*/defaultNetworkInterface=\"enp0s8\"/g' /home/vagrant/resources/usr/sbin/k3s-ipchanged.sh"]
+    },
+    {
       "type": "shell",
       "expect_disconnect": false,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
@@ -80,6 +90,7 @@
         "scripts/kubernetes/setupMainNode.sh",
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
+        "scripts/dev/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }
@@ -87,7 +98,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "build/{{.BuildName}}.box"
+      "output": "build/{{.BuildName}}-main.box"
     }
   ]
 }

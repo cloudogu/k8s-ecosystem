@@ -12,14 +12,20 @@ function runReplaceExternalIpAddress() {
     externalIpAddress="$(getExternalIpAddress)"
     echo "Waiting for non-empty IP..."
     waitForNonEmptyIP "${externalIpAddress}"
-    echo "Replacing IP in ${K3S_SYSTEMD_ENV_FILE} with ${externalIpAddress}..."
-    replaceIpAddressInK3sConfig "${K3S_SYSTEMD_ENV_FILE}" "${externalIpAddress}"
-    echo "Replacing IP in ${K3S_SYSTEMD_SERVICE_FILE} with ${externalIpAddress}..."
-    replaceIpAddressInK3sService "${K3S_SYSTEMD_SERVICE_FILE}" "${externalIpAddress}"
-    echo "Reloading systemctl daemon..."
-    systemctl daemon-reload
-    echo "Restarting k3s service..."
-    systemctl restart k3s
+    echo "Checking if IP has changed..."
+    if [[ $(IPhasChanged "${externalIpAddress}" "${K3S_SYSTEMD_ENV_FILE}" "${K3S_SYSTEMD_SERVICE_FILE}") == "true" ]]; then
+        echo "IP has changed"
+        echo "Replacing IP in ${K3S_SYSTEMD_ENV_FILE} with ${externalIpAddress}..."
+        replaceIpAddressInK3sConfig "${K3S_SYSTEMD_ENV_FILE}" "${externalIpAddress}"
+        echo "Replacing IP in ${K3S_SYSTEMD_SERVICE_FILE} with ${externalIpAddress}..."
+        replaceIpAddressInK3sService "${K3S_SYSTEMD_SERVICE_FILE}" "${externalIpAddress}"
+        echo "Reloading systemctl daemon..."
+        systemctl daemon-reload
+        echo "Restarting k3s service..."
+        systemctl restart k3s
+    else
+        echo "IP has not changed"
+    fi
 }
 
 function replaceIpAddressInK3sConfig() {
@@ -28,6 +34,19 @@ function replaceIpAddressInK3sConfig() {
     echo "Using IP ${externalIpAddress} in K3s env file"
 
     sed -i "s|^\(K3S_EXTERNAL_IP\)=.\+$|\1='${externalIpAddress}'|g" "${k3sOverrideConfigFile}"
+}
+
+function IPhasChanged() {
+    local externalIpAddress="${1}"
+    local k3sSystemdEnvFile="${2}"
+    local k3sSystemdServiceFile="${3}"
+    if grep "${externalIpAddress}" "${k3sSystemdEnvFile}" ; then
+        echo "false"
+    elif grep "${externalIpAddress}" "${k3sSystemdServiceFile}" ; then
+        echo "false"
+    else
+        echo "true"
+    fi
 }
 
 function replaceIpAddressInK3sService() {
@@ -43,7 +62,7 @@ function waitForNonEmptyIP() {
     local externalIpAddress="${1}"
 
     for (( i = 1; i <=24; i++ )); do
-        if [[ "${externalIpAddress}" != "" ]]; then
+        if [[ "${externalIpAddress}" == "" ]]; then
             echo "IP is still empty (${i})"
             sleep 5
             externalIpAddress="$(getExternalIpAddress)"

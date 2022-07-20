@@ -31,3 +31,13 @@ sh -
 echo "Increasing virtual address space for sonar dogu..."
 # see https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html
 sysctl -w vm.max_map_count=262144
+
+# This is usually done by the k3s-ipchanged service, but doesn't work at first start
+K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
+K3S_SYSTEMD_ENV_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service.env"
+K3S_SYSTEMD_SERVICE_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service"
+externalIpAddress=192.168.56.2
+echo "Replacing IP in ${K3S_SYSTEMD_ENV_FILE} with ${externalIpAddress}..."
+sed -i "s|^\(K3S_EXTERNAL_IP\)=.\+$|\1='${externalIpAddress}'|g" "${K3S_SYSTEMD_ENV_FILE}"
+echo "Replacing IP in ${K3S_SYSTEMD_SERVICE_FILE} with ${externalIpAddress}..."
+sed -i "s|\(--node[-a-z]*-ip\)=.*$|\1=${externalIpAddress}' \\\|g" "${K3S_SYSTEMD_SERVICE_FILE}"

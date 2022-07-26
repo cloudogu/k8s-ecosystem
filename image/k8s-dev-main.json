@@ -66,12 +66,19 @@
 		},
     {
       "type": "shell",
+      "expect_disconnect": true,
+      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
+      "scripts": [
+        "scripts/dev/setMainHostname.sh"
+      ]
+    },
+    {
+      "type": "shell",
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
       "inline": ["sed -i 's/defaultNetworkInterface=.*/defaultNetworkInterface=\"enp0s8\"/g' /home/vagrant/resources/usr/sbin/k3s-ipchanged.sh"]
     },
     {
       "type": "shell",
-      "expect_disconnect": false,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
       "environment_vars": [
         "HOME_DIR=/home/{{user `username`}}",
@@ -87,10 +94,11 @@
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
-        "scripts/kubernetes/setupMainNode.sh",
+        "scripts/dev/setupMainNodeDev.sh",
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
         "scripts/dev/installCustomServiceFiles.sh",
+        "scripts/dev/prepareFirstStart.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

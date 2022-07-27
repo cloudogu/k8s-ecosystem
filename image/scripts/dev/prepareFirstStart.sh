@@ -3,7 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# This is usually done by the k3s-ipchanged service, but doesn't work at first start
+# This is usually done by the k3s-conf service, but doesn't work at first start
 K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 K3S_SYSTEMD_ENV_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service.env"
 K3S_SYSTEMD_SERVICE_FILE="${K3S_SYSTEMD_ENV_DIR}/k3s.service"

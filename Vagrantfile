@@ -31,6 +31,8 @@ Vagrant.configure("2") do |config|
 
     main.vm.box = "testk8sMain"
 
+    main.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
+
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
     main.vm.network "private_network", ip: main_k3s_ip_address
@@ -82,6 +84,8 @@ Vagrant.configure("2") do |config|
       worker.vm.hostname = "ces-worker-#{i}"
 
       worker.vm.box = "testk8sWorker"
+
+      worker.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 
       # Kubernetes API Access
       worker_port = 6444 + i.to_i

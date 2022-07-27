@@ -1,6 +1,7 @@
 [Unit]
-Description=Handle IP address changes for a correct K3s network configuration
+Description=K3s network configuration updater
 After=network-online.target k3s.service
+ConditionFileNotEmpty=/etc/ces/nodeconfig/k3sConfig.json
 
 [Install]
 WantedBy=multi-user.target
@@ -9,4 +10,4 @@ WantedBy=multi-user.target
 [Service]
 Restart=on-failure
 LimitNOFILE=400000
-ExecStart=/usr/sbin/k3s-ipchanged.sh
+ExecStart=/usr/sbin/k3s-conf.sh

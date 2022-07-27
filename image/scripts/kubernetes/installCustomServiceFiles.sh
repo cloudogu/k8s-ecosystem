@@ -7,7 +7,7 @@ INTERMEDIATE_DIR=/home/ces-admin/resources
 TARGET_DIR=/
 
 function runInstallCustomServiceFiles() {
-    local filePaths="etc/systemd/system/k3s-ipchanged.service usr/sbin/k3s-ipchanged.sh"
+    local filePaths="etc/systemd/system/k3s-conf.service usr/sbin/k3s-conf.sh"
 
     echo "Moving all files from ${INTERMEDIATE_DIR} to ${TARGET_DIR}"
     for filePath in ${filePaths}; do
@@ -20,7 +20,7 @@ function runInstallCustomServiceFiles() {
         fi
     done
 
-    systemctl enable k3s-ipchanged
+    systemctl enable k3s-conf
 
     rm -rf "${INTERMEDIATE_DIR}"
 }

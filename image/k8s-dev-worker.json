@@ -71,7 +71,8 @@
       "environment_vars": [
         "HOME_DIR=/home/{{user `username`}}",
         "K3S_TOKEN={{user `k3s_server_token`}}",
-        "CES_NAMESPACE={{user `ces_namespace`}}"
+        "CES_NAMESPACE={{user `ces_namespace`}}",
+        "USERNAME={{user `username`}}"
       ],
       "scripts": [
         "scripts/startInstallation.sh",
@@ -82,7 +83,7 @@
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
-        "scripts/dev/installCustomServiceFiles.sh",
+        "scripts/kubernetes/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

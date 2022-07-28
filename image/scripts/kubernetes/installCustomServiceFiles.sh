@@ -3,7 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-INTERMEDIATE_DIR=/home/ces-admin/resources
+INTERMEDIATE_DIR=/home/${USERNAME}/resources
 TARGET_DIR=/
 
 function runInstallCustomServiceFiles() {

@@ -9,7 +9,7 @@ export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 function runUpdatek3sConfiguration() {
     local configHasChanged="false"
 
-    echo "Determining whether this is the main host or a worker..."
+    echo "Determining whether this is the main node or a worker..."
     if ls /etc/systemd/system | grep agent > /dev/null; then
         echo "This is a k3s agent/worker node"
         export K3S_SERVICE_NAME=k3s-agent

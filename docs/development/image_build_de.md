@@ -10,6 +10,8 @@
 ## 2. Start des Bauprozesses mit Packer
 - `cd <k8s-ecosystem-pfad>/image/`
 - `packer build -var "timestamp=$(date +%Y%m%d)" k8s-prod.json`
+  - Um nur für einen bestimmten Hypervisor zu bauen, kann der `--only=`-Parameter genutzt werden
+  - Beispiel: `packer build -var "timestamp=$(date +%Y%m%d)" --only=ecosystem-virtualbox k8s-prod.json`
 
 ## 3. Warten
 - Der Image-Erstellungsprozess dauert etwa 15 Minuten, abhängig von Ihrer Hardware und Internetanbindung.

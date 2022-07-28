@@ -75,11 +75,6 @@
     {
       "type": "shell",
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
-      "inline": ["sed -i 's/defaultNetworkInterface=.*/defaultNetworkInterface=\"enp0s8\"/g' /home/vagrant/resources/usr/sbin/k3s-conf.sh"]
-    },
-    {
-      "type": "shell",
-      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
       "environment_vars": [
         "HOME_DIR=/home/{{user `username`}}",
         "K3S_TOKEN={{user `k3s_server_token`}}",

@@ -60,6 +60,11 @@
   ],
   "provisioners": [
     {
+			"type": "file",
+			"source": "../resources",
+		  "destination": "/home/{{user `username`}}/resources"
+		},
+    {
       "type": "shell",
       "expect_disconnect": false,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
@@ -77,6 +82,7 @@
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
+        "scripts/dev/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

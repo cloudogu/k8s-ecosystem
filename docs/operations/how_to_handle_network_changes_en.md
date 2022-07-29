@@ -11,7 +11,7 @@ Basically an IP address change involves some downtime, because the `k3s` systemd
 
 After successful change it is advisable to start a new browser session in Cloudogu EcoSystem and call any dogu.
 
-### 1. automatic customization on VM restart
+### 1. automatic customization on VM restart (OLD)
 
 To simplify the customization process, there is a separate service `k3s-ipchanged`. This service ensures that the external IP address of a network interface is obtained at every VM restart. This enriches the `k3s` service and restarts it.
 

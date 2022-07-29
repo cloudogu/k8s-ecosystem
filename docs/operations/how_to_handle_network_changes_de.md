@@ -11,7 +11,7 @@ Grundsätzlich ist eine IP-Adressen-Änderung mit einer gewissen Downtime verbun
 
 Nach erfolgreicher Änderung ist es ratsam, eine neue Browsersitzung im Cloudogu EcoSystem zu starten und ein beliebiges Dogu aufzurufen.
 
-### 1. Automatische Anpassung bei VM-Neustart
+### 1. Automatische Anpassung bei VM-Neustart (VERALTET)
 
 Um die Anpassung zu vereinfachen, existiert ein eigener Dienst `k3s-ipchanged`. Dieser Dienst sorgt dafür, dass bei jedem VM-Neustart die externe IP-Adresse eines Netzwerkinterfaces bezogen. Damit wird der `k3s`-Dienst angereichert und neu gestartet.
 

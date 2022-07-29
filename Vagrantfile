@@ -16,6 +16,7 @@ dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
+install_setup = true
 
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
@@ -74,9 +75,10 @@ Vagrant.configure("2") do |config|
     #                   path: "docker-registry/all_node_registry.sh",
     #                   args: [fqdn]
 
-    # main.vm.provision "Install ces-setup", type: "shell",
-    #                   path: "ces-setup-installation.sh"
-
+    if install_setup
+      main.vm.provision "Install ces-setup", type: "shell",
+                      path: "setup_installation/ces-setup-installation.sh"
+    end
   end
 
   (0..(worker_count - 1)).each do |i|

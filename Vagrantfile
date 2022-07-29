@@ -114,9 +114,6 @@ Vagrant.configure("2") do |config|
           k3s_server_token
         ]
 
-  #     worker.vm.provision "Install dependencies", type: "shell",
-  #                         path: "dependencies.sh"
-
   #     worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
   #                         path: "docker-registry/all_node_registry.sh",
   #                         args: [fqdn]

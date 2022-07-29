@@ -124,9 +124,9 @@ Vagrant.configure("2") do |config|
      end
    end
 
-  # # Use "up" rather than "provision" here because the latter simply does not work.
-  # config.trigger.after :up do |trigger|
-  #   trigger.info = "Run ./setup.sh locally to adjust local kubeconfig..."
-  #   trigger.run = { path: "./setup.sh", args: [fqdn, docker_registry_namespace] }
-  # end
+  # Use "up" rather than "provision" here because the latter simply does not work.
+  config.trigger.after :up do |trigger|
+    trigger.info = "Adjusting local kubeconfig..."
+    trigger.run = { path: "./local_kubeconfig.sh", args: [fqdn, docker_registry_namespace] }
+  end
 end

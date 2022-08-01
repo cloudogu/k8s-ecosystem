@@ -1,3 +1,13 @@
 .idea
 image/build
 image/output-*
+
+.vagrant
+.vagrant.rb
+*.log
+
+tmp
+
+# applications
+containers/
+!containers/.gitkeep

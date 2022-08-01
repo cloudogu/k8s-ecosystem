@@ -10,13 +10,13 @@ main_k3s_port = 6443
 k3s_server_token = ENV["K3S_TOKEN"] || "MySecretToken1!"
 fqdn = "k3s.local"
 docker_registry_namespace = "ecosystem"
+install_setup = true
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-install_setup = true
 
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
@@ -25,7 +25,7 @@ end
 
 Vagrant.configure("2") do |config|
   # requires plugin vagrant-disksize
-  #config.disksize.size = '80GB'
+  # config.disksize.size = '80GB'
 
   config.vm.define "main", primary: true do |main|
     main.vm.hostname = "ces-main"
@@ -67,13 +67,13 @@ Vagrant.configure("2") do |config|
                         image_registry_email,
                       ]
 
-    # main.vm.provision "Install local Docker registry", type: "shell",
-    #                   path: "docker-registry/main_only_registry.sh",
-    #                   args: [fqdn, docker_registry_namespace]
+    main.vm.provision "Install local Docker registry", type: "shell",
+                      path: "image/scripts/dev/docker-registry/main_only_registry.sh",
+                      args: [fqdn, docker_registry_namespace]
 
-    # main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
-    #                   path: "docker-registry/all_node_registry.sh",
-    #                   args: [fqdn]
+    main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
+                      path: "image/scripts/dev/docker-registry/all_node_registry.sh",
+                      args: [fqdn]
 
     if install_setup
       main.vm.provision "Install ces-setup", type: "shell",
@@ -114,16 +114,15 @@ Vagrant.configure("2") do |config|
           k3s_server_token
         ]
 
-  #     worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
-  #                         path: "docker-registry/all_node_registry.sh",
-  #                         args: [fqdn]
-
+      worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
+                          path: "image/scripts/dev/docker-registry/all_node_registry.sh",
+                          args: [fqdn]
      end
    end
 
   # Use "up" rather than "provision" here because the latter simply does not work.
   config.trigger.after :up do |trigger|
     trigger.info = "Adjusting local kubeconfig..."
-    trigger.run = { path: "./local_kubeconfig.sh", args: [fqdn, docker_registry_namespace] }
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, docker_registry_namespace] }
   end
 end

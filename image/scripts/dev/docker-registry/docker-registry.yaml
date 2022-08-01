@@ -1,0 +1,124 @@
+# generated from https://helm.twun.io/docker-registry v2.1.0
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-registry-secret
+  labels:
+    app: docker-registry
+type: Opaque
+data:
+  haSharedSecret: "Z0ZyZ29TQnZ0TTBablk5WA=="
+  proxyUsername: ""
+  proxyPassword: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-registry-config
+  labels:
+    app: docker-registry
+data:
+  config.yml: |-
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    http:
+      addr: :30099
+      debug:
+        addr: :5001
+        prometheus:
+          enabled: false
+          path: /metrics
+      headers:
+        X-Content-Type-Options:
+        - nosniff
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    version: 0.1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  type: NodePort
+  ports:
+    - port: 30099
+      protocol: TCP
+      targetPort: docker-api
+      nodePort: 30099
+  selector:
+    app: docker-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  selector:
+    matchLabels:
+      app: docker-registry
+  replicas: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+      annotations:
+        checksum/config: e13d2768dbcea94e68d0feea454737c949b2a1c5b79cfdfd377aee2bed81e242
+        checksum/secret: 97a1dba3f8cd7ff43b650b5475c35102c3ba070c1c678ce36b2d62b0d2e04de4
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: docker-registry
+          image: "registry:2.7.1"
+          imagePullPolicy: IfNotPresent
+          command:
+          - /bin/registry
+          - serve
+          - /etc/docker/registry/config.yml
+          ports:
+            - name: docker-api
+              containerPort: 30099
+          livenessProbe:
+            httpGet:
+              path: /
+              port: docker-api
+          readinessProbe:
+            httpGet:
+              path: /
+              port: docker-api
+          resources:
+            {}
+          env:
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: haSharedSecret
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: "/var/lib/registry"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry/
+            - name: "docker-registry-config"
+              mountPath: "/etc/docker/registry"
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: docker-registry-config
+          configMap:
+            name: docker-registry-config

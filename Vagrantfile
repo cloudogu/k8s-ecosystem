@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
 
     if install_setup
       main.vm.provision "Install ces-setup", type: "shell",
-                      path: "setup_installation/ces-setup-installation.sh"
+                      path: "image/scripts/dev/setup_installation/ces-setup-installation.sh"
     end
   end
 

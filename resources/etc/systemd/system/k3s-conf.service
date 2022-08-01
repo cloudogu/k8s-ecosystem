@@ -6,7 +6,6 @@ ConditionFileNotEmpty=/etc/ces/nodeconfig/k3sConfig.json
 [Install]
 WantedBy=multi-user.target
 
-
 [Service]
 Restart=on-failure
 LimitNOFILE=400000

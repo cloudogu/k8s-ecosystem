@@ -20,11 +20,10 @@ Public CES</a>
 
 **Note:** There are currently no prebuild images for the multi node version of the EcoSystem.
 
-### Build with Packer
+### Getting Started
 
-Download Packer from https://www.packer.io/downloads.html and move the extracted binary to `/usr/local/bin/packer`.
-
-Build the VM according to your liking with one of the builders in `images/template.prod.json`.
+For more information about the setup or development of the EcoSystem visit
+the [Getting Started Guide](docs/getting_started_en.md)
 
 ### What is the Cloudogu EcoSystem?
 

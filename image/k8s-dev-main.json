@@ -10,7 +10,7 @@
     "iso_checksum": "sha256:28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad",
     "main_k3s_port": "6443",
     "k3s_server_token": "MySecretToken1!",
-    "fqdn": "k3s.local",
+    "fqdn": "k3ces.local",
     "ces_namespace": "ecosystem"
   },
   "builders": [

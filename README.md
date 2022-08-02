@@ -23,7 +23,7 @@ Public CES</a>
 ### Getting Started
 
 For more information about the setup or development of the EcoSystem visit
-the [Getting Started Guide](docs/getting_started_en.md)
+the [Getting Started Guide](docs/getting_started_en.md).
 
 ### What is the Cloudogu EcoSystem?
 

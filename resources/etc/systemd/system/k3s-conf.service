@@ -1,7 +1,6 @@
 [Unit]
 Description=K3s network configuration updater
 After=network-online.target k3s.service
-ConditionFileNotEmpty=/etc/ces/nodeconfig/k3sConfig.json
 
 [Install]
 WantedBy=multi-user.target

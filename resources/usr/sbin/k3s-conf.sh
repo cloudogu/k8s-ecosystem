@@ -6,6 +6,15 @@ set -o pipefail
 export NODE_CONFIG_FILE=/etc/ces/nodeconfig/k3sConfig.json
 export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 
+function waitForConfigFile() {
+  until [ -f "${NODE_CONFIG_FILE}" ]; do
+    echo "Config file ${NODE_CONFIG_FILE} not available, waiting 15 seconds"
+    sleep 15
+  done
+
+  echo "Found config file ${NODE_CONFIG_FILE}, starting the configuration of k3s..."
+}
+
 function runUpdateK3sConfiguration() {
   local configHasChanged="false"
 
@@ -167,5 +176,6 @@ function replaceK3sUrlInK3sEnvFile() {
 
 # run script only if called but not if sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  waitForConfigFile
   runUpdateK3sConfiguration "$@"
 fi

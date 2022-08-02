@@ -94,7 +94,6 @@
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
         "scripts/kubernetes/installCustomServiceFiles.sh",
-        "scripts/dev/prepareFirstStart.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

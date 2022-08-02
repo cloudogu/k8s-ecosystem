@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 worker_count = (ENV["K8S_WORKERS"] || "1").to_i
-vm_memory = (ENV["K8S_VM_MEMORY"] || "2048").to_i
+vm_memory = (ENV["K8S_VM_MEMORY"] || "4096").to_i
 vm_cpus = (ENV["K8S_VM_CPUS"] || "2").to_i
 vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
@@ -24,9 +24,6 @@ if File.file?(".vagrant.rb")
 end
 
 Vagrant.configure("2") do |config|
-  # requires plugin vagrant-disksize
-  config.disksize.size = '80GB'
-
   config.vm.define "main", primary: true do |main|
     main.vm.hostname = "ces-main"
 

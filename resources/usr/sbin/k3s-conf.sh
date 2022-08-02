@@ -6,10 +6,19 @@ set -o pipefail
 export NODE_CONFIG_FILE=/etc/ces/nodeconfig/k3sConfig.json
 export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 
+function waitForAnyServiceFile() {
+  until [ -f "${K3S_SYSTEMD_ENV_DIR}/k3s.service" ] || [ -f "${K3S_SYSTEMD_ENV_DIR}/k3s-agent.service" ]; do
+    echo "Waiting for k3s or k3s-agent service to exist. Try again in 5 seconds..."
+    sleep 5
+  done
+
+  echo "Found k3s/k3s-agent service files"
+}
+
 function waitForConfigFile() {
   until [ -f "${NODE_CONFIG_FILE}" ]; do
-    echo "Config file ${NODE_CONFIG_FILE} not available, waiting 15 seconds"
-    sleep 15
+    echo "Config file ${NODE_CONFIG_FILE} not available. Try again in 5 seconds..."
+    sleep 5
   done
 
   echo "Found config file ${NODE_CONFIG_FILE}, starting the configuration of k3s..."
@@ -19,7 +28,7 @@ function runUpdateK3sConfiguration() {
   local configHasChanged="false"
 
   echo "Determining whether this is the main node or a worker..."
-  if ls /etc/systemd/system | grep agent >/dev/null; then
+  if ls /etc/systemd/system | grep k3s-agent >/dev/null; then
     echo "This is a k3s agent/worker node"
     export K3S_SERVICE_NAME=k3s-agent
   else
@@ -176,6 +185,7 @@ function replaceK3sUrlInK3sEnvFile() {
 
 # run script only if called but not if sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  waitForAnyServiceFile
   waitForConfigFile
   runUpdateK3sConfiguration "$@"
 fi

@@ -2,14 +2,14 @@
 
 Dieses Dokument enthält die notwendigen Informationen, um die Entwicklungs-Baseboxen zu bauen, die für den Start einer
 Entwicklungsinstanz des Cloudogu EcoSystems erforderlich sind. Im Allgemeinen gibt es zwei Baseboxen. Eine für den
-Hauptknoten und eine für einen Arbeitsknoten. Die Baseboxen enthalten gemeinsame Tools und Installationen, um den
+Hauptknoten und eine für die Arbeitsknoten. Die Baseboxen enthalten gemeinsame Tools und Installationen, um den
 Aufwand für die Erstellung einer neuen Entwicklungsinstanz über Vagrant zu reduzieren.
 
 ## Voraussetzungen
 
 - `git` installiert
 - `packer` installiert (siehe [packer.io](https://www.packer.io/))
-- VirtualBox" installiert
+- VirtualBox installiert
 - Verstehen der [Struktur der Projektdateien](structure_of_the_files_de.md)
 
 ## Bauen der Basebox für den Hauptknoten

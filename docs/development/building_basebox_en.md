@@ -1,8 +1,8 @@
-# Building the EcoSystem Development Base-Boxes
+# Building the EcoSystem Development Baseboxes
 
-This document contains the necessary information to build the development base-boxes required to start a development
-instance of the Cloudogu EcoSystem. Generally there are two base-boxes. One for the main node and another for a worker
-node. The base-boxes contain shared tools and installations to reduce the effort for creating a new development instance
+This document contains the necessary information to build the development baseboxes required to start a development
+instance of the Cloudogu EcoSystem. Generally there are two baseboxes. One for the main node and another for a worker
+node. The baseboxes contain shared tools and installations to reduce the effort for creating a new development instance
 via Vagrant.
 
 ## Requirements

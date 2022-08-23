@@ -10,4 +10,4 @@
 
 - [Structure of the Cloudogu EcoSystem Project Files](development/structure_of_the_files_en.md)
 - [Building Cloudogu EcoSystem Images](development/image_build_en.md)
-- [Building Cloudogu EcoSystem Development Base-Boxes](development/building_basebox_en.md)
+- [Building Cloudogu EcoSystem Development Baseboxes](development/building_basebox_en.md)

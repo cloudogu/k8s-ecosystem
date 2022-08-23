@@ -4,7 +4,7 @@ Das Verzeichnis `image` enthält die folgenden Dateien:
 
 ```
 📦image
- ┣ (📂 build)              - Enthält die resultierenden Base-Boxen nach deren Erstellung.
+ ┣ (📂 build)              - Enthält die resultierenden Baseboxen nach deren Erstellung.
  ┣ 📂 http                 - Enthält Informationen für Subiquity (den Ubuntu-Installer seit 20.04) für:
  ┃ ┗ 📂 dev                   - die Basebox der Entwickler.
  ┃ ┗ 📂 prod                  - die Produktions-Images.

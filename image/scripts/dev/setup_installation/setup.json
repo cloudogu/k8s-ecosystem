@@ -1,0 +1,53 @@
+{
+  "naming": {
+    "fqdn": "192.168.56.2",
+    "domain": "k3ces.local",
+    "certificateType": "selfsigned",
+    "relayHost": "asdf",
+    "completed": true,
+    "useInternalIp": false,
+    "internalIp": ""
+  },
+  "dogus": {
+    "defaultDogu": "ldap",
+    "install": [
+      "official/ldap",
+      "official/postfix"
+    ],
+    "completed": true
+  },
+  "admin": {
+    "username": "admin",
+    "mail": "admin@admin.admin",
+    "password": "adminpw",
+    "adminGroup": "cesAdmin",
+    "completed": true,
+    "adminMember": true,
+    "sendWelcomeMail": false
+  },
+  "userBackend": {
+    "dsType": "embedded",
+    "server": "",
+    "attributeID": "uid",
+    "attributeGivenName": "",
+    "attributeSurname": "",
+    "attributeFullname": "cn",
+    "attributeMail": "mail",
+    "attributeGroup": "memberOf",
+    "baseDN": "",
+    "searchFilter": "(objectClass=person)",
+    "connectionDN": "",
+    "password": "",
+    "host": "ldap",
+    "port": "389",
+    "loginID": "",
+    "loginPassword": "",
+    "encryption": "",
+    "completed": true,
+    "groupBaseDN": "",
+    "groupSearchFilter": "",
+    "groupAttributeName": "",
+    "groupAttributeDescription": "",
+    "groupAttributeMember": ""
+  }
+}

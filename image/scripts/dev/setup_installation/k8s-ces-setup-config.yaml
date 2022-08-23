@@ -1,0 +1,20 @@
+#
+# The default configuration map for the ces-setup. Should always be deployed before the setup itself.
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-ces-setup-config
+  namespace: ecosystem
+  labels:
+    app: cloudogu-ecosystem
+    app.kubernetes.io/name: k8s-ces-setup
+data:
+  k8s-ces-setup.yaml: |
+    log_level: "DEBUG"
+    dogu_operator_url: https://github.com/cloudogu/k8s-dogu-operator/releases/download/v0.9.1/k8s-dogu-operator_0.9.1.yaml
+    service_discovery_url: https://github.com/cloudogu/k8s-service-discovery/releases/download/v0.3.0/k8s-service-discovery_0.3.0.yaml
+    etcd_server_url: https://raw.githubusercontent.com/cloudogu/k8s-etcd/develop/manifests/etcd.yaml
+    etcd_client_image_repo: bitnami/etcd:3.5.2-debian-10-r0
+    key_provider: pkcs1v15
+    remote_registry_url_schema: default

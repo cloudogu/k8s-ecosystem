@@ -5,7 +5,7 @@ set -o pipefail
 
 echo "**** Begin installing Longhorn"
 echo "Installing Longhorn"
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.2.4/deploy/longhorn.yaml
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.3.0/deploy/longhorn.yaml
 
 echo "Waiting until Longhorn storageclass is created"
 for (( i = 1; i <=19; i++ ))

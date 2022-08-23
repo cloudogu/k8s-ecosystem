@@ -1,3 +1,12 @@
 .idea
 image/build
 image/output-*
+
+.vagrant
+.vagrant.rb
+*.log
+
+tmp
+
+# keys begin mounted into local instance to give ssh access to dev machine
+authorized_keys

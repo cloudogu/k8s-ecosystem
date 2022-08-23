@@ -1,8 +1,8 @@
 {
   "variables": {
-    "vm_name": "CloudoguEcoSystem-{{user `timestamp`}}",
-    "username": "ces-admin",
-    "password": "ces-admin",
+    "vm_name": "ces-worker",
+    "username": "vagrant",
+    "password": "vagrant",
     "memory": "8192",
     "cpus": "4",
     "disk_size": "100000",
@@ -15,18 +15,17 @@
   },
   "builders": [
     {
-      "name": "ecosystem-virtualbox",
+      "name": "ecosystem-basebox",
       "type": "virtualbox-iso",
-      "format": "ova",
+      "guest_os_type": "Ubuntu_64",
       "vm_name": "{{user `vm_name`}}",
-      "guest_os_type": "ubuntu-64",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "ssh_username": "{{user `username`}}",
       "ssh_password": "{{user `password`}}",
       "ssh_handshake_attempts": "10000",
       "ssh_timeout": "20m",
-      "http_directory": "http/prod",
+      "http_directory": "http/dev",
       "headless": false,
       "boot_wait": "5s",
       "boot_command": [
@@ -57,46 +56,14 @@
           "10"
         ]
       ]
-    },
-    {
-      "name": "ecosystem-vmware",
-      "type": "vmware-iso",
-      "version": "14",
-      "disk_type_id": "1",
-      "disk_size": "{{user `disk_size`}}",
-      "vm_name": "{{user `vm_name`}}",
-      "guest_os_type": "ubuntu-64",
-      "cpus": "{{user `cpus`}}",
-      "memory": "{{user `memory`}}",
-      "iso_urls": [
-        "{{user `iso_url`}}"
-      ],
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "ssh_username": "{{user `username`}}",
-      "ssh_password": "{{user `password`}}",
-      "ssh_handshake_attempts": "10000",
-      "ssh_timeout": "27m",
-      "http_directory": "http/prod",
-      "headless": false,
-      "tools_upload_flavor": "linux",
-      "boot_wait": "5s",
-      "boot_command": [
-        "<enter><enter><f6><esc><wait> ",
-        "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
-        "<enter>"
-      ],
-      "shutdown_command": "echo {{user `username`}} | sudo -S -E shutdown -P now"
     }
   ],
   "provisioners": [
     {
-      "type": "shell",
-      "expect_disconnect": true,
-      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
-      "scripts": [
-        "scripts/disableAutomaticUbuntuUpdates.sh"
-      ]
-    },
+			"type": "file",
+			"source": "../resources",
+		  "destination": "/home/{{user `username`}}/resources"
+		},
     {
       "type": "shell",
       "expect_disconnect": false,
@@ -111,29 +78,20 @@
         "scripts/startInstallation.sh",
         "scripts/installDependencies.sh",
         "scripts/installGuestAdditions.sh",
+        "scripts/dev/vagrant.sh",
         "scripts/configureGrub.sh",
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
-        "scripts/kubernetes/setupMainNode.sh",
-        "scripts/kubernetes/createNamespace.sh",
-        "scripts/kubernetes/installLonghorn.sh",
+        "scripts/kubernetes/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }
   ],
   "post-processors": [
     {
-      "type": "checksum",
-      "checksum_types": [
-        "sha256"
-      ],
-      "output": "build/SHA256SUMS"
-    },
-    {
-      "type": "compress",
-      "compression_level": 6,
-      "output": "build/{{user `vm_name`}}.tar.gz"
+      "type": "vagrant",
+      "output": "build/{{.BuildName}}-worker.box"
     }
   ]
 }

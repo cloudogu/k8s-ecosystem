@@ -1,54 +1,60 @@
 # Netzwerkänderungen auf das Kubernetes Cloudogu EcoSystem anwenden
 
-Die Auflösung von Netzwerkteilen (externe IP-Adresse, FQDN) ist stellt im K8s-EcoSystem-VMs eine Herausforderung dar. Dieses Dokument beschreibt, worauf geachtet werden sollte, wenn sich IP-Adresse oder FQDN ändern.
+Das Auflösen von Netzwerkteilen (externe IP-Adresse, FQDN) ist in K8s EcoSystem-VMs eine Herausforderung.
+Dieses Dokument beschreibt, worauf zu achten ist, wenn sich IP-Adresse oder FQDN ändern.
 
 ## Externe IP-Adresse anpassen
 
-Die externe IP-Adresse wird dem `k3s`-systemd-Dienst beim Start mitgegeben. Nur so kann `k3s` eine externe IP-Adresse seinen Knoten mitgeben, sodass eine Konnektivität bzgl. von K8s `LoadBalancer`-Services ermöglicht werden kann.
+Die externe IP-Adresse wird dem systemd-Dienst "k3s" beim Starten durch Lesen der
+[Knotenkonfigurationsdatei](configuring_main_and_worker_nodes_de.md). Dies ist die einzige Möglichkeit, wie `k3s`
+eine externe IP-Adresse für seine Knoten bereitstellen kann, um eine Verbindung zu den `LoadBalancer`-Diensten von K8s zu
+ermöglichen.
 
-**Vorsicht:**
-Grundsätzlich ist eine IP-Adressen-Änderung mit einer gewissen Downtime verbunden, da der `k3s`-systemd-Dienst neu gestartet werden muss!
+**Vorsicht!**
+Grundsätzlich ist eine IP-Adressänderung mit einer gewissen Ausfallzeit verbunden, da der `k3s` systemd-Dienst neu
+gestartet werden muss!
 
-Nach erfolgreicher Änderung ist es ratsam, eine neue Browsersitzung im Cloudogu EcoSystem zu starten und ein beliebiges Dogu aufzurufen.
-
-### 1. Automatische Anpassung bei VM-Neustart
-
-Um die Anpassung zu vereinfachen, existiert ein eigener Dienst `k3s-ipchanged`. Dieser Dienst sorgt dafür, dass bei jedem VM-Neustart die externe IP-Adresse eines Netzwerkinterfaces bezogen. Damit wird der `k3s`-Dienst angereichert und neu gestartet.
+Nach erfolgreicher Änderung ist es ratsam, eine neue Browsersitzung im Cloudogu EcoSystem zu starten und ein
+beliebiges Dogu aufzurufen.
 
 ### 2. Manuelle Anpassung
 
-Sollte ein Neustart der VM im laufenden Betrieb nicht nötig/möglich erscheinen, so lässt sich der gleiche Vorgang mittels dieses Kommandos durchführen:
+Wenn ein Neustart der VM im laufenden Betrieb nicht notwendig/möglich erscheint, kann derselbe Vorgang mit folgendem
+Befehl durchgeführt werden:
 
 ```bash
-sudo /usr/sbin/k3s-ipchanged.sh
+sudo systemctl restart k3s-conf
 ```
 
-## FQDN in SSL-Zertifikaten anpassen
+## Anpassen des FQDN in SSL-Zertifikaten
 
-Die FQDN ist ein zentraler Bestandteil des Cloudogu EcoSystems. Wenn die FQDN sich ändert, muss zwingend die FQDN in der lokalen Registry und die dazugehörigen SSL-Zertifikate angepasst werden.
+Der FQDN ist eine Schlüsselkomponente des Cloudogu EcoSystems. Wenn sich der FQDN ändert, ist es zwingend erforderlich,
+den FQDN in der lokalen Registry und den zugehörigen SSL-Zertifikaten anzupassen.
 
-Die Konfiguration der FQDN im CES lässt sich wie folgt ändern:
+Die Konfiguration des FQDN im CES kann wie folgt geändert werden:
 
 ```bash
 kubectl exec -it etcd-client -- etcdctl set /config/_global/fqdn your.new.fqdn
 ```
 
-Ggf. müssen eigene DNS- oder `/etc/hosts`-Einträge ebenfalls auf die neue FQDN angeglichen werden.
+Gegebenenfalls müssen auch die eigenen DNS- oder `/etc/hosts`-Einträge an den neuen FQDN angepasst werden.
 
-Wie die SSL-Zertifikate aktualisiert werden, hängt von der Qualität der SSL-Zertifikate ab -- also ob diese selbst erzeugt wurden oder von einem externen Zertifikatsaussteller.
+Wie die SSL-Zertifikate aktualisiert werden, hängt von der Qualität der SSL-Zertifikate ab, d.h. ob sie selbst
+generiert oder von einem externen Zertifikatsaussteller stammen.
 
-### Selbst erzeugte SSL-Zertifikate
+### Selbst erstellte SSL-Zertifikate
 
-1. [SSL-Template](https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl) herstellen
-2. Zertifikat und Key erzeugen (vergleiche [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
-3. Zertifikate sowie alle Intermediate Zertifikate im `etcd` austauschen 
-   1. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "YOUR CERTIFICATES HERE"`
-   2. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "YOUR CERTIFICATE KEY"`
-4. Alle Dogus neu starten
+1. [SSL-Vorlage] erstellen (https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
+2. Zertifikat und Schlüssel generieren (
+   siehe [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
+3. Zertifikate und alle Zwischenzertifikate in `etcd` austauschen
+    1. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "IHRE ZERTIFIKATE HIER"`.
+    2. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "IHR ZERTIFIKATSSCHLÜSSEL"`
+4. Starten Sie alle Dogus neu.
 
-### Zertifikate von externen Ausstellern
+### Zertifikate von externen Herausgebern
 
-1. Zertifikate sowie alle Intermediate Zertifikate im `etcd` austauschen
-   1. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "YOUR CERTIFICATES HERE"`
-   2. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "YOUR CERTIFICATE KEY"`
-2. Alle Dogus neu starten
+1. Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `etcd
+    1. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "IHRE ZERTIFIKATE"`
+    2. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "IHR ZERTIFIKATSCHLÜSSEL"`
+2. Starten Sie alle Dogus neu.

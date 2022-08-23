@@ -71,6 +71,7 @@ echo "**** Executing optimizeImageSize.sh..."
 removeUnusedFiles
 purgeUnwantedPackages
 aptAutoClean
-disableSwapUntilReboot
-zeroOutFreeSpace
+# Using the following two methods do the exact opposite by including the whole swap file in the result image, making it multiple times larger than necessary.
+#disableSwapUntilReboot
+#zeroOutFreeSpace
 echo "**** Finished optimizeImageSize.sh"

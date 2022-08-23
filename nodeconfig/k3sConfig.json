@@ -1,0 +1,13 @@
+{
+    "ces-main": {
+        "isMainNode": true,
+        "node-ip": "192.168.56.2",
+        "node-external-ip": "192.168.56.2",
+        "flannel-iface": "enp0s8"
+    },
+    "ces-worker-0": {
+        "node-ip": "192.168.56.3",
+        "node-external-ip": "192.168.56.3",
+        "flannel-iface": "enp0s8"
+    }
+}

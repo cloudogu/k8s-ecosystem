@@ -15,5 +15,5 @@ erstellt wurde, kann das CES nun auf die folgende Art und Weise gestartet und ad
     - Kubeconfig setzen, bspw. via `export KUBECONFIG=~/.kube/k3s.yaml`
     - Testen der Konfiguration, bspw. via `kubectl get all --all-namespaces`
 - Installation beginnen
-    - Der Installationsprozess ist hier
-      beschrieben: https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/installation_guide_de.md
+    - Der Installationsprozess ist hier beschrieben:
+      https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/installation_guide_de.md

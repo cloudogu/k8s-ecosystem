@@ -35,6 +35,6 @@ Um die `authorized_keys`-Datei in das EcoSystem einzubinden, geht man für VMwar
 - Einbinden des Ordners, der die `authorized_keys`-Datei enthält, als Shared Folder
     - Siehe "Einstellungen" der VM -> "Optionen"-Reiter -> "Shared Folders"
     - Aktivierung von "Shared Folders" und Hinzufügen des Ordners mit einem Namen
-- Neuen Eintrag in der `/etc/fstab`
-  erstellen: `.host:/NameDesSharedFolders /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
+- Neuen Eintrag in der `/etc/fstab` erstellen: 
+  `.host:/NameDesSharedFolders /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
 - Reboot des Systems oder Mounten des Shared Folders via `sudo mount -a`

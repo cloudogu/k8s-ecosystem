@@ -5,8 +5,8 @@ sind. Dieses Dokument beschreibt die vollständigen Konfigurationsoptionen.
 
 ## Format der Konfigurationsdatei
 
-Die Arbeits- und Hauptknoten werden durch eine JSON-Datei konfiguriert, die auf jedem Knoten gemountet wird
-unter `/etc/ces/nodeconfig/k3sConfig.json`. Die json-Datei hat das folgende Format:
+Die Arbeits- und Hauptknoten werden durch eine JSON-Datei konfiguriert, die auf jedem Knoten
+unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat das folgende Format:
 
 **Beispiel: k3sConfig.json**
 
@@ -38,6 +38,7 @@ Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für ein Node 
 
 ```
 Option: isMainNode
+Erforderlich: Nein
 Beschreibung:       Dieses Flag legt fest, ob ein Knoten der Hauptknoten ist.
 Akzeptierte Werte: true|false
 Standardwert: false
@@ -47,7 +48,7 @@ Standardwert: false
 
 ```
 Option: flannel-iface
-Erforderlich: true
+Erforderlich: ja
 Beschreibung:       Diese Option enthält den für k3s verwendeten Schnittstellenbezeichner.
 Akzeptierte Werte: jeder gültige Schnittstellenname (ip a | grep ": ")
 ```
@@ -56,22 +57,22 @@ Akzeptierte Werte: jeder gültige Schnittstellenname (ip a | grep ": ")
 
 ```
 Option: node-ip
-Erforderlich: true
+Erforderlich: ja
 Beschreibung:       Die IP des Knotens, der über die angegebene Flannel-iface erreichbar ist.
 Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 ```
 
-**Knoten-externe-ip**
+**node-external-ip**
 
 ```
-Option: knoten-extern-ip
-Erforderlich: true
-Beschreibung:       Die externe IP des Knotens. Kann dieselbe sein wie die Knoten-IP.
+Option: node-external-ip
+Erforderlich: ja
+Beschreibung:       Die externe IP des Knotens. Kann dieselbe sein wie die node-ip.
 Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 ```
 
 ## Verwendung der Knotenkonfiguration im EcoSystem
 
 Es ist besonders wichtig, die Konfigurationsdatei in alle Knoten unter dem Pfad `/etc/ces/nodeconfig/k3sConfig.json`
-beim Starten. Beim Start wird ein benutzerdefinierter Dienst ausgelöst, um den `k3s` oder `k3s-agent` Dienst
+beim Starten einzubinden. Beim Start wird ein benutzerdefinierter Dienst ausgelöst, um den `k3s` oder `k3s-agent` Dienst
 entsprechend zu konfigurieren. 

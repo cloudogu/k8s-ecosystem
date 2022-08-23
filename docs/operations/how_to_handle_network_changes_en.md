@@ -7,14 +7,14 @@ look for when IP address or FQDN change.
 
 The external IP address is given to the `k3s` systemd service at startup by reading
 the [node configuration file](configuring_main_and_worker_nodes_en.md). This is the only way `k3s` can provide an
-external IP address to its nodes to allow connectivity to K8's `LoadBalancer` services.
+external IP address to its nodes to allow connectivity to K8s' `LoadBalancer` services.
 
 **Caution!**
 Basically an IP address change involves some downtime, because the `k3s` systemd service has to be restarted!
 
 After successful change it is advisable to start a new browser session in Cloudogu EcoSystem and call any dogu.
 
-### 2. manual adjustment
+### 1. Manual adjustment
 
 If restarting the VM while it is running does not seem necessary/possible, the same operation can be performed using
 this command:
@@ -36,14 +36,14 @@ kubectl exec -it etcd-client -- etcdctl set /config/_global/fqdn your.new.fqdn
 
 If necessary, own DNS or `/etc/hosts` entries must also be adjusted to the new FQDN.
 
-How the SSL certificates are updated depends on the quality of the SSL certificates -- i.e. whether they are
+How the SSL certificates are updated depends on the quality of the SSL certificates, i.e. whether they are
 self-generated or from an external certificate issuer.
 
 ### Self-generated SSL certificates
 
 1. create [SSL template](https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
 2. generate certificate and key (
-   compare [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
+   see [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
 3. exchange certificates and all intermediate certificates in `etcd
     1. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "YOUR CERTIFICATES HERE"`.
     2. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "YOUR CERTIFICATE KEY"`

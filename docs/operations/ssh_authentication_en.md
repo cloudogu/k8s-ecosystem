@@ -35,6 +35,6 @@ To include the `authorized_keys` file in the EcoSystem, follow these steps for V
 - Mount the folder containing the `authorized_keys` file as a Shared Folder
     - See "Settings" of the VM -> "Options" tab -> "Shared Folders"
     - Enable "Shared Folders" and add the folder with a name
-- Create new entry
-  in `/etc/fstab`: `.host:/NameOfTheSharedFolder /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
+- Create new entry in `/etc/fstab`:
+  `.host:/NameOfTheSharedFolder /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
 - Reboot the system or mount the shared folder via `sudo mount -a`.

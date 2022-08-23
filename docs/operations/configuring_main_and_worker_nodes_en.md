@@ -1,6 +1,6 @@
 # Configuring the Main and Worker Nodes
 
-The main and worker nodes needs to be configured to be fully accessible in you own cluster. This document describes the
+The main and worker nodes need to be configured to be fully accessible in your cluster. This document describes the
 complete configuration options.
 
 ## Format of Configuration File
@@ -26,8 +26,8 @@ at `/etc/ces/nodeconfig/k3sConfig.json`. The json file has the following format:
 }
 ```
 
-Each node gets an entry to this file. The identifier is chosen based on the hostname of the node, e.g., our main node
-has the hostname `ces-main` and our worker node has the hostname `ces-worker-0`. The nodes use their hostname to
+Each node gets an entry in this file. The identifier is chosen based on the host name of the node, e.g., our main node
+has the host name `ces-main` and our worker node has the host name `ces-worker-0`. The nodes use their host name to
 retrieve the configuration relevant for them.
 
 ## Configuration Options
@@ -38,7 +38,8 @@ This section describes the possible configuration option in detail:
 
 ```
 Option:            isMainNode
-Description:       This flag descides whether a node is the main node.
+Required: false
+Description:       This flag decides whether a node is the main node.
 Accepted Values:   true|false
 Default Value:     false
 ```

@@ -5,7 +5,7 @@ The directory `image` contains the following files:
 ```
 📦image
  ┣ (📂 build)             - Contains the resulting base-boxes after building them.
- ┣ 📂 http                - Contains information for Subiquity, i. e., the new installer for Ubuntu > 20.04 for:
+ ┣ 📂 http                - Contains information for Subiquity (the Ubuntu installer since 20.04) for:
  ┃ ┗ 📂 dev                  - the developmen base-boxes.
  ┃ ┗ 📂 prod                 - the production images.
  ┣ 📂 scripts             - Contains various scripts:
@@ -13,6 +13,6 @@ The directory `image` contains the following files:
  ┃ ┗ 📂 kubernetes          - Scripts regarding the setup of k8s.
  ┃ ┗ 📜 *.sh                - general scripts applying to all images and base-boxes.
  ┣ 📜 k8s-dev-main.json   - Packer template used to build the development basebox for the main node.
- ┣ 📜 k8s-dev-worker.json - Packer template used to build the development basebox for the worker node.
- ┗ 📜 k8s-prod.json       - Packer template used to build the production images of multiple provisioners.
+ ┣ 📜 k8s-dev-worker.json - Packer template used to build the development basebox for the worker nodes.
+ ┗ 📜 k8s-prod.json       - Packer template used to build the production images for multiple hypervisors.
 ```

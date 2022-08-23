@@ -53,6 +53,10 @@ Vagrant.configure("2") do |config|
       end
     end
 
+    main.vm.provision "Wait for k3s-conf service to finish",
+                      type: "shell",
+                      path: "image/scripts/dev/waitForK3sConfService.sh"
+
     main.vm.provision "Setup main node", type: "shell",
                       path: "image/scripts/dev/mainSetup.sh",
                       args: [
@@ -110,6 +114,9 @@ Vagrant.configure("2") do |config|
           main_k3s_port,
           k3s_server_token
         ]
+      worker.vm.provision "Wait for k3s-conf service to finish",
+                      type: "shell",
+                      path: "image/scripts/dev/waitForK3sConfService.sh"
 
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",

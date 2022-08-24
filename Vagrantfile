@@ -27,7 +27,10 @@ Vagrant.configure("2") do |config|
   config.vm.define "main", primary: true do |main|
     main.vm.hostname = "ces-main"
 
-    main.vm.box = "testk8sMain"
+    main.vm.box = "basebox-mn-main-v1.0.0"
+    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn-main/v1.0.0/basebox-mn-main-v1.0.0.box"
+    main.vm.box_download_checksum = "16e0411810a53344545fac389d8e1d9912b27664dc34e4e62e75789f5946b77d"
+    main.vm.box_download_checksum_type = "sha256"
 
     main.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 
@@ -86,7 +89,10 @@ Vagrant.configure("2") do |config|
     config.vm.define "worker-#{i}" do |worker|
       worker.vm.hostname = "ces-worker-#{i}"
 
-      worker.vm.box = "testk8sWorker"
+      worker.vm.box = "basebox-mn-worker-v1.0.0"
+      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn-worker/v1.0.0/basebox-mn-worker-v1.0.0.box"
+      worker.vm.box_download_checksum = "6435ca1fd72f3846fc6fb6e8ecbf6ff4daf99250260f572b6f3be4950e1496f5"
+      worker.vm.box_download_checksum_type = "sha256"
 
       worker.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 

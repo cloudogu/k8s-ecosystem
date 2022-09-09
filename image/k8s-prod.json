@@ -90,6 +90,11 @@
   ],
   "provisioners": [
     {
+      "type": "file",
+      "source": "../resources",
+      "destination": "/home/{{user `username`}}/resources"
+    },
+    {
       "type": "shell",
       "expect_disconnect": true,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
@@ -118,6 +123,7 @@
         "scripts/kubernetes/setupMainNode.sh",
         "scripts/kubernetes/createNamespace.sh",
         "scripts/kubernetes/installLonghorn.sh",
+        "scripts/kubernetes/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"
       ]
     }

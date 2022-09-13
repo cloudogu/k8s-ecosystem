@@ -38,3 +38,10 @@ To include the `authorized_keys` file in the EcoSystem, follow these steps for V
 - Create new entry in `/etc/fstab`:
   `.host:/NameOfTheSharedFolder /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
 - Reboot the system or mount the shared folder via `sudo mount -a`.
+
+## Troubleshooting
+
+If the authentication via public key does not work, the logfile of the SSH service can help.
+You can read it e.g. via `journalctl -u ssh`.
+If there are entries like `Authentication refused: bad ownership or modes for file /etc/ces/authorized_keys`,
+the file permissions should be checked and reset if necessary, e.g. via `chmod 600 /etc/ces/authorized_keys` and `chown ces-admin:ces-admin /etc/ces/authorized_keys`.

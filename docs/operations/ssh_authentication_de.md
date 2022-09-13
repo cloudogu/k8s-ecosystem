@@ -38,3 +38,10 @@ Um die `authorized_keys`-Datei in das EcoSystem einzubinden, geht man für VMwar
 - Neuen Eintrag in der `/etc/fstab` erstellen: 
   `.host:/NameDesSharedFolders /etc/ces fuse.vmhgfs-fuse defaults,allow_other,uid=1000 0 0`
 - Reboot des Systems oder Mounten des Shared Folders via `sudo mount -a`
+
+## Troubleshooting
+
+Sollte die Authentifizierung via Public Key nicht funktionieren, kann das Logfile des SSH-Dienstes weiterhelfen.
+Man kann es bspw. über `journalctl -u ssh` auslesen.
+Tauchen dort Einträge der Art `Authentication refused: bad ownership or modes for file /etc/ces/authorized_keys` auf,
+sollten die Dateirechte überprüft und ggf. neu gesetzt werden, bspw. via `chmod 600 /etc/ces/authorized_keys` und `chown ces-admin:ces-admin /etc/ces/authorized_keys`.

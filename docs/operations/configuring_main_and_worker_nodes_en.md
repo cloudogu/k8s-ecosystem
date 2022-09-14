@@ -5,34 +5,50 @@ complete configuration options.
 
 ## Format of Configuration File
 
-The worker and main nodes are configured by a JSON file that is mounted on every node
+The worker and main nodes are configured by a JSON file that has to be mounted on every node
 at `/etc/ces/nodeconfig/k3sConfig.json`. The json file has the following format:
 
 **Example: k3sConfig.json**
 
 ```json
 {
-  "ces-main": {
-    "isMainNode": true,
-    "node-ip": "192.168.56.2",
-    "node-external-ip": "192.168.56.2",
-    "flannel-iface": "enp0s8"
-  },
-  "ces-worker-0": {
-    "node-ip": "192.168.56.3",
-    "node-external-ip": "192.168.56.3",
-    "flannel-iface": "enp0s8"
-  }
+  "ces-namespace": "ecosystem",
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },{
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    }
+  ]
 }
 ```
 
-Each node gets an entry in this file. The identifier is chosen based on the host name of the node, e.g., our main node
-has the host name `ces-main` and our worker node has the host name `ces-worker-0`. The nodes use their host name to
-retrieve the configuration relevant for them.
+Each node gets an entry in this file. To find out the right configuration, the nodes
+try to match their host name with the `name` field of every `nodes` object.
 
-## Configuration Options
+## CES Namespace
 
-This section describes the possible configuration option in detail:
+The entry `ces-namespace` lets you specify which kubernetes namespace the CES is installed into.
+
+## Node Configuration Options
+
+This section describes the possible configuration options in detail:
+
+**name**
+
+```
+Option:            name
+Required:          true
+Description:       This option contains the node's (host) name.
+Accepted Values:   Any valid host name
+```
 
 **isMainNode**
 

@@ -12,27 +12,43 @@ unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat da
 
 ```json
 {
-  "ces-main": {
-    "isMainNode": true,
-    "node-ip": "192.168.56.2",
-    "node-external-ip": "192.168.56.2",
-    "flannel-iface": "enp0s8"
-  },
-  "ces-worker-0": {
-    "node-ip": "192.168.56.3",
-    "node-external-ip": "192.168.56.3",
-    "flannel-iface": "enp0s8"
-  }
+  "ces-namespace": "ecosystem",
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },{
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    }
+  ]
 }
 ```
 
-Jeder Knoten erhält einen Eintrag in diese Datei. Der Bezeichner wird auf der Grundlage des Hostnamens des Knotens
-gewählt, z.B. hat unser Hauptknoten hat den Hostnamen `ces-main` und unser Arbeitsknoten hat den
-Hostnamen `ces-worker-0`. Die Knoten verwenden ihren Hostnamen, um die für sie relevante Konfiguration abzurufen.
+Jeder Knoten erhält einen Eintrag in dieser Datei. Um die richtige Konfiguration herauszufinden, versuchen die Knoten,
+ihren Hostnamen mit dem Feld `name` jedes `nodes`-Objekts abzugleichen.
+
+## CES-Namespace
+
+Der Eintrag `ces-namespace` gibt an, in welchem kubernetes-Namespace das CES installiert wird.
 
 ## Konfigurationsoptionen
 
 Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für ein Node im Detail:
+
+**Name**
+
+```
+Option: name
+Erforderlich: ja
+Beschreibung:       Diese Option enthält den Namen des Knotens (Host).
+Akzeptierte Werte:   Jeder gültige Hostname
+```
 
 **isMainNode**
 

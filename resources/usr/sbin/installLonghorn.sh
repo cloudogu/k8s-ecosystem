@@ -5,16 +5,18 @@ set -o pipefail
 
 echo "**** Begin installing Longhorn"
 echo "Installing Longhorn"
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.3.0/deploy/longhorn.yaml
+if [[ ! -e /home/ces-admin/longhorn.yaml ]]; then
+    echo "Can not install Longhorn, because /home/ces-admin/longhorn.yaml does not exist. Exiting"
+    exit 1
+fi
 
-echo "Waiting until Longhorn storageclass is created"
-for (( i = 1; i <=19; i++ ))
-    do
-        echo "Request longhorn storageclass... ($i)"
-        if eval kubectl get storageclass longhorn; then
-            break
-        fi
-        sleep 5
+kubectl apply -f /home/ces-admin/longhorn.yaml
+
+COUNTER=20
+until [  $COUNTER -lt 1 ] || kubectl get storageclass longhorn; do
+    echo "Longhorn storageclass not ready yet (${COUNTER})"
+    ((COUNTER-=1))
+    sleep 5
 done
 
 echo "Making Longhorn the default StorageClass"

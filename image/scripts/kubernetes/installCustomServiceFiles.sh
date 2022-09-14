@@ -7,7 +7,7 @@ INTERMEDIATE_DIR=/home/${USERNAME}/resources
 TARGET_DIR=/
 
 function runInstallCustomServiceFiles() {
-    local filePaths="etc/systemd/system/k3s-conf.service usr/sbin/k3s-conf.sh"
+    local filePaths="etc/systemd/system/k3s-conf.service usr/sbin/k3s-conf.sh usr/sbin/createNamespace.sh usr/sbin/installLonghorn.sh usr/sbin/setupMainNode.sh"
 
     echo "Moving all files from ${INTERMEDIATE_DIR} to ${TARGET_DIR}"
     for filePath in ${filePaths}; do

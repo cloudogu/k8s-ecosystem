@@ -12,12 +12,17 @@ fi
 
 kubectl apply -f /home/ces-admin/longhorn.yaml
 
-COUNTER=20
-until [  $COUNTER -lt 1 ] || kubectl get storageclass longhorn; do
+COUNTER=0
+until [  $COUNTER -gt 20 ] || kubectl get storageclass longhorn; do
     echo "Longhorn storageclass not ready yet (${COUNTER})"
-    ((COUNTER-=1))
+    ((COUNTER+=1))
     sleep 5
 done
+
+if ! kubectl get storageclass longhorn; then
+    echo "Longhorn storage class is still not ready! Exiting"
+    exit 1
+fi
 
 echo "Making Longhorn the default StorageClass"
 kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'

@@ -13,6 +13,7 @@ unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat da
 ```json
 {
   "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
   "nodes": [
     {
       "name": "ces-main",
@@ -36,6 +37,11 @@ ihren Hostnamen mit dem Feld `name` jedes `nodes`-Objekts abzugleichen.
 ## CES-Namespace
 
 Der Eintrag `ces-namespace` gibt an, in welchem kubernetes-Namespace das CES installiert wird.
+
+## k3s Token
+
+Mit dem Eintrag `k3s-token` können Sie den Token angeben, den die Knoten zur Authentifizierung innerhalb des Clusters verwenden werden.
+Dieser Token kann nicht mehr geändert werden, sobald der Cluster installiert ist.
 
 ## Konfigurationsoptionen
 

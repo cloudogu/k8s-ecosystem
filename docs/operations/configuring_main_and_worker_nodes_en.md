@@ -13,6 +13,7 @@ at `/etc/ces/nodeconfig/k3sConfig.json`. The json file has the following format:
 ```json
 {
   "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
   "nodes": [
     {
       "name": "ces-main",
@@ -36,6 +37,11 @@ try to match their host name with the `name` field of every `nodes` object.
 ## CES Namespace
 
 The entry `ces-namespace` lets you specify which kubernetes namespace the CES is installed into.
+
+## k3s Token
+
+The entry `k3s-token` lets you specify the token the nodes will use to authenticate inside the cluster.
+This token can not be changed once the cluser has been installed.
 
 ## Node Configuration Options
 

@@ -188,14 +188,16 @@ function installK3s() {
   local flannelIface
   local cesNamespace
   local isMainNode
+  local k3sToken
   nodeIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
   nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
+  k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
   if [[ ${isMainNode} == "true" ]]; then
     echo "This machine has been configured as a main node"
-    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}"
+    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}"
     /usr/sbin/createNamespace.sh "${cesNamespace}"
     /usr/sbin/installLonghorn.sh
   else

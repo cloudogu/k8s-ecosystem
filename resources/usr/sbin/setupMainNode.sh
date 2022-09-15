@@ -12,16 +12,6 @@ k3sVersion=$(cat /var/lib/rancher/k3s/agent/images/k3sVersion)
 echo "Re-syncing VM time to avoid certificate time errors..."
 systemctl restart systemd-timesyncd.service
 
-# TODO: Remove this old code:
-#DEFAULT_NETWORK_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
-#export DEFAULT_NETWORK_INTERFACE
-
-#EXTERNAL_IP_ADDRESS=$(ip addr show "${DEFAULT_NETWORK_INTERFACE}" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-#export EXTERNAL_IP_ADDRESS
-
-#echo "The default network interface of this machine has been detected as: ${DEFAULT_NETWORK_INTERFACE}"
-#echo "The external ip address of this machine has been detected as: ${EXTERNAL_IP_ADDRESS}"
-
 echo "Installing k3s ${k3sVersion}..."
 INSTALL_K3S_SKIP_DOWNLOAD=true \
 INSTALL_K3S_VERSION=${k3sVersion} \

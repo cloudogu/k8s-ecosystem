@@ -7,6 +7,11 @@ export NODE_CONFIG_FILE=/etc/ces/nodeconfig/k3sConfig.json
 export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 HOSTNAME=$(cat /etc/hostname)
 export HOSTNAME
+if [[ -e /etc/vagrant_box_build_time ]]; then
+  export DEFAULT_USER=vagrant
+else
+  export DEFAULT_USER=ces-admin
+fi
 
 function waitForAnyServiceFile() {
   until [ -f "${K3S_SYSTEMD_ENV_DIR}/k3s.service" ] || [ -f "${K3S_SYSTEMD_ENV_DIR}/k3s-agent.service" ]; do
@@ -197,9 +202,9 @@ function installK3s() {
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
   if [[ ${isMainNode} == "true" ]]; then
     echo "This machine has been configured as a main node"
-    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}"
+    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER}
     /usr/sbin/createNamespace.sh "${cesNamespace}"
-    /usr/sbin/installLonghorn.sh
+    /usr/sbin/installLonghorn.sh ${DEFAULT_USER}
   else
     echo "This machine has been configured as a worker node"
   fi

@@ -5,8 +5,6 @@ set -o pipefail
 
 export NODE_CONFIG_FILE=/etc/ces/nodeconfig/k3sConfig.json
 export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
-HOSTNAME=$(cat /etc/hostname)
-export HOSTNAME
 if [[ -e /etc/vagrant_box_build_time ]]; then
   export DEFAULT_USER=vagrant
 else
@@ -46,6 +44,7 @@ function runUpdateK3sConfiguration() {
   local k3sSystemEnvFile="${K3S_SYSTEMD_ENV_DIR}/${K3S_SERVICE_NAME}.service.env"
   local k3sSystemServiceFile="${K3S_SYSTEMD_ENV_DIR}/${K3S_SERVICE_NAME}.service"
 
+  HOSTNAME=$(cat /etc/hostname)
   echo "Hostname is ${HOSTNAME}"
 
   echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${HOSTNAME} from ${NODE_CONFIG_FILE}..."
@@ -194,6 +193,7 @@ function installK3s() {
   local cesNamespace
   local isMainNode
   local k3sToken
+  HOSTNAME=$(cat /etc/hostname)
   nodeIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
   nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})

@@ -1,6 +1,6 @@
 {
     "variables": {
-      "vm_name": "ces-main",
+      "vm_name": "ces",
       "username": "vagrant",
       "password": "vagrant",
       "memory": "8192",
@@ -64,14 +64,6 @@
               "source": "../resources",
             "destination": "/home/{{user `username`}}/resources"
           },
-      {
-        "type": "shell",
-        "expect_disconnect": true,
-        "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
-        "scripts": [
-          "scripts/dev/setMainHostname.sh"
-        ]
-      },
       {
         "type": "shell",
         "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",

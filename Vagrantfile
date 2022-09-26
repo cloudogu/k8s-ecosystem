@@ -80,7 +80,8 @@ Vagrant.configure("2") do |config|
 
     if install_setup
       main.vm.provision "Install ces-setup", type: "shell",
-                      path: "image/scripts/dev/setup_installation/ces-setup-installation.sh"
+                      path: "image/scripts/kubernetes/installLatestK8sCesSetup.sh",
+                      args: [docker_registry_namespace]
     end
   end
 

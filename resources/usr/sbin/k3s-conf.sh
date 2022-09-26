@@ -33,7 +33,7 @@ function runUpdateK3sConfiguration() {
   local configHasChanged="false"
 
   echo "Determining whether this is the main node or a worker..."
-  if ls /etc/systemd/system/k3s-agent >/dev/null; then
+  if ls /etc/systemd/system/k3s-agent.service >/dev/null; then
     echo "This is a k3s agent/worker node"
     export K3S_SERVICE_NAME=k3s-agent
   else
@@ -199,15 +199,27 @@ function installK3s() {
   local isMainNode
   local k3sToken
   HOSTNAME=$(cat /etc/hostname)
+  echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${HOSTNAME} from ${NODE_CONFIG_FILE}..."
   nodeIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
   nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
+  echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
 
-  if [[ ${k3sToken} == "null" ]]; then
+  if [[ -z ${nodeIp} ]] || [[ -z ${nodeExternalIp} ]] || [[ -z ${flannelIface} ]]; then
+    echo "ERROR: node-ip, node-external-ip and/or flannel-iface configuration is empty"
+    exit 1
+  fi
+
+  if [[ ${k3sToken} == "null" ]] || [[ -z ${k3sToken} ]]; then
     echo "ERROR: The k3s token setting does not exist or is empty!"
+    exit 1
+  fi
+
+  if [[ ${cesNamespace} == "null" ]] || [[ -z ${cesNamespace} ]]; then
+    echo "ERROR: The ces namespace setting does not exist or is empty!"
     exit 1
   fi
 

@@ -7,7 +7,6 @@ vm_cpus = (ENV["K8S_VM_CPUS"] || "2").to_i
 vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
-k3s_server_token = ENV["K3S_TOKEN"] || "MySecretToken1!"
 fqdn = "k3ces.local"
 docker_registry_namespace = "ecosystem"
 install_setup = true
@@ -112,14 +111,6 @@ Vagrant.configure("2") do |config|
         vb.name = "k3s-worker-#{i}-" + Time.now.to_f.to_s
       end
 
-      # Run some setup script to install K3s on he VM
-      worker.vm.provision "Install k3s", type: "shell",
-                          path: "image/scripts/dev/k3s-worker.sh", args: [
-          "192.168.56.#{worker_ip_octet}",
-          main_k3s_ip_address,
-          main_k3s_port,
-          k3s_server_token
-        ]
       worker.vm.provision "Wait for k3s-conf service to finish",
                       type: "shell",
                       path: "image/scripts/dev/waitForK3sConfService.sh"

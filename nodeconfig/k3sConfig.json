@@ -1,13 +1,8 @@
 {
     "ces-namespace": "ecosystem",
+    "k3s-token": "SuPeR_secure123!TOKEN",
     "nodes": [
         {
-            "name": "ces",
-            "isMainNode": true,
-            "node-ip": "192.168.2.63",
-            "node-external-ip": "192.168.2.63",
-            "flannel-iface": "enp0s3"
-        },{
             "name": "ces-main",
             "isMainNode": true,
             "node-ip": "192.168.56.2",
@@ -17,6 +12,16 @@
             "name": "ces-worker-0",
             "node-ip": "192.168.56.3",
             "node-external-ip": "192.168.56.3",
+            "flannel-iface": "enp0s8"
+        },{
+            "name": "ces-worker-1",
+            "node-ip": "192.168.56.4",
+            "node-external-ip": "192.168.56.4",
+            "flannel-iface": "enp0s8"
+        },{
+            "name": "ces-worker-2",
+            "node-ip": "192.168.56.5",
+            "node-external-ip": "192.168.56.5",
             "flannel-iface": "enp0s8"
         }
     ]

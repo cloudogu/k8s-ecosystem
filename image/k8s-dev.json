@@ -9,7 +9,6 @@
       "iso_url": "https://releases.ubuntu.com/20.04.5/ubuntu-20.04.5-live-server-amd64.iso",
       "iso_checksum": "sha256:5035be37a7e9abbdc09f0d257f3e33416c1a0fb322ba860d42d74aa75c3468d4",
       "main_k3s_port": "6443",
-      "k3s_server_token": "MySecretToken1!",
       "fqdn": "k3ces.local",
       "ces_namespace": "ecosystem"
     },

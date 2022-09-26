@@ -1,5 +1,5 @@
 [Unit]
-Description=K3s network configuration updater
+Description=K3s management service
 After=network-online.target k3s.service
 
 [Install]

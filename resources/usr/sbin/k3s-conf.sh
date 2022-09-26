@@ -53,6 +53,11 @@ function runUpdateK3sConfiguration() {
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
 
+  if [[ ${nodeIp} == "null" ]] || [[ ${nodeExternalIp} == "null" ]] || [[ ${flannelIface} == "null" ]]; then
+    echo "ERROR: node-ip, node-external-ip and/or flannel-iface configuration is null"
+    exit 1
+  fi
+
   echo "Checking if configuration has changed..."
   if [[ $(nodeIPHasChanged "${nodeIp}" "${k3sSystemServiceFile}") == "true" ]]; then
     configHasChanged="true"
@@ -200,6 +205,12 @@ function installK3s() {
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
+
+  if [[ ${k3sToken} == "null" ]]; then
+    echo "ERROR: The k3s token setting does not exist or is empty!"
+    exit 1
+  fi
+
   if [[ ${isMainNode} == "true" ]]; then
     echo "This machine has been configured as a main node"
     /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER}
@@ -207,6 +218,11 @@ function installK3s() {
     /usr/sbin/installLonghorn.sh ${DEFAULT_USER}
   else
     echo "This machine has been configured as a worker node"
+    local mainNodeIp
+    local mainNodePort
+    mainNodeIp=$(jq -r '.nodes[]| select(.isMainNode==true)|."node-external-ip"' ${NODE_CONFIG_FILE})
+    mainNodePort=6443
+    /usr/sbin/k3s-worker.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${mainNodeIp}" ${mainNodePort} "${k3sToken}" ${DEFAULT_USER}
   fi
 }
 

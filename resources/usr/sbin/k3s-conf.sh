@@ -45,6 +45,9 @@ function runUpdateK3sConfiguration() {
   local k3sSystemServiceFile="${K3S_SYSTEMD_ENV_DIR}/${K3S_SERVICE_NAME}.service"
 
   local hostName
+  local nodeIp
+  local nodeExternalIp
+  local flannelIface
   hostName=$(cat /etc/hostname)
   echo "Hostname is ${hostName}"
 

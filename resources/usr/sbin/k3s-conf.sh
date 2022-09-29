@@ -44,13 +44,14 @@ function runUpdateK3sConfiguration() {
   local k3sSystemEnvFile="${K3S_SYSTEMD_ENV_DIR}/${K3S_SERVICE_NAME}.service.env"
   local k3sSystemServiceFile="${K3S_SYSTEMD_ENV_DIR}/${K3S_SERVICE_NAME}.service"
 
-  HOSTNAME=$(cat /etc/hostname)
-  echo "Hostname is ${HOSTNAME}"
+  local hostName
+  hostName=$(cat /etc/hostname)
+  echo "Hostname is ${hostName}"
 
-  echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${HOSTNAME} from ${NODE_CONFIG_FILE}..."
-  nodeIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
-  nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
-  flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
+  echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${hostName} from ${NODE_CONFIG_FILE}..."
+  nodeIp=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
+  nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
+  flannelIface=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
 
   if [[ ${nodeIp} == "null" ]] || [[ ${nodeExternalIp} == "null" ]] || [[ ${flannelIface} == "null" ]]; then
@@ -198,13 +199,14 @@ function installK3s() {
   local cesNamespace
   local isMainNode
   local k3sToken
-  HOSTNAME=$(cat /etc/hostname)
-  echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${HOSTNAME} from ${NODE_CONFIG_FILE}..."
-  nodeIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
-  nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
-  flannelIface=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
+  local hostName
+  hostName=$(cat /etc/hostname)
+  echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${hostName} from ${NODE_CONFIG_FILE}..."
+  nodeIp=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
+  nodeExternalIp=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-external-ip\"" ${NODE_CONFIG_FILE})
+  flannelIface=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
-  isMainNode=$(jq -r ".nodes[] | select(.name == \"${HOSTNAME}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
+  isMainNode=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
   echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
 

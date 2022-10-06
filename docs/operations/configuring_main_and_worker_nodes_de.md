@@ -97,4 +97,32 @@ Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 
 Es ist besonders wichtig, die Konfigurationsdatei in alle Knoten unter dem Pfad `/etc/ces/nodeconfig/k3sConfig.json`
 beim Starten einzubinden. Beim Start wird ein benutzerdefinierter Dienst ausgelöst, um den `k3s` oder `k3s-agent` Dienst
-entsprechend zu konfigurieren. 
+entsprechend zu konfigurieren.
+
+## Troubleshooting
+
+### Gleicher Hostname von Worker und Main bei Worker-Initialisierung
+
+Durch Verwendung eines gleichen Hostnames bei der Initialisierung eines Workers kann es zu einer fehlerhaften
+Konfiguration kommen.
+
+Beim Start des k3s-agent's erscheint folgende Meldung:
+
+`Failed to retrieve agent config: Node password rejected, duplicate hostname or contents of '/etc/rancher/node/password'
+may not match server node-passwd entry, try enabling a unique node name with the --with-node-id flag`
+
+#### Lösung:
+
+`/usr/local/bin/k3s-uninstall.sh` auf Worker ausführen.
+
+Prüfen, ob alte Credentials vom Worker-Node existieren: `kubectl get secrets --namespace=kube-system`
+
+Falls ja: `kubectl delete secret <worker>.node-password.k3s --namespace=kube-system`
+
+Prüfen, ob Worker noch als Node gelistet ist: `kubectl get nodes`
+
+Falls ja: `kubectl delete node <worker>`
+
+
+
+

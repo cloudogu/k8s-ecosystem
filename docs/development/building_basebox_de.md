@@ -1,8 +1,7 @@
-# Aufbau der EcoSystem Development Baseboxen
+# Aufbau der EcoSystem Development Baseboxe
 
-Dieses Dokument enthält die notwendigen Informationen, um die Entwicklungs-Baseboxen zu bauen, die für den Start einer
-Entwicklungsinstanz des Cloudogu EcoSystems erforderlich sind. Im Allgemeinen gibt es zwei Baseboxen. Eine für den
-Hauptknoten und eine für die Arbeitsknoten. Die Baseboxen enthalten gemeinsame Tools und Installationen, um den
+Dieses Dokument enthält die notwendigen Informationen, um die Entwicklungs-Basebox zu bauen, die für den Start einer
+Entwicklungsinstanz des Cloudogu EcoSystems erforderlich sind. Die Basebox enthält Tools und Installationen, um den
 Aufwand für die Erstellung einer neuen Entwicklungsinstanz über Vagrant zu reduzieren.
 
 ## Voraussetzungen
@@ -12,7 +11,7 @@ Aufwand für die Erstellung einer neuen Entwicklungsinstanz über Vagrant zu red
 - VirtualBox installiert
 - Verstehen der [Struktur der Projektdateien](structure_of_the_files_de.md)
 
-## Bauen der Basebox für den Hauptknoten
+## Bauen der Basebox
 
 **1. Klonen Sie das k8s-ecosystem Repository**
 
@@ -24,30 +23,10 @@ git clone https://github.com/cloudogu/k8s-ecosystem.git
 
 ```bash
 cd <k8s-ecosystem-pfad>/image/
-packer build k8s-dev-main.json
+packer build k8s-dev.json
 ```
 
 **3. Warten**
 
 Der Image-Erstellungsprozess dauert etwa 15 Minuten, abhängig von Ihrer Hardware und Internetverbindung. Packer sollte
 eine resultierende Basebox mit dem Namen `ecosystem-basebox-main.box` im `build` Ordner erstellen.
-
-## Erstellen der Worker Node Basebox
-
-**1. Klonen Sie das k8s-ecosystem Repository**
-
-```bash
-git clone https://github.com/cloudogu/k8s-ecosystem.git
-```
-
-**2. Image erstellen**
-
-```bash
-cd <k8s-ecosystem-pfad>/image/
-packer build k8s-dev-worker.json
-```
-
-**3. Warten**
-
-Der Image-Erstellungsprozess dauert etwa 15 Minuten, abhängig von Ihrer Hardware und Internetverbindung. Packer sollte
-eine Basebox mit dem Namen `ecosystem-basebox-worker.box` im Ordner `build` erstellen.

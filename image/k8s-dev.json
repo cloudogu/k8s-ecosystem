@@ -1,0 +1,94 @@
+{
+    "variables": {
+      "vm_name": "ces",
+      "username": "vagrant",
+      "password": "vagrant",
+      "memory": "8192",
+      "cpus": "4",
+      "disk_size": "100000",
+      "iso_url": "https://releases.ubuntu.com/20.04.5/ubuntu-20.04.5-live-server-amd64.iso",
+      "iso_checksum": "sha256:5035be37a7e9abbdc09f0d257f3e33416c1a0fb322ba860d42d74aa75c3468d4",
+      "main_k3s_port": "6443",
+      "fqdn": "k3ces.local",
+      "ces_namespace": "ecosystem"
+    },
+    "builders": [
+      {
+        "name": "ecosystem-basebox",
+        "type": "virtualbox-iso",
+        "guest_os_type": "Ubuntu_64",
+        "vm_name": "{{user `vm_name`}}",
+        "iso_url": "{{user `iso_url`}}",
+        "iso_checksum": "{{user `iso_checksum`}}",
+        "ssh_username": "{{user `username`}}",
+        "ssh_password": "{{user `password`}}",
+        "ssh_handshake_attempts": "10000",
+        "ssh_timeout": "20m",
+        "http_directory": "http/dev",
+        "headless": false,
+        "boot_wait": "5s",
+        "boot_command": [
+          "<enter><enter><f6><esc><wait> ",
+          "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
+          "<enter>"
+        ],
+        "shutdown_command": "echo {{user `username`}} | sudo -S -E shutdown -P now",
+        "hard_drive_interface": "sata",
+        "disk_size": "{{user `disk_size`}}",
+        "vboxmanage": [
+          [
+            "modifyvm",
+            "{{user `vm_name`}}",
+            "--memory",
+            "{{user `memory`}}"
+          ],
+          [
+            "modifyvm",
+            "{{user `vm_name`}}",
+            "--cpus",
+            "{{user `cpus`}}"
+          ],
+          [
+            "modifyvm",
+            "{{user `vm_name`}}",
+            "--vram",
+            "10"
+          ]
+        ]
+      }
+    ],
+    "provisioners": [
+      {
+              "type": "file",
+              "source": "../resources",
+            "destination": "/home/{{user `username`}}/resources"
+          },
+      {
+        "type": "shell",
+        "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
+        "environment_vars": [
+          "HOME_DIR=/home/{{user `username`}}",
+          "USERNAME={{user `username`}}"
+        ],
+        "scripts": [
+          "scripts/startInstallation.sh",
+          "scripts/installDependencies.sh",
+          "scripts/installGuestAdditions.sh",
+          "scripts/dev/vagrant.sh",
+          "scripts/configureGrub.sh",
+          "scripts/configureNetworking.sh",
+          "scripts/configureSSHDaemon.sh",
+          "scripts/setupFail2Ban.sh",
+          "scripts/kubernetes/prepareK3sInstallation.sh",
+          "scripts/kubernetes/installCustomServiceFiles.sh",
+          "scripts/optimizeImageSize.sh"
+        ]
+      }
+    ],
+    "post-processors": [
+      {
+        "type": "vagrant",
+        "output": "build/{{.BuildName}}.box"
+      }
+    ]
+  }

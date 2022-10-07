@@ -12,27 +12,49 @@ unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat da
 
 ```json
 {
-  "ces-main": {
-    "isMainNode": true,
-    "node-ip": "192.168.56.2",
-    "node-external-ip": "192.168.56.2",
-    "flannel-iface": "enp0s8"
-  },
-  "ces-worker-0": {
-    "node-ip": "192.168.56.3",
-    "node-external-ip": "192.168.56.3",
-    "flannel-iface": "enp0s8"
-  }
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },{
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    }
+  ]
 }
 ```
 
-Jeder Knoten erhält einen Eintrag in diese Datei. Der Bezeichner wird auf der Grundlage des Hostnamens des Knotens
-gewählt, z.B. hat unser Hauptknoten hat den Hostnamen `ces-main` und unser Arbeitsknoten hat den
-Hostnamen `ces-worker-0`. Die Knoten verwenden ihren Hostnamen, um die für sie relevante Konfiguration abzurufen.
+Jeder Knoten erhält einen Eintrag in dieser Datei. Um die richtige Konfiguration herauszufinden, versuchen die Knoten,
+ihren Hostnamen mit dem Feld `name` jedes `nodes`-Objekts abzugleichen.
+
+## CES-Namespace
+
+Der Eintrag `ces-namespace` gibt an, in welchem kubernetes-Namespace das CES installiert wird.
+
+## k3s Token
+
+Mit dem Eintrag `k3s-token` können Sie den Token angeben, den die Knoten zur Authentifizierung innerhalb des Clusters verwenden werden.
+Dieser Token kann nicht mehr geändert werden, sobald der Cluster installiert ist.
 
 ## Konfigurationsoptionen
 
 Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für ein Node im Detail:
+
+**Name**
+
+```
+Option: name
+Erforderlich: ja
+Beschreibung:       Diese Option enthält den Namen des Knotens (Host).
+Akzeptierte Werte:   Jeder gültige Hostname
+```
 
 **isMainNode**
 
@@ -75,4 +97,32 @@ Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 
 Es ist besonders wichtig, die Konfigurationsdatei in alle Knoten unter dem Pfad `/etc/ces/nodeconfig/k3sConfig.json`
 beim Starten einzubinden. Beim Start wird ein benutzerdefinierter Dienst ausgelöst, um den `k3s` oder `k3s-agent` Dienst
-entsprechend zu konfigurieren. 
+entsprechend zu konfigurieren.
+
+## Troubleshooting
+
+### Gleicher Hostname von Worker und Main bei Worker-Initialisierung
+
+Durch Verwendung eines gleichen Hostnames bei der Initialisierung eines Workers kann es zu einer fehlerhaften
+Konfiguration kommen.
+
+Beim Start des k3s-agent's erscheint folgende Meldung:
+
+`Failed to retrieve agent config: Node password rejected, duplicate hostname or contents of '/etc/rancher/node/password'
+may not match server node-passwd entry, try enabling a unique node name with the --with-node-id flag`
+
+#### Lösung:
+
+`/usr/local/bin/k3s-uninstall.sh` auf Worker ausführen.
+
+Prüfen, ob alte Credentials vom Worker-Node existieren: `kubectl get secrets --namespace=kube-system`
+
+Falls ja: `kubectl delete secret <worker>.node-password.k3s --namespace=kube-system`
+
+Prüfen, ob Worker noch als Node gelistet ist: `kubectl get nodes`
+
+Falls ja: `kubectl delete node <worker>`
+
+
+
+

@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+CES_NAMESPACE=${1}
 TEMP_DIR=""
 CES_SETUP_RELEASE_CONFIG_YAML=https://raw.githubusercontent.com/cloudogu/k8s-ces-setup/develop/k8s/k8s-ces-setup-config.yaml
 CES_SETUP_RELEASE_YAML=https://raw.githubusercontent.com/cloudogu/k8s-ces-setup/develop/k8s/k8s-ces-setup.yaml
@@ -39,12 +40,17 @@ applyResources() {
   kubectl --namespace "${CES_NAMESPACE}" apply -f "${configYaml}"
   kubectl --namespace "${CES_NAMESPACE}" apply -f "${setupYaml}"
 }
+createSetupJsonConfigMap() {
+  echo "Creating setup.json config map..."
+  kubectl --namespace "${CES_NAMESPACE}" create configmap k8s-ces-setup-json --from-file=/vagrant/image/setup.json
+}
 
 echo "**** Executing installLatestK8sCesSetup.sh..."
 
 TEMP_DIR="$(mktemp -d)"
-echo "Creating temporary directory: ${TEMP_DIR}"
+echo "Created temporary directory: ${TEMP_DIR}"
 
+createSetupJsonConfigMap
 downloadLatestSetupReleaseResources
 templateNamespace
 applyResources

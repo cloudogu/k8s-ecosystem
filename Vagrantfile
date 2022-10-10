@@ -16,6 +16,9 @@ dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
+basebox_name = "basebox-mn-v1.0.0"
+basebox_checksum = "5998f66f63afc2cf1a264e56208618c601c78cd7745128ce49da15e0cc9f2145"
+basebox_checksum_type = "sha256"
 
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
@@ -26,10 +29,10 @@ Vagrant.configure("2") do |config|
   config.vm.define "main", primary: true do |main|
     main.vm.hostname = "ces-main"
 
-    main.vm.box = "basebox-mn-main-v1.0.0"
-    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn-main/v1.0.0/basebox-mn-main-v1.0.0.box"
-    main.vm.box_download_checksum = "16e0411810a53344545fac389d8e1d9912b27664dc34e4e62e75789f5946b77d"
-    main.vm.box_download_checksum_type = "sha256"
+    main.vm.box = basebox_name
+    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.0.0/ecosystem-basebox-mn-v1.0.0.box"
+    main.vm.box_download_checksum = basebox_checksum
+    main.vm.box_download_checksum_type = basebox_checksum_type
 
     main.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 
@@ -89,10 +92,10 @@ Vagrant.configure("2") do |config|
     config.vm.define "worker-#{i}" do |worker|
       worker.vm.hostname = "ces-worker-#{i}"
 
-      worker.vm.box = "basebox-mn-worker-v1.0.0"
-      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn-worker/v1.0.0/basebox-mn-worker-v1.0.0.box"
-      worker.vm.box_download_checksum = "6435ca1fd72f3846fc6fb6e8ecbf6ff4daf99250260f572b6f3be4950e1496f5"
-      worker.vm.box_download_checksum_type = "sha256"
+      worker.vm.box = basebox_name
+      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.0.0/ecosystem-basebox-mn-v1.0.0.box"
+      worker.vm.box_download_checksum = basebox_checksum
+      worker.vm.box_download_checksum_type = basebox_checksum_type
 
       worker.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 

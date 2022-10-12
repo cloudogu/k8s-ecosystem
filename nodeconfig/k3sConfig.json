@@ -1,28 +1,54 @@
 {
-    "ces-namespace": "ecosystem",
-    "k3s-token": "SuPeR_secure123!TOKEN",
-    "nodes": [
-        {
-            "name": "ces-main",
-            "isMainNode": true,
-            "node-ip": "192.168.56.2",
-            "node-external-ip": "192.168.56.2",
-            "flannel-iface": "enp0s8"
-        },{
-            "name": "ces-worker-0",
-            "node-ip": "192.168.56.3",
-            "node-external-ip": "192.168.56.3",
-            "flannel-iface": "enp0s8"
-        },{
-            "name": "ces-worker-1",
-            "node-ip": "192.168.56.4",
-            "node-external-ip": "192.168.56.4",
-            "flannel-iface": "enp0s8"
-        },{
-            "name": "ces-worker-2",
-            "node-ip": "192.168.56.5",
-            "node-external-ip": "192.168.56.5",
-            "flannel-iface": "enp0s8"
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "nodes": [
+    {
+      "name": "ces",
+      "isMainNode": true,
+      "node-ip": "192.168.179.19",
+      "node-external-ip": "192.168.179.19",
+      "flannel-iface": "enp0s3"
+    },
+    {
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-1",
+      "node-ip": "192.168.56.4",
+      "node-external-ip": "192.168.56.4",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-2",
+      "node-ip": "192.168.56.5",
+      "node-external-ip": "192.168.56.5",
+      "flannel-iface": "enp0s8"
+    }
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "docker.io": {
+        "endpoints": [
+          "https://192.168.179.19"
+        ]
+      },
+      "registry.cloudogu.com": {
+        "endpoints": [
+          "https://docker.io"
+        ]
+      }
+    }
+  },
+  "configs":
+    {
+      "192.168.179.18": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
         }
-    ]
+      }
+    }
 }

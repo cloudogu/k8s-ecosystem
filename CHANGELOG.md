@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Packer templates for CES development images
 - Node configuration file; #7
 - k3s offline/airgap installation; #7
+- Configuration for private registries; #9

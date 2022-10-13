@@ -47,6 +47,12 @@ This token can not be changed once the cluser has been installed.
 
 This section describes the possible configuration options in detail:
 
+## docker-registry-configuration
+
+The `docker-registry-configuration` entry allows you to configure private Docker registries for k3s.
+Mirrors for specific registries can be specified. Each mirror can be configured using the `configs` object.
+The `docker-registry-configuration` is stored on the node (main and worker) under `/etc/rancher/k3s/` directory.
+
 **name**
 
 ```
@@ -91,6 +97,52 @@ Option:            node-external-ip
 Required:          true
 Description:       The external IP of the node. Can be the same as the node-ip.
 Accepted Values:   Valid IPv4 Address (xxx.xxx.xxx.xxx)
+```
+
+This section describes the possible configuration options for the `docker-registry-configuration` in detail:
+
+The configuration options map, the options for the `registries.yaml` for k3s from Rancher.
+These can be found [here](https://docs.k3s.io/installation/private-registry).
+
+A complete configuration could look like the following:
+
+```json
+{
+  "docker-registry-configuration": {
+    "mirrors": {
+      "docker.io": {
+        "endpoints": [
+          "https://192.168.179.19",
+          "https://192.168.179.20"
+        ]
+      },
+      "registry.cloudogu.com": {
+        "endpoints": [
+          "https://192.168.179.19"
+        ]
+      }
+    }
+  },
+  "configs": {
+    "192.168.179.19": {
+      "auth": {
+        "username": "ces-admin",
+        "password": "ces-admin"
+      },
+      "tls": {
+        "cert_file": "path to the cert file used in the registry",
+        "key_file":  "path to the key file used in the registry",
+        "ca_file": "path to the ca file used in the registry",
+        "insecure_skip_verify": false
+      }
+    },
+    "192.168.179.20": {
+      "auth": {
+        "token": "token"
+      }
+    }
+  }
+}
 ```
 
 ## Using the Node Configuration in the EcoSystem

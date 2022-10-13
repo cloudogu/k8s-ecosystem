@@ -12,22 +12,40 @@ at `/etc/ces/nodeconfig/k3sConfig.json`. The json file has the following format:
 
 ```json
 {
-  "ces-namespace": "ecosystem",
-  "k3s-token": "SuPeR_secure123!TOKEN",
-  "nodes": [
-    {
-      "name": "ces-main",
-      "isMainNode": true,
-      "node-ip": "192.168.56.2",
-      "node-external-ip": "192.168.56.2",
-      "flannel-iface": "enp0s8"
-    },{
-      "name": "ces-worker-0",
-      "node-ip": "192.168.56.3",
-      "node-external-ip": "192.168.56.3",
-      "flannel-iface": "enp0s8"
+  "docker-registry-configuration": {
+    "mirrors": {
+      "docker.io": {
+        "endpoint": [
+          "https://192.168.179.19",
+          "https://192.168.179.20"
+        ]
+      },
+      "registry.cloudogu.com": {
+        "endpoint": [
+          "https://192.168.179.19"
+        ]
+      }
+    },
+    "configs": {
+      "192.168.179.19": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
+        },
+        "tls": {
+          "cert_file": "path to the cert file used in the registry",
+          "key_file":  "path to the key file used in the registry",
+          "ca_file": "path to the ca file used in the registry",
+          "insecure_skip_verify": false
+        }
+      },
+      "192.168.179.20": {
+        "auth": {
+          "token": "token"
+        }
+      }
     }
-  ]
+  }
 }
 ```
 
@@ -111,13 +129,13 @@ A complete configuration could look like the following:
   "docker-registry-configuration": {
     "mirrors": {
       "docker.io": {
-        "endpoints": [
+        "endpoint": [
           "https://192.168.179.19",
           "https://192.168.179.20"
         ]
       },
       "registry.cloudogu.com": {
-        "endpoints": [
+        "endpoint": [
           "https://192.168.179.19"
         ]
       }

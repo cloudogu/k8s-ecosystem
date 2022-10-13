@@ -31,19 +31,12 @@
   "docker-registry-configuration": {
     "mirrors": {
       "docker.io": {
-        "endpoints": [
-          "https://192.168.179.19"
-        ]
-      },
-      "registry.cloudogu.com": {
-        "endpoints": [
-          "https://docker.io"
+        "endpoint": [
+          "https://192.168.179.18"
         ]
       }
-    }
-  },
-  "configs":
-    {
+    },
+    "configs": {
       "192.168.179.18": {
         "auth": {
           "username": "ces-admin",
@@ -51,4 +44,5 @@
         }
       }
     }
+  }
 }

@@ -31,17 +31,17 @@ unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat da
   "docker-registry-configuration": {
     "mirrors": {
       "docker.io": {
-        "endpoints": [
+        "endpoint": [
           "https://192.168.179.19"
         ]
       }
-    }
-  },
-  "configs": {
-    "192.168.179.18": {
-      "auth": {
-        "username": "ces-admin",
-        "password": "ces-admin"
+    },
+    "configs": {
+      "192.168.179.18": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
+        }
       }
     }
   }
@@ -129,34 +129,34 @@ Eine vollstände Konfiguration könnte wie folgend aussehen:
   "docker-registry-configuration": {
     "mirrors": {
       "docker.io": {
-        "endpoints": [
+        "endpoint": [
           "https://192.168.179.19",
           "https://192.168.179.20"
         ]
       },
       "registry.cloudogu.com": {
-        "endpoints": [
+        "endpoint": [
           "https://192.168.179.19"
         ]
       }
-    }
-  },
-  "configs": {
-    "192.168.179.19": {
-      "auth": {
-        "username": "ces-admin",
-        "password": "ces-admin"
-      },
-      "tls": {
-        "cert_file": "path to the cert file used in the registry",
-        "key_file":  "path to the key file used in the registry",
-        "ca_file": "path to the ca file used in the registry",
-        "insecure_skip_verify": false
-      }
     },
-    "192.168.179.20": {
-      "auth": {
-        "token": "token"
+    "configs": {
+      "192.168.179.19": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
+        },
+        "tls": {
+          "cert_file": "path to the cert file used in the registry",
+          "key_file":  "path to the key file used in the registry",
+          "ca_file": "path to the ca file used in the registry",
+          "insecure_skip_verify": false
+        }
+      },
+      "192.168.179.20": {
+        "auth": {
+          "token": "token"
+        }
       }
     }
   }

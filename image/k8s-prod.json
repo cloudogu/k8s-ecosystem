@@ -95,14 +95,6 @@
     },
     {
       "type": "shell",
-      "expect_disconnect": true,
-      "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
-      "scripts": [
-        "scripts/disableAutomaticUbuntuUpdates.sh"
-      ]
-    },
-    {
-      "type": "shell",
       "expect_disconnect": false,
       "execute_command": "echo {{user `password`}} | {{.Vars}} sudo -S -E /bin/bash -eux '{{.Path}}'",
       "environment_vars": [

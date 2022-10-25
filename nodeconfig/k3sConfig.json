@@ -3,11 +3,11 @@
   "k3s-token": "SuPeR_secure123!TOKEN",
   "nodes": [
     {
-      "name": "ces",
+      "name": "ces-main",
       "isMainNode": true,
-      "node-ip": "192.168.179.19",
-      "node-external-ip": "192.168.179.19",
-      "flannel-iface": "enp0s3"
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
     },
     {
       "name": "ces-worker-0",
@@ -27,22 +27,5 @@
       "node-external-ip": "192.168.56.5",
       "flannel-iface": "enp0s8"
     }
-  ],
-  "docker-registry-configuration": {
-    "mirrors": {
-      "docker.io": {
-        "endpoint": [
-          "https://192.168.179.18"
-        ]
-      }
-    },
-    "configs": {
-      "192.168.179.18": {
-        "auth": {
-          "username": "ces-admin",
-          "password": "ces-admin"
-        }
-      }
-    }
-  }
+  ]
 }

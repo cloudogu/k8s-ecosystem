@@ -27,7 +27,7 @@ EOF
 
 function detectFqdnInEtcHosts() {
   local fqdn="${1}"
-  local ip=${2}
+  local ip="${2}"
   echo "Checking if FQDN ${fqdn} was configured in /etc/hosts..."
 
   if ! grep "${fqdn}" "${ETC_HOSTS}" > /dev/null ; then
@@ -38,8 +38,9 @@ function detectFqdnInEtcHosts() {
 
 function runSetup() {
   local fqdn="${1}"
+  local ip="${2}"
   updateKubectlAccess
-  detectFqdnInEtcHosts "${fqdn}"
+  detectFqdnInEtcHosts "${fqdn}" "${ip}"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

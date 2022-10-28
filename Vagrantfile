@@ -16,8 +16,8 @@ dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-basebox_name = "basebox-mn-v1.0.0"
-basebox_checksum = "5998f66f63afc2cf1a264e56208618c601c78cd7745128ce49da15e0cc9f2145"
+basebox_name = "basebox-mn-v1.1.0"
+basebox_checksum = "8f8dc2f1973591507fab33271bb95e122a449c0fdbd9d8c4dd4dc832aa58ee95"
 basebox_checksum_type = "sha256"
 
 # Load custom configurations from .vagrant.rb file, if existent
@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
     main.vm.hostname = "ces-main"
 
     main.vm.box = basebox_name
-    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.0.0/ecosystem-basebox-mn-v1.0.0.box"
+    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.1.0/ecosystem-basebox-mn-v1.1.0.box"
     main.vm.box_download_checksum = basebox_checksum
     main.vm.box_download_checksum_type = basebox_checksum_type
 
@@ -93,7 +93,7 @@ Vagrant.configure("2") do |config|
       worker.vm.hostname = "ces-worker-#{i}"
 
       worker.vm.box = basebox_name
-      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.0.0/ecosystem-basebox-mn-v1.0.0.box"
+      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.1.0/ecosystem-basebox-mn-v1.1.0.box"
       worker.vm.box_download_checksum = basebox_checksum
       worker.vm.box_download_checksum_type = basebox_checksum_type
 

@@ -79,7 +79,7 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
-                      args: [fqdn]
+                      args: [fqdn, main_k3s_ip_address]
 
     if install_setup
       main.vm.provision "Install ces-setup", type: "shell",
@@ -121,13 +121,13 @@ Vagrant.configure("2") do |config|
 
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
-                          args: [fqdn]
+                          args: [fqdn, "192.168.56.#{worker_ip_octet}"]
      end
    end
 
   # Use "up" rather than "provision" here because the latter simply does not work.
   config.trigger.after :up do |trigger|
     trigger.info = "Adjusting local kubeconfig..."
-    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, docker_registry_namespace] }
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
   end
 end

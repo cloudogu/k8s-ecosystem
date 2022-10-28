@@ -110,6 +110,7 @@
         "scripts/configureNetworking.sh",
         "scripts/configureSSHDaemon.sh",
         "scripts/setupFail2Ban.sh",
+        "scripts/installK9s.sh",
         "scripts/kubernetes/prepareK3sInstallation.sh",
         "scripts/kubernetes/installCustomServiceFiles.sh",
         "scripts/optimizeImageSize.sh"

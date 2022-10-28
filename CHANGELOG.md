@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Node configuration file; #7
 - k3s offline/airgap installation; #7
 - Enable unattended-upgrades
+- Install k9s; #11

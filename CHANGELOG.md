@@ -13,3 +13,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - k3s offline/airgap installation; #7
 - Enable unattended-upgrades
 - Configuration for private registries; #9
+- Install k9s; #11

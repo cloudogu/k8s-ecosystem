@@ -116,7 +116,7 @@ Required:          true
 Description:       The external IP of the node. Can be the same as the node-ip.
 Accepted Values:   Valid IPv4 Address (xxx.xxx.xxx.xxx)
 ```
-
+### docker-registry-configuration
 This section describes the possible configuration options for the `docker-registry-configuration` in detail:
 
 The configuration options map, the options for the `registries.yaml` for k3s from Rancher.

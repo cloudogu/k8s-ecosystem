@@ -259,6 +259,7 @@ function configureDockerRegistryMirrors() {
     return
   fi
 
+  echo "Writing docker registry configuration into ${K3S_DOCKER_REGISTRY_CONFIG_FILE}..."
   mkdir -p "${K3S_DOCKER_REGISTRY_CONFIG_PATH}"
   echo "${config}" | yq -P > "${K3S_DOCKER_REGISTRY_CONFIG_FILE}"
 }

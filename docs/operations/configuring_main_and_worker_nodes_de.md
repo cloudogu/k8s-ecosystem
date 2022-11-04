@@ -119,7 +119,7 @@ Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 
 Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für die `docker-registry-configuration` im Detail:
 
-Die Konfigurationsoptionen bilden, die Optionen für die `registries.yaml` für k3s von Rancher ab.
+Die Konfigurationsoptionen bilden die Optionen für die `registries.yaml` für k3s von Rancher ab.
 Diese sind [hier](https://docs.k3s.io/installation/private-registry) zu finden.
 
 Eine vollstände Konfiguration könnte wie folgend aussehen:

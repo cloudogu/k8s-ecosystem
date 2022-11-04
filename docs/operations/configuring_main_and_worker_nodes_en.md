@@ -119,7 +119,7 @@ Accepted Values:   Valid IPv4 Address (xxx.xxx.xxx.xxx)
 ### docker-registry-configuration
 This section describes the possible configuration options for the `docker-registry-configuration` in detail:
 
-The configuration options map, the options for the `registries.yaml` for k3s from Rancher.
+The configuration maps the options for the `registries.yaml` for k3s from Rancher.
 These can be found [here](https://docs.k3s.io/installation/private-registry).
 
 A complete configuration could look like the following:

@@ -253,6 +253,7 @@ function configureDockerRegistryMirrors() {
   if [[ "${config}" == "null" ]]; then
     echo "No docker registry configuration found"
     if [[ -f "${K3S_DOCKER_REGISTRY_CONFIG_FILE}" ]]; then
+      echo "Removing ${K3S_DOCKER_REGISTRY_CONFIG_FILE}..."
       rm "${K3S_DOCKER_REGISTRY_CONFIG_FILE}"
     fi
     return

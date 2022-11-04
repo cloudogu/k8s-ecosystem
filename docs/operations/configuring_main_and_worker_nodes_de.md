@@ -117,7 +117,7 @@ Beschreibung:       Die externe IP des Knotens. Kann dieselbe sein wie die node-
 Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
 ```
 ### docker-registry-configuration
-Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für die `docker-registry-configuration` im Detail:
+Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für die `docker-registry-configuration`:
 
 Die Konfigurationsoptionen bilden die Optionen für die `registries.yaml` für k3s von Rancher ab.
 Diese sind [hier](https://docs.k3s.io/installation/private-registry) zu finden.

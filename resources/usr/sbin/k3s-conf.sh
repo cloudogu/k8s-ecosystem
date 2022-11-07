@@ -4,6 +4,8 @@ set -o nounset
 set -o pipefail
 
 export NODE_CONFIG_FILE=/etc/ces/nodeconfig/k3sConfig.json
+export K3S_DOCKER_REGISTRY_CONFIG_PATH=/etc/rancher/k3s
+export K3S_DOCKER_REGISTRY_CONFIG_FILE="${K3S_DOCKER_REGISTRY_CONFIG_PATH}"/registries.yaml
 export K3S_SYSTEMD_ENV_DIR=/etc/systemd/system
 if [[ -e /etc/vagrant_box_build_time ]]; then
   export DEFAULT_USER=vagrant
@@ -243,9 +245,29 @@ function installK3s() {
   fi
 }
 
+function configureDockerRegistryMirrors() {
+  local config
+  echo "Getting docker registry configuration from ${NODE_CONFIG_FILE}..."
+
+  config=$(jq -r ".\"docker-registry-configuration\"" ${NODE_CONFIG_FILE})
+  if [[ "${config}" == "null" ]]; then
+    echo "No docker registry configuration found"
+    if [[ -f "${K3S_DOCKER_REGISTRY_CONFIG_FILE}" ]]; then
+      echo "Removing ${K3S_DOCKER_REGISTRY_CONFIG_FILE}..."
+      rm "${K3S_DOCKER_REGISTRY_CONFIG_FILE}"
+    fi
+    return
+  fi
+
+  echo "Writing docker registry configuration into ${K3S_DOCKER_REGISTRY_CONFIG_FILE}..."
+  mkdir -p "${K3S_DOCKER_REGISTRY_CONFIG_PATH}"
+  echo "${config}" | yq -P > "${K3S_DOCKER_REGISTRY_CONFIG_FILE}"
+}
+
 # run script only if called but not if sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   waitForConfigFile
+  configureDockerRegistryMirrors
   if [[ -e /var/lib/rancher/k3s/agent/images/k3sVersion ]]; then
     installK3s
     rm /var/lib/rancher/k3s/agent/images/k3sVersion

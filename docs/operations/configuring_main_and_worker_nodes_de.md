@@ -27,7 +27,24 @@ unter `/etc/ces/nodeconfig/k3sConfig.json` gemountet wird. Die json-Datei hat da
       "node-external-ip": "192.168.56.3",
       "flannel-iface": "enp0s8"
     }
-  ]
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "docker.io": {
+        "endpoint": [
+          "https://192.168.179.19"
+        ]
+      }
+    },
+    "configs": {
+      "192.168.179.18": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -42,6 +59,13 @@ Der Eintrag `ces-namespace` gibt an, in welchem kubernetes-Namespace das CES ins
 
 Mit dem Eintrag `k3s-token` können Sie den Token angeben, den die Knoten zur Authentifizierung innerhalb des Clusters verwenden werden.
 Dieser Token kann nicht mehr geändert werden, sobald der Cluster installiert ist.
+
+## docker-registry-configuration
+
+Mit dem Eintrag `docker-registry-configuration` können Sie private Docker-Registries für k3s konfigurieren.
+Dabei können Mirrors für bestimmte Registries angegeben werden. Jeder Mirror kann über das `configs`-Objekt
+konfiguriert werden. Die `docker-registry-configuration` wird auf dem Node (Main und Worker) unter `/etc/rancher/k3s/`
+abgelegt.
 
 ## Konfigurationsoptionen
 
@@ -91,6 +115,52 @@ Option: node-external-ip
 Erforderlich: ja
 Beschreibung:       Die externe IP des Knotens. Kann dieselbe sein wie die node-ip.
 Akzeptierte Werte:   Gültige IPv4-Adresse (xxx.xxx.xxx.xxx)
+```
+### docker-registry-configuration
+Dieser Abschnitt beschreibt die möglichen Konfigurationsoptionen für die `docker-registry-configuration`:
+
+Die Konfigurationsoptionen bilden die Optionen für die `registries.yaml` für k3s von Rancher ab.
+Diese sind [hier](https://docs.k3s.io/installation/private-registry) zu finden.
+
+Eine vollstände Konfiguration könnte wie folgend aussehen:
+
+```json
+{
+  "docker-registry-configuration": {
+    "mirrors": {
+      "docker.io": {
+        "endpoint": [
+          "https://192.168.179.19",
+          "https://192.168.179.20"
+        ]
+      },
+      "registry.cloudogu.com": {
+        "endpoint": [
+          "https://192.168.179.19"
+        ]
+      }
+    },
+    "configs": {
+      "192.168.179.19": {
+        "auth": {
+          "username": "ces-admin",
+          "password": "ces-admin"
+        },
+        "tls": {
+          "cert_file": "path to the cert file used in the registry",
+          "key_file":  "path to the key file used in the registry",
+          "ca_file": "path to the ca file used in the registry",
+          "insecure_skip_verify": false
+        }
+      },
+      "192.168.179.20": {
+        "auth": {
+          "token": "token"
+        }
+      }
+    }
+  }
+}
 ```
 
 ## Verwendung der Knotenkonfiguration im EcoSystem

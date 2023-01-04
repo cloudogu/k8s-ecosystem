@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
     main.vm.hostname = "ces-main"
 
     main.vm.box = basebox_name
-    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.1.0/ecosystem-basebox-mn-v1.1.0.box"
+    main.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.2.0/ecosystem-basebox-mn-v1.2.0.box"
     main.vm.box_download_checksum = basebox_checksum
     main.vm.box_download_checksum_type = basebox_checksum_type
 
@@ -93,7 +93,7 @@ Vagrant.configure("2") do |config|
       worker.vm.hostname = "ces-worker-#{i}"
 
       worker.vm.box = basebox_name
-      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.1.0/ecosystem-basebox-mn-v1.1.0.box"
+      worker.vm.box_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/v1.2.0/ecosystem-basebox-mn-v1.2.0.box"
       worker.vm.box_download_checksum = basebox_checksum
       worker.vm.box_download_checksum_type = basebox_checksum_type
 

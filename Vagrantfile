@@ -16,8 +16,8 @@ dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-basebox_name = "basebox-mn-v1.1.0"
-basebox_checksum = "8f8dc2f1973591507fab33271bb95e122a449c0fdbd9d8c4dd4dc832aa58ee95"
+basebox_name = "basebox-mn-v1.2.0"
+basebox_checksum = "3236bbca1270be4460e5e68af9587a4cf7b1d701a38755c985d882658823b236"
 basebox_checksum_type = "sha256"
 
 # Load custom configurations from .vagrant.rb file, if existent

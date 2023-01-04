@@ -3,10 +3,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+k9sVersion=v0.26.7
 installDir=/usr/local/bin/
 
 echo "Installing k9s to ${installDir}..."
-wget -q https://github.com/derailed/k9s/releases/download/v0.26.6/k9s_Linux_x86_64.tar.gz
+wget -q https://github.com/derailed/k9s/releases/download/${k9sVersion}/k9s_Linux_x86_64.tar.gz
 mkdir -p "${installDir}"
 tar xf k9s_Linux_x86_64.tar.gz -C "${installDir}"
 echo "Configuring KUBECONFIG..."

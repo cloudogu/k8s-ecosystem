@@ -12,7 +12,10 @@
     "defaultDogu": "ldap",
     "install": [
       "official/ldap",
-      "official/postfix"
+      "official/postfix",
+      "k8s/nginx-static",
+      "k8s/nginx-ingress",
+      "official/cas"
     ],
     "completed": true
   },

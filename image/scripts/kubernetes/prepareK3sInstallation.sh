@@ -3,8 +3,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-k3sVersion=v1.24.4+k3s1
-longhornVersion=v1.3.1
+k3sVersion=v1.24.9+k3s1
+longhornVersion=v1.4.0
 k3sBinarySHA256SUM=2ca446c6180675b39d241d14cf7f5a329f366e929fb35b0388e303657ad6e006
 k3sImagesTarSHA256SUM=3d426f64dd3e791d02d309e5c0d45089675e2382d831cc473ce4bd2ac20d6ab5
 

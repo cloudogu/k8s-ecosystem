@@ -14,6 +14,8 @@ k -n kube-system create -k snapshot-controller/6.2/snapshot-controller
 
 Install Velero:
 ```shell
+helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+
 helm install velero \
 --namespace=velero \
 --create-namespace \

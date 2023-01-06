@@ -1,15 +1,45 @@
-# Velero
+# Velero + Longhorn Backup&Restore
 
-## Backups with CSI Snapshots of Longhorn Volumes
+Setup local MinIO
+```shell
+docker run -d --name minio \
+-p 9000:9000 -p 9090:9090 \
+-e "MINIO_ROOT_USER=MINIOADMIN" \
+-e "MINIO_ROOT_PASSWORD=MINIOADMINPW" \
+quay.io/minio/minio \
+server /data --console-address ":9090"
+```
+
+Open Administration on http://localhost:9000:
+- Create Bucket _longhorn_
+- Create Bucket _velero_
+- Create Access Key
+  - KeyID: `longhorn-test-key`
+  - Secret Access Key: `longhorn-test-secret-key`
+
+Create MinIO Secret:
+```shell
+k -n longhorn-system apply -f minio-secret.yaml
+```
+
+Port-forward Longhorn UI:
+```shell
+k -n longhorn-system port-forward service/longhorn-frontend 8000:8000
+```
+
+Create Backup Target and Backup Target Credential Secret in Longhorn UI
+- Backup Target: s3://longhorn@dummyregion/
+- Backup Target Credential Secret: minio-secret
 
 Install snapshot controller and CSI Snapshot CRDs (K3s does not have them by default):
 ```shell
 k -n kube-system create -k snapshot-controller/5.0/crd
 k -n kube-system create -k snapshot-controller/5.0/snapshot-controller
 ```
+
+Apply default VolumeSnapshotClass:
 ```shell
-k -n kube-system create -k snapshot-controller/6.2/crd
-k -n kube-system create -k snapshot-controller/6.2/snapshot-controller
+k apply -f default-volumesnapshotclass.yaml
 ```
 
 Install Velero:
@@ -25,7 +55,7 @@ helm install velero \
 --set configuration.backupStorageLocation.bucket=velero \
 --set configuration.backupStorageLocation.config.region=minio-default \
 --set configuration.backupStorageLocation.config.s3ForcePathStyle=true \
---set configuration.backupStorageLocation.config.s3Url=http://minio-default.velero.svc.cluster.local:9000 \
+--set configuration.backupStorageLocation.config.s3Url=http://192.168.56.1:9000 \
 --set configuration.backupStorageLocation.config.publicUrl=http://localhost:9000 \
 --set snapshotsEnabled=true \
 --set configuration.volumeSnapshotLocation.name=default \
@@ -42,16 +72,6 @@ helm install velero \
 vmware-tanzu/velero
 ```
 
-Install MinIO:
-```shell
-k -n velero apply -f examples/minio/00-minio-deployment.yaml
-```
-
-Apply default VolumeSnapshotClass: 
-```shell
-k apply -f default-volumesnapshotclass.yaml
-```
-
 Install test application:
 ```shell
 k apply -f examples/csi-test/pod-pvc.yaml
@@ -66,7 +86,7 @@ k -n csi-app exec -ti csi-nginx bash
 
 Do a backup:
 ```shell
-./velero backup create csi-b2 --include-namespaces csi-app --wait
+./velero backup create csi-b1 --include-namespaces csi-app --wait
 ```
 
 Simulate disaster:
@@ -76,5 +96,5 @@ k delete ns csi-app
 
 Apply backup:
 ```shell
-./velero restore create --from-backup csi-b2 --wait
+./velero restore create --from-b1 csi-backup --wait
 ```

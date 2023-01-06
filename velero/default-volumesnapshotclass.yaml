@@ -7,4 +7,4 @@ metadata:
 driver: driver.longhorn.io
 deletionPolicy: Delete
 parameters:
-  type: snap
+  type: bak

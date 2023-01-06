@@ -1,5 +1,7 @@
 # Velero + Longhorn Backup&Restore
 
+## MinIO Configuration
+
 Setup local MinIO
 ```shell
 docker run -d --name minio \
@@ -10,14 +12,16 @@ quay.io/minio/minio \
 server /data --console-address ":9090"
 ```
 
-Open Administration on http://localhost:9000:
+Open MinIO Administration on http://localhost:9000:
 - Create Bucket _longhorn_
 - Create Bucket _velero_
 - Create Access Key
   - KeyID: `longhorn-test-key`
   - Secret Access Key: `longhorn-test-secret-key`
 
-Create MinIO Secret:
+## Longhorn Configuration
+
+Create MinIO Secret for Longhorn:
 ```shell
 k -n longhorn-system apply -f minio-secret.yaml
 ```
@@ -31,6 +35,8 @@ Create Backup Target and Backup Target Credential Secret in Longhorn UI
 - Backup Target: s3://longhorn@dummyregion/
 - Backup Target Credential Secret: minio-secret
 
+## Snapshot controller and CSI Snapshot CRDs
+
 Install snapshot controller and CSI Snapshot CRDs (K3s does not have them by default):
 ```shell
 k -n kube-system create -k snapshot-controller/5.0/crd
@@ -41,6 +47,8 @@ Apply default VolumeSnapshotClass:
 ```shell
 k apply -f default-volumesnapshotclass.yaml
 ```
+
+## Velero Configuration
 
 Install Velero:
 ```shell
@@ -71,6 +79,8 @@ helm install velero \
 --set "initContainers[1].volumeMounts[0].name=plugins" \
 vmware-tanzu/velero
 ```
+
+## Test Backup and Restore
 
 Install test application:
 ```shell

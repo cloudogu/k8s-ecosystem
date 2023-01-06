@@ -19,6 +19,14 @@ Open MinIO Administration on http://localhost:9000:
   - KeyID: `longhorn-test-key`
   - Secret Access Key: `longhorn-test-secret-key`
 
+## Enable Volume Encryption
+
+```shell
+k apply -f longhorn/
+kubectl patch storageclass longhorn-crypt -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+```
+
 ## Longhorn Configuration
 
 Create MinIO Secret for Longhorn:
@@ -56,7 +64,6 @@ helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
 
 helm install velero \
 --namespace=velero \
---create-namespace \
 --set-file credentials.secretContents.cloud=credentials-velero \
 --set configuration.provider=aws \
 --set configuration.backupStorageLocation.name=default \
@@ -89,9 +96,7 @@ k apply -f examples/csi-test/pod-pvc.yaml
 
 Write test data:
 ```shell
-k -n csi-app exec -ti csi-nginx bash
-# while true; do echo -n "FOOBARBAZ " >> /mnt/longhorndisk/foobar; done 
-^C
+kubectl -n csi-app exec -ti csi-nginx -- bash -c 'echo -n "FOOBARBAZ" >> /mnt/longhorndisk/foobar'
 ```
 
 Do a backup:

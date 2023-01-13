@@ -36,7 +36,7 @@ k -n longhorn-system apply -f minio-secret.yaml
 
 Port-forward Longhorn UI:
 ```shell
-k -n longhorn-system port-forward service/longhorn-frontend 8000:8000
+k -n longhorn-system port-forward service/longhorn-frontend 8000:80
 ```
 
 Create Backup Target and Backup Target Credential Secret in Longhorn UI
@@ -64,6 +64,7 @@ helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
 
 helm install velero \
 --namespace=velero \
+--create-namespace \
 --set-file credentials.secretContents.cloud=credentials-velero \
 --set configuration.provider=aws \
 --set configuration.backupStorageLocation.name=default \

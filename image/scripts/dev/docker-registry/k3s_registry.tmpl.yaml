@@ -1,8 +1,0 @@
-mirrors:
-  REGISTRY_IDENTIFIER:
-    endpoint:
-      - "http://REGISTRY_IDENTIFIER"
-configs:
-  "REGISTRY_IDENTIFIER":
-    tls:
-      insecure_skip_verify: false

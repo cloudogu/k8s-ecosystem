@@ -4,10 +4,7 @@ set -o nounset
 set -o pipefail
 
 # This file executes settings and installations only on the K8s main node.
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-export REGISTRY_TEMP_DIR=/vagrant/tmp
 export DOCKER_REGISTRY_DIR=/vagrant/image/scripts/dev/docker-registry
-export DOCKER_NODE_PORT=30099
 
 function deployRegistry() {
   local targetNamespace="${1}"

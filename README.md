@@ -13,8 +13,6 @@ This is the repository containing all setup scripts and resources to install a C
 Documentation</a>
 <a href="https://community.cloudogu.com/c/cloudogu-ecosystem/18"><img src="https://my.cloudogu.com/images/icons/talkIcon.svg" width="50">
 Community</a>
-<a href="https://cloudogu.windcloud.de/"><img src="https://my.cloudogu.com/images/icons/publicEcoSystemIcon.svg" width="50">
-Public CES</a>
 
 ## Quick start
 

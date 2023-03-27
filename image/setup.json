@@ -1,7 +1,7 @@
 {
   "naming": {
-    "fqdn": "splittest.local",
-    "domain": "splittest.local",
+    "fqdn": "192.168.56.2",
+    "domain": "k3ces.local",
     "certificateType": "selfsigned",
     "relayHost": "asdf",
     "completed": true,
@@ -15,13 +15,6 @@
       "official/postfix",
       "k8s/nginx-static",
       "k8s/nginx-ingress",
-      "official/mysql",
-      "official/redis",
-      "official/swaggerui",
-      "official/postgresql",
-      "official/ldap-mapper",
-      "official/jenkins",
-      "official/scm",
       "official/cas"
     ],
     "completed": true

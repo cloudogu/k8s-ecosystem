@@ -3,11 +3,11 @@
 
 worker_count = (ENV["K8S_WORKERS"] || "1").to_i
 vm_memory = (ENV["K8S_VM_MEMORY"] || "4096").to_i
-vm_cpus = (ENV["K8S_VM_CPUS"] || "3").to_i
+vm_cpus = (ENV["K8S_VM_CPUS"] || "2").to_i
 vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
-fqdn = "splittest.local"
+fqdn = "k3ces.local"
 docker_registry_namespace = "ecosystem"
 install_setup = true
 dogu_registry_username = ""

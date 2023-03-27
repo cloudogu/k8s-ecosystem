@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  nginx-reverse-proxy:
+    container_name: nginx-reverse-proxy
+    image: nginx:stable
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/ssl/private
+

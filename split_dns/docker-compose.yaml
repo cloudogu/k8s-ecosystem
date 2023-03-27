@@ -11,5 +11,3 @@ services:
       - ./conf.d:/etc/nginx/conf.d
       - ./certs:/etc/ssl/private
 
-volumes:
-  nginxreverseproxytestconf.d:

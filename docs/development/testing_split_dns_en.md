@@ -5,7 +5,7 @@ The split DNS environment is when your k8s-CES uses its internal address for dog
 To test this scenario, the "split_dns" folder has been prepared for the following procedure:
 
 - Add entry "192.168.56.1 splittest.local" to your /etc/hosts file
-- Install k8s-CES with the provided setup.json ("splittest.local" beeing the fqdn)
+- Install k8s-CES with an adapted setup.json ("splittest.local" beeing the fqdn and domain)
 - Make sure to create the files split_dns/certs/fullchain.pem and split_dns/certs/privkey.pem:
   - Get fullchain.pem from the cluster
     - kubectl get secret ecosystem-certificate -n ecosystem -o jsonpath='{.data}'|jq -r .[]|head -n1|base64 --decode
@@ -14,4 +14,5 @@ To test this scenario, the "split_dns" folder has been prepared for the followin
     - `etcdctl get /config/_global/certificate/server.key`
 - Run the nginx reverse proxy for this test via `docker-compose up` inside the split_dns folder
 - Now you should be able to use the k8s-CES via the "splittest.local" FQDN
+    - There may be some 500 error pages if you connect too early
     - There should be no log output for the nginx reverse proxy on inter-Dogu communication

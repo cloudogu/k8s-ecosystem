@@ -17,3 +17,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable unattended-upgrades
 - Configuration for private registries; #9
 - Install k9s; #11
+- Add env var `KUBECONFIG` to sudoers thereby k9s can be used with `sudo` to edit resources; #21

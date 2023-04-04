@@ -82,12 +82,6 @@ Vagrant.configure("2") do |config|
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
                       args: [fqdn, main_k3s_ip_address]
-
-    if install_setup
-      main.vm.provision "Install ces-setup", type: "shell",
-                      path: "image/scripts/kubernetes/installLatestK8sCesSetup.sh",
-                      args: [docker_registry_namespace]
-    end
   end
 
   (0..(worker_count - 1)).each do |i|
@@ -124,12 +118,20 @@ Vagrant.configure("2") do |config|
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
                           args: [fqdn, "192.168.56.#{worker_ip_octet}"]
+
+      # Use "up" rather than "provision" here because the latter simply does not work.
+      config.trigger.after :up do |trigger|
+        trigger.info = "Adjusting local kubeconfig..."
+        trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+      end
+
+      if install_setup
+        config.trigger.after :up do |trigger|
+          trigger.only_on = "worker-#{worker_count - 1}"
+          trigger.info = "Install ces-setup"
+          trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace] }
+        end
+      end
      end
    end
-
-  # Use "up" rather than "provision" here because the latter simply does not work.
-  config.trigger.after :up do |trigger|
-    trigger.info = "Adjusting local kubeconfig..."
-    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
-  end
 end

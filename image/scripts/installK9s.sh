@@ -12,6 +12,3 @@ wget -q https://github.com/derailed/k9s/releases/download/${k9sVersion}/k9s_Linu
 echo "${k9sTarSHA256SUM} k9s_Linux_x86_64.tar.gz" | sha256sum --check
 mkdir -p "${installDir}"
 tar xf k9s_Linux_x86_64.tar.gz -C "${installDir}"
-echo "Configuring KUBECONFIG..."
-echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/"${USERNAME}"/.bashrc
-sudo sh -c 'echo "Defaults env_keep += \"KUBECONFIG\"" >> /etc/sudoers'

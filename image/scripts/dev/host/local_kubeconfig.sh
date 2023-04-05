@@ -12,7 +12,7 @@ function updateKubectlAccess() {
   echo "Setting up k3ces.local cluster access ..."
   vagrantSetupCluster="$(cat <<EOF
 cd /vagrant \
-&& cp /etc/rancher/k3s/k3s.yaml k3s.yaml
+&& sudo cp /etc/rancher/k3s/k3s.yaml k3s.yaml
 EOF
   )"
 

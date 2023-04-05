@@ -28,6 +28,10 @@ INSTALL_K3S_EXEC="--disable local-storage
  --flannel-iface=${flannelInterface}" \
 /home/"${username}"/install.sh
 
+echo "Configuring KUBECONFIG..."
+echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/environment
+chmod 660 /etc/rancher/k3s/k3s.yaml
+
 echo "Increasing virtual address space for sonar dogu..."
 # see https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html
 sysctl -w vm.max_map_count=262144

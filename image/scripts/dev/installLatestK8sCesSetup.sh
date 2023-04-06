@@ -58,6 +58,9 @@ checkIfSetupIsInstalled() {
 waitForLonghorn() {
   echo "Waiting for longhorn to start up"
 
+  # wait for pods to spawn
+  sleep 10s
+
   for (( i = 0; i <=19; i++ )); do
       local sleepInterval=10
       if kubectl -n longhorn-system get pods -o custom-columns=READY-true:status.containerStatuses[*].ready | grep false > /dev/null; then

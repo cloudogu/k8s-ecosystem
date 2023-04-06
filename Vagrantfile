@@ -16,11 +16,11 @@ dogu_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-basebox_version="v1.3.0"
+basebox_version = "v1.3.0"
 basebox_checksum = "eb2b9eb3e95379da28092d3bc9301a7061b1089cc87f4800ae2b90446fcac10f"
 basebox_checksum_type = "sha256"
-basebox_url="https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/"+basebox_version+"/basebox-mn-"+basebox_version+".box"
-basebox_name = "basebox-mn-"+basebox_version
+basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
+basebox_name = "basebox-mn-" + basebox_version
 
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
@@ -112,28 +112,32 @@ Vagrant.configure("2") do |config|
       end
 
       worker.vm.provision "Wait for k3s-conf service to finish",
-                      type: "shell",
-                      path: "image/scripts/dev/waitForK3sConfService.sh"
+                          type: "shell",
+                          path: "image/scripts/dev/waitForK3sConfService.sh"
 
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
                           args: [fqdn, "192.168.56.#{worker_ip_octet}"]
 
-
-      end
+    end
   end
 
-    # Use "up" rather than "provision" here because the latter simply does not work.
-    config.trigger.after :up do |trigger|
-      trigger.info = "Adjusting local kubeconfig..."
-      trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+  # Use "up" rather than "provision" here because the latter simply does not work.
+  config.trigger.after :up do |trigger|
+    trigger.info = "Adjusting local kubeconfig..."
+    trigger.only_on = "main"
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+  end
 
-      if install_setup
-        config.trigger.after :up do |trigger|
-          trigger.only_on = "worker-#{worker_count - 1}"
-          trigger.info = "Install ces-setup"
-          trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace] }
-        end
+  if install_setup
+    config.trigger.after :up do |trigger|
+      if worker_count > 0
+        trigger.only_on = "worker-#{worker_count - 1}"
+      else
+        trigger.only_on = "main"
       end
-   end
+      trigger.info = "Install ces-setup"
+      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace] }
+    end
+  end
 end

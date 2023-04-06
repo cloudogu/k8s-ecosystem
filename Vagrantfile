@@ -119,11 +119,14 @@ Vagrant.configure("2") do |config|
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
                           args: [fqdn, "192.168.56.#{worker_ip_octet}"]
 
-      # Use "up" rather than "provision" here because the latter simply does not work.
-      config.trigger.after :up do |trigger|
-        trigger.info = "Adjusting local kubeconfig..."
-        trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+
       end
+  end
+
+    # Use "up" rather than "provision" here because the latter simply does not work.
+    config.trigger.after :up do |trigger|
+      trigger.info = "Adjusting local kubeconfig..."
+      trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
 
       if install_setup
         config.trigger.after :up do |trigger|
@@ -132,6 +135,5 @@ Vagrant.configure("2") do |config|
           trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace] }
         end
       end
-     end
    end
 end

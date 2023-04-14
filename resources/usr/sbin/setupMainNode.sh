@@ -12,7 +12,15 @@ username=${5}
 k3sVersion=$(cat /var/lib/rancher/k3s/agent/images/k3sVersion)
 
 echo "Re-syncing VM time to avoid certificate time errors..."
-systemctl restart systemd-timesyncd.service
+if systemctl is-active --quiet systemd-timesyncd.service; then
+  echo "Restarting systemd-timesyncd..."
+  systemctl restart systemd-timesyncd.service
+elif systemctl is-active --quiet chronyd; then
+  echo "Restarting chronyd..."
+  systemctl restart chronyd.service
+else
+  echo "Neither systemd-timesyncd nor chronyd is active. This may lead to certificate time errors."
+fi
 
 echo "Installing k3s ${k3sVersion}..."
 INSTALL_K3S_SKIP_DOWNLOAD=true \

@@ -21,7 +21,7 @@ Außerdem gibt es zwei weitere reservierte Labels, die automatisch von `k8s-dogu
 - `dogu.name: <dogu-name>` und
 - `dogu.version: <dogu-version`
 
-Diese Bezeichnungen **DÜRFEN NICHT** manuell gesetzt werden, da diese Bezeichnungen für die dogu-Upgrade-Prozedur entscheidend sind.
+Diese Bezeichnungen **DÜRFEN NICHT** manuell gesetzt werden, da diese Bezeichnungen für die Dogu-Upgrade-Prozedur entscheidend sind.
 
 ### 1. Labels, die die Anwendung identifizieren
 

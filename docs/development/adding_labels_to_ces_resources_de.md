@@ -21,11 +21,11 @@ Außerdem gibt es zwei weitere reservierte Labels, die automatisch von `k8s-dogu
 - `dogu.name: <dogu-name>` und
 - `dogu.version: <dogu-version`
 
-Diese Bezeichnungen **MÜSSEN** NICHT manuell gesetzt werden, da diese Bezeichnungen für die dogu-Upgrade-Prozedur entscheidend sind.
+Diese Bezeichnungen **DÜRFEN NICHT** manuell gesetzt werden, da diese Bezeichnungen für die dogu-Upgrade-Prozedur entscheidend sind.
 
 ### 1. Labels, die die Anwendung identifizieren
 
-**ALL** Ressourcen einer CES-Komponente **MÜSSEN** ein Label erhalten, das die Auswahl der zugrunde liegenden Anwendung ermöglicht. Damit können alle Ressourcen identifiziert werden, die durch den Einsatz dieser Anwendung in diesen Cluster gelangt sind.
+**ALLE** Ressourcen einer CES-Komponente **MÜSSEN** ein Label erhalten, das die Auswahl der zugrunde liegenden Anwendung ermöglicht. Damit können alle Ressourcen identifiziert werden, die durch den Einsatz dieser Anwendung in diesen Cluster gelangt sind.
 
 Das Format des Labels ist: `app.kubernetes.io/name: <component-name>`
 
@@ -57,7 +57,7 @@ metadata:
 
 ### 2. Labels, die als abnehmbarer Teil des Cloudogu EcoSystems identifizieren
 
-**Einige** Ressourcen einer CES-Komponente **MÜSSEN** ein Label erhalten, das alle gruppiert die Auswahl der zugrundeliegenden Anwendung ermöglicht. Dies ermöglicht es, alle Ressourcen zu identifizieren, die mit offiziellen Mitteln des Cloudogu EcoSystems in diesen Cluster gelangt sind.
+**Einige** Ressourcen einer CES-Komponente **MÜSSEN** ein Label erhalten, das alle gruppiert und die Auswahl der zugrundeliegenden Anwendung ermöglicht. Dies ermöglicht es, alle Ressourcen zu identifizieren, die mit offiziellen Mitteln des Cloudogu EcoSystems in diesen Cluster gelangt sind.
 
 Das Format des Labels ist: `app: ces`
 
@@ -160,4 +160,4 @@ Labels bieten eine Möglichkeit, Ressourcen eine semantische Identität zu verle
 
 Annotationen hingegen liefern nicht-identifizierende Informationen. Das Zielpublikum sind eher Clients wie Werkzeuge oder Bibliotheken, die diese Informationen oft nutzen, um die Art und Weise ihrer Ausführung zu ändern.
 
-Im Allgemeinen können Bezeichnungen ohne Ende verwendet werden, während Anmerkungen sparsam eingesetzt werden sollten. Labels sind das Mittel der Wahl, wenn es darum geht, Ressourcen für Menschen sichtbar zu markieren.
+Im Allgemeinen können Labels beliebig viel verwendet werden, während Annotationen sparsam eingesetzt werden sollten. Labels sind das Mittel der Wahl, wenn es darum geht, Ressourcen für Menschen sichtbar zu markieren.

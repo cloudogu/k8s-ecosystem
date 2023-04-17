@@ -160,5 +160,4 @@ Labels provide a way of adding a semantic identity to resources. Using CLI tools
 
 Annotations on the other side provide non-identifying information. The target audience is rather clients like tools or libraries that oftentimes use this information to modify the way they are executed.
 
-In general, labels can be used without ends while annotations should be used sparingly. Labels are the go-to mechanism when it comes to put a visible marker to resources which should be recognized by humans.
-
+In general, labels can be used as much as you like while annotations should be used sparingly. Labels are the go-to mechanism when it comes to put a visible marker to resources which should be recognized by humans.

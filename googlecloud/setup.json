@@ -1,6 +1,6 @@
 {
   "naming": {
-    "fqdn": "35.198.90.139",
+    "fqdn": "34.107.96.225",
     "domain": "k3ces.local",
     "certificateType": "selfsigned",
     "relayHost": "asdf",
@@ -22,7 +22,7 @@
   "admin": {
     "username": "admin",
     "mail": "admin@admin.admin",
-    "password": "adminpw",
+    "password": "admin123cloudogu$",
     "adminGroup": "cesAdmin",
     "completed": true,
     "adminMember": true,

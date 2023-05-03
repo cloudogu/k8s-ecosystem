@@ -10,13 +10,8 @@
 
 ## Notes und Mistakes 
 
-- Get Credentials:
-
-`gcloud container clusters get-credentials ces-multinode`
-
-- Change nodepool size:
-
-`gcloud container clusters resize ces-multinode --num-nodes=0`
+- Get Credentials: `gcloud container clusters get-credentials ces-multinode`
+- Change nodepool size: `gcloud container clusters resize ces-multinode --num-nodes=0`
 - After downscaling the nodepool, etcd-client is gone: `kubectl apply -f etcd-client.yml`
 - CES-Role does not have permissions to handle specific resources:
   - Clusterroles

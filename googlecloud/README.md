@@ -1,13 +1,5 @@
 # CES-Multinode on a GKE-Cluster
 
-## TODO
-
-- install longhorn
-  - without podsecuritypolicies
-- create namespace
-- install setup
-- Done
-
 ## Notes und Mistakes 
 
 - Get Credentials: `gcloud container clusters get-credentials ces-multinode`
@@ -24,6 +16,9 @@
 
 - `sysctl -w vm.max_map_count=262144` muss auf jeden Node für Sonar ausgeführt werden
 
+
+## Longhorn
+
 - Longhorn startet auf Container-Optimized OS nicht:
 ```markdown
 longhorn-manager time="2023-04-27T14:20:54Z" level=error msg="Failed environment check, please make sure you have iscsiadm/open-iscsi installed on the host"
@@ -34,13 +29,15 @@ Stream closed EOF for longhorn-system/longhorn-manager-4m48w (longhorn-manager)
 
 - Man muss beachten, dass nur eine Storage-class default ist.
 
+- 2 CPU könnten schon zu wenig für Longhorn sein, wenn zum Beispiel der Google-Metrics-Server auf einem Node läuft
+  - outOfCpu error
+
+- Der dogu-operator validiert immer noch Volumes, wenn sie bereits existieren (pre data und upgrade)
+  - Funktionalität kann entfernt werden.
+
 
 ## Thematik Load-Balancer und IP
 
-
-  Externe IP muss aus Node-Balancer ausgelesen werden, daher FQDN-Änderung nötig
-  - `etcdctl set /config/_global/fqdn <IP>`
-  - evtl. Neuinstallation von CAS oder zumindest `cas_config.sh` ausführen.
 - Nginx-Ingress hat zwei LoadBalancer-Services, jeweils für HTTP und HTTPS. Ist das wirklich nötig?
 
 - Google-Loadbalancer muss von Google deaktiviert werden
@@ -55,9 +52,13 @@ Wenn IP-Adresse als FQDN:
 - Nginx-Ingress hat zwei LoadBalancer-Services, jeweils für HTTP und HTTPS. Ist das wirklich nötig?
 
 - FQDN nachträglich geändert und Dogus neu gestartet: To many redirects bei Aufruf `/nexus`
-  - Anschließend muss das Zertifikat neu generiert werden -> TODO Story erstellen automatisiert.
-  - Zertifikatsgenerierung über API dauert sehr lang oder freezed -> TODO Analyse
+  - Anschließend muss das Zertifikat neu generiert werden:
+    - IP von `k8s-service-discovery` ermitteln
+    - `curl <pod_ip>/api/v1/ssl 365`
 
 - Postgres-Container hat eine andere Routing-Tabelle. Das Dogu verarbeitet nur die genaue. 0.0.0.0 wir ignoriert. 
-  - Muss im Dogu behoben werden. TODO Story
+  - Muss im Dogu behoben werden
+  - Reload der Config: 
+    - `su - postgres`
+    - `/usr/bin/pg_ctl reload`
 

@@ -1,0 +1,85 @@
+@startuml
+!define CLOUDOGUURL https://raw.githubusercontent.com/cloudogu/plantuml-cloudogu-sprites/master
+
+!includeurl CLOUDOGUURL/common.puml
+!includeurl CLOUDOGUURL/dogus/cloudogu.puml
+!includeurl CLOUDOGUURL/tools/k8s.puml
+!define SECONDARY_COLOR #55EE55
+!define MANUAL_INSTALLATION #yellow
+!define MIXED_INSTALLATION #yellow|55EE55
+
+'cloud cloudogusvc as "Cloudogu services" <<$cloudogu>>
+cloud publicimgs as "public images\n(ohne Credentials)" #white
+
+rectangle "Cluster" as cluster <<$k8s>> {
+  rectangle "Namespace" as namespace <<$k8s>> #white {
+
+    rectangle credentials as " " #white {
+      file cert as "<<secret>>\neigenes oder \nself signed \nZertifikat" MIXED_INSTALLATION
+      file creds1 as "<<secret>>\nDogu registry credentials" MANUAL_INSTALLATION
+      file creds2 as "<<secret>>\nImage registry credentials" MANUAL_INSTALLATION
+    }
+
+    file dogujson as "<<configmap>>\nk8s-dogu-json" MANUAL_INSTALLATION
+    file setupres as "<<deployment>>\nk8s-ces-setup" MANUAL_INSTALLATION
+    file servdiscres as "<<deployment>>\nk8s-service-discovery" SECONDARY_COLOR
+    file k8scesctlres as "<<deployment>>\nk8s-ces-control" SECONDARY_COLOR
+    file doguratorres as "<<deployment>>\nk8s-dogu-operator" SECONDARY_COLOR
+    file compOpres as "<<deployment>>\nk8s-component-operator" SECONDARY_COLOR
+    file k8setcdres as "<<deployment>>\nk8s-etcd" SECONDARY_COLOR
+
+    rectangle servdisc as "k8s-service-discovery" <<$cloudogu>>
+    rectangle k8scesctl as "k8s-ces-control" <<$cloudogu>>
+    rectangle dogurator as "k8s-dogu-operator" <<$cloudogu>>
+    rectangle setup as "k8s-ces-setup" <<$cloudogu>>
+    rectangle compOp as "k8s-component-operator" <<$cloudogu>>
+    rectangle k8setcd as "k8s-etcd" <<$cloudogu>>
+  }
+
+  rectangle "longhorn" as namespacelonghorn <<$k8s>> #white {
+    rectangle k8slonghorn as "k8s-longhorn" <<$cloudogu>>
+  }
+}
+
+actor admin
+
+'styling
+creds1 -[hidden]d- creds2
+
+admin --> setupres : installiert
+admin --> dogujson : installiert
+admin --> credentials : installiert
+dogujson -> setup
+servdisc -d-> cert : erzeugt (optional)
+servdisc <-- cert : liest bei Änderung
+servdisc -> k8setcd : schreibt gewähltes\nZertifikat in etcd
+setup -r-> compOpres : installiert
+compOp --d-> doguratorres : installiert
+compOp --d-> servdiscres : installiert
+compOp --d-> k8scesctlres : installiert
+compOp --d-> k8setcdres : installiert
+
+setupres --> setup         : erzeugt
+compOpres --> compOp       : erzeugt
+doguratorres --> dogurator : erzeugt
+servdiscres  --> servdisc  : erzeugt
+k8scesctlres --> k8scesctl : erzeugt
+k8setcdres --> k8setcd     : erzeugt
+
+setupres     <-.- publicimgs
+compOpres    <-.- publicimgs
+doguratorres <-.- publicimgs
+servdiscres  <-.- publicimgs
+k8scesctlres <-.- publicimgs
+k8setcdres   <-.- publicimgs
+
+
+legend right
+  | Color | Bedeutung |
+  |<SECONDARY_COLOR>| automatisch erzeugte Ressource |
+  |<MANUAL_INSTALLATION>        | manuell erzeugte Ressource |
+  |<#23a3dd>        | von K8s erzeugte Arbeitslast |
+endlegend
+
+caption k8s-ces-setup initialisiert den Cluster und ermöglicht so ein Cloudogu EcoSystem in Kubernetes
+@enduml

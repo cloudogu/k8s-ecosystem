@@ -9,6 +9,7 @@ installGuestAdditions() {
   case "${PACKER_BUILDER_TYPE}" in
   virtualbox-iso) installGuestAdditionsVirtualBox ;;
   vmware-iso) installGuestAdditionsVMWare ;;
+  vsphere-iso) installGuestAdditionsVMWare ;;
   qemu) ;;
 
   *)

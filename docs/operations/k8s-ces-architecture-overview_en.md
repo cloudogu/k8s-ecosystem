@@ -27,7 +27,7 @@ The following Kubernetes components are used in the Kubernetes Cloudogu EcoSyste
 - [k8s-component-operator](https://github.com/cloudogu/k8s-component-operator)
   - manages K8s CES components in terms of their installation, update and uninstallation.
 - [k8s-etcd](https://github.com/cloudogu/k8s-etcd)
-  - provides the local Cloudogu EcoSystem registry
+  - provides the local Cloudogu EcoSystem Registry
 - [k8s-ces-control](https://github.com/cloudogu/k8s-ces-control)
   - provides protected access to administration operations with the Admin-Dogu
 - [k8s-host-change](https://github.com/cloudogu/k8s-host-change)

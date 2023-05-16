@@ -1,0 +1,74 @@
+@startuml
+!define CLOUDOGUURL https://raw.githubusercontent.com/cloudogu/plantuml-cloudogu-sprites/master
+
+!includeurl CLOUDOGUURL/common.puml
+!includeurl CLOUDOGUURL/dogus/cloudogu.puml
+!includeurl CLOUDOGUURL/tools/k8s.puml
+!define SECONDARY_COLOR #55EE55
+!define MANUAL_INSTALLATION #yellow
+!define MIXED_INSTALLATION #yellow|55EE55
+
+cloud cloudogusvc as "Cloudogu services" <<$cloudogu>> {
+    file dogujson as "dogu.json" #white
+    database doguimage as "dogu image" #white
+}
+
+rectangle "Cluster" as cluster <<$k8s>> {
+  rectangle "Namespace" as namespace <<$k8s>> #white {
+
+    rectangle credentials as " " #white {
+      file creds1 as "<<secret>>\nDogu registry credentials" MANUAL_INSTALLATION
+      file creds2 as "<<secret>>\nImage registry credentials" MANUAL_INSTALLATION
+    }
+
+    file dogures as "<<dogu CR>>\ndogu" MANUAL_INSTALLATION
+
+    rectangle servdisc as "k8s-service-discovery" <<$cloudogu>>
+    rectangle dogurator as "k8s-dogu-operator" <<$cloudogu>> {
+        rectangle upgradeMgr #white
+        rectangle deleteMgr #white
+        rectangle installMgr #white
+        rectangle resourceGen as "resource generator" #white
+    }
+
+    rectangle doguResources as "Dogu resources" #white {
+        file deploymentres as "<<deployment>>\npod template\nfile mounts:\n  - private key\n  - node_master\n  - and so on..." SECONDARY_COLOR
+        file pvcres as "<<pvc>>\nnormales Volume" SECONDARY_COLOR
+        file reservedpvcres as "<<pvc>>\nreserviertes Volume \nfür Upgrade" SECONDARY_COLOR
+        file svcres as "<<service>>" SECONDARY_COLOR
+        file exposedsvcres as "<<exposed service>>\n(optional)" SECONDARY_COLOR
+        file secretres as "<<secret>>\nprivate key" SECONDARY_COLOR
+    }
+
+    rectangle k8setcd as "k8s-etcd" <<$cloudogu>>
+  }
+}
+
+actor admin
+
+'styling
+installMgr -[hidden]d- upgradeMgr
+cloudogusvc -[hidden]r-> cluster
+
+admin =====> dogures : installiert \nDogu-Ressource
+
+dogurator <=== dogures : "erkennt Änderung \nim Cluster-Zustand"
+
+installMgr <--- dogujson   : "lädt dogu.json herunter \n(mit Credentials)"
+installMgr -> resourceGen  : "übergibt dogu.json"
+dogurator <-.-d- credentials  : "benutzt Credentials für\nZugang zu Registry-Diensten"
+deploymentres <-.-d- credentials  : "benutzt Credentials für\nZugang zu Registry-Diensten"
+resourceGen =====> doguResources : "legt Ressourcen \nanhand von \ndogu.json an (upsert)"
+installMgr ----> k8setcd    : "schreibt dogu.json und \nggf. Konfigurationswerte\n in etcd"
+servdisc -> k8setcd        : "beobachtet auf Änderungen"
+deploymentres <----- doguimage : "pullt Container-Image \n(Credentials als Docker-Secret \nim Pod-Template)"
+servdisc --> svcres : "beobachtet auf Service-Änderungen"
+
+legend right
+  | Farbe | Bedeutung |
+  |<SECONDARY_COLOR>| automatisch erzeugte Ressource |
+  |<#yellow>        | manuell erzeugte Ressource |
+endlegend
+
+caption k8s-dogu-operator interpretiert die dogu.json und erzeugt daraus alle nötigen Kubernetes-Ressourcen
+@enduml

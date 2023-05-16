@@ -1,0 +1,148 @@
+@startuml
+!define CLOUDOGUURL https://raw.githubusercontent.com/cloudogu/plantuml-cloudogu-sprites/master
+
+!includeurl CLOUDOGUURL/common.puml
+!includeurl CLOUDOGUURL/dogus/cloudogu.puml
+!includeurl CLOUDOGUURL/dogus/scm.puml
+!includeurl CLOUDOGUURL/dogus/redmine.puml
+!includeurl CLOUDOGUURL/dogus/nginx.puml
+!includeurl CLOUDOGUURL/dogus/postgresql.puml
+!includeurl CLOUDOGUURL/tools/k8s.puml
+!define SECONDARY_COLOR #55EE55
+
+rectangle "Cluster" as cluster <<$k8s>> {
+  rectangle k8sapi as "K8s API-Server" <<$k8s>> #white
+  rectangle k8sres as "*"
+
+  rectangle "Namespace" as namespace <<$k8s>> #white {
+    rectangle mgrComps as "K8s components" #white {
+
+      rectangle servdiscpod as "k8s-service-discovery Pod" {
+        rectangle servdisc as "k8s-service-discovery" <<$cloudogu>> #white
+      }
+      note as servdiscnote #ffffee
+        creates Warp-Menü and
+        ingress rules, handles
+        the maintenance mode
+      end note
+
+      rectangle k8scesctlpod as "k8s-ces-control Pod" {
+        rectangle k8scesctl as "k8s-ces-control" <<$cloudogu>> #white
+      }
+      note as k8scesctlnote #ffffee
+        emulates GRPC-Dienst
+        in place of cesappd
+      end note
+
+      rectangle oppod as "k8s-dogu-operator Pod" {
+        rectangle dogurator as "k8s-dogu-operator" <<$cloudogu>> #white
+      }
+      note as doguratornote #ffffee
+        controls Dogu CRD
+        and thus Dogu
+        installations etc
+      end note
+
+      rectangle setuppod as "k8s-ces-setup Pod" {
+        rectangle setup as "k8s-ces-setup" <<$cloudogu>> #white
+      }
+      note as setupnote #ffffee
+        bootstraps necessary
+        components
+      end note
+
+      rectangle k8setcdpod as "k8s-etcd Pod" {
+        database k8setcd as "CES Registry" #white
+      }
+
+      note as k8setcdnote #ffffee
+        the regular CES
+        key-value database
+        (does not contain the
+        K8s cluster state)
+      end note
+
+      rectangle otherpod as "more components" <<$cloudogu>> {
+      }
+
+      k8setcdnote .. k8setcd
+      setupnote .. setup
+      doguratornote .. dogurator
+      k8scesctlnote .. k8scesctl
+      servdiscnote .. servdisc
+    }
+
+'    setup    -[hidden]r-> k8setcd
+'    setup    -[hidden]r- dogurator
+'    setup    -[hidden]d- servdisc
+'    servdisc -[hidden]r- k8scesctl
+    setup -l-> k8setcd
+    dogurator -u-> k8setcd
+    servdisc -d-> k8setcd
+    k8scesctl -u-> k8setcd
+
+    rectangle dogus #white {
+
+      rectangle nginxIngressPod as "nginx-ingress Pod" {
+        DOGU_NGINX(nginxingress, "nginx ingress") #white
+        note right of nginxingress #ffffee
+          reverse proxy,
+          ingress controller, and
+          warp menu injektor
+        end note
+      }
+      rectangle nginxstaticPod as "nginx-static Pod" {
+        DOGU_NGINX(nginxstatic, "nginx-static") #white
+        note bottom of nginxstatic #ffffee
+          delivers static
+          web resources
+        end note
+      }
+
+      rectangle postgresqlPod as "postgresql Pod" {
+        DOGU_POSTGRESQL(postgresql, "PostgreSQL") #white
+      }
+
+      rectangle redminePod as "redmine Pod" {
+        DOGU_REDMINE(redmine, "Redmine") #white
+      }
+
+      rectangle scmPod as "scm Pod" {
+         DOGU_SCM(scm, "SCM-Manager") #white
+      }
+    }
+  }
+}
+
+actor user
+actor admin
+rectangle kubectlces as "kubectl-ces-plugin" <<$cloudogu>>
+
+'styling
+dogus -[hidden]u- mgrComps
+'k8setcdpod -----[hidden]r-> mgrComps
+scm -[hidden]d-> redmine
+nginxingress -[hidden]d-> postgresql
+redmine -[hidden]-> scm
+
+admin --> k8sapi
+k8sapi --> k8sres : manages all \nresources
+admin -> kubectlces
+kubectlces --> k8sapi
+
+user --d-> nginxingress
+nginxingress -r-> nginxstatic
+nginxingress <-d-> scm
+nginxingress <-d-> redmine
+redmine <-d-> postgresql
+
+
+
+legend bottom right
+  Not shown:
+  Necessary Kubenetes resources of shown
+  components (f. e. deployments, services, etc)
+endlegend
+
+caption Kubernetes cluster with a selection of dogus and some important CES components
+@enduml

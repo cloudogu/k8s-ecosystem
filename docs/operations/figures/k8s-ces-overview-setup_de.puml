@@ -62,8 +62,7 @@ admin --> setupjson : installiert
 admin --> credentials : installiert
 setupjson -> setup
 servdisc -d-> cert : erzeugt
-servdisc <-- cert : liest bei Änderung
-servdisc -> k8setcd : schreibt gewähltes\nZertifikat in etcd
+servdisc <-> k8setcd : schreibt/liest \ngewähltes Zertifikat
 setup -r-> compOpres : installiert
 compOp --d-> doguratorres : installiert
 compOp --d-> servdiscres : installiert

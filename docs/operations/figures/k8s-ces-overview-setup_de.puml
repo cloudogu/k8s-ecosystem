@@ -10,6 +10,7 @@
 
 'cloud cloudogusvc as "Cloudogu services" <<$cloudogu>>
 cloud publicimgs as "public images\n(ohne Credentials)" #white
+cloud github as "Github"
 
 rectangle "Cluster" as cluster <<$k8s>> {
   rectangle "Namespace" as namespace <<$k8s>> #white {
@@ -20,8 +21,16 @@ rectangle "Cluster" as cluster <<$k8s>> {
       file creds2 as "<<secret>>\nImage registry credentials" MANUAL_INSTALLATION
     }
 
-    file dogujson as "<<configmap>>\nk8s-dogu-json" MANUAL_INSTALLATION
-    file setupres as "<<deployment>>\nk8s-ces-setup" MANUAL_INSTALLATION
+    file setupjson as "<<configmap>>\nk8s-ces-setup-json" MANUAL_INSTALLATION
+
+      note top of setupjson #ffffee
+        enthält übliche
+        setup.json
+      end note
+
+
+    file setupres as "<<viele Ressourcen>>\nk8s-ces-setup" MANUAL_INSTALLATION
+    
     file servdiscres as "<<deployment>>\nk8s-service-discovery" SECONDARY_COLOR
     file k8scesctlres as "<<deployment>>\nk8s-ces-control" SECONDARY_COLOR
     file doguratorres as "<<deployment>>\nk8s-dogu-operator" SECONDARY_COLOR
@@ -46,11 +55,13 @@ actor admin
 'styling
 creds1 -[hidden]d- creds2
 
-admin --> setupres : installiert
-admin --> dogujson : installiert
+github .. setupres 
+admin <-- github : bezieht von Github
+admin --> setupres : patched mit Namespaces und installiert
+admin --> setupjson : installiert
 admin --> credentials : installiert
-dogujson -> setup
-servdisc -d-> cert : erzeugt (optional)
+setupjson -> setup
+servdisc -d-> cert : erzeugt
 servdisc <-- cert : liest bei Änderung
 servdisc -> k8setcd : schreibt gewähltes\nZertifikat in etcd
 setup -r-> compOpres : installiert

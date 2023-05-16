@@ -10,7 +10,7 @@ The single- and multi-node variants of Cloudogu EcoSystems share these structura
 
 - Dogu applications run as Docker containers
 - [`dogu.json`](https://github.com/cloudogu/dogu-development-docs/blob/main/docs/core/compendium_en.md) describes necessary dependencies and the inner structure of a Dogu application
-- The basic access to the local EcoSystem registry as well as its content structure does not change
+- The basic access to the local EcoSystem Registry as well as its content structure does not change
 - The setup allows an "unattended" installation using [`setup.json`](https://docs.cloudogu.com/de/docs/system-components/ces-setup/operations/setup-json/)
 
 ## Overview of Kubernetes-specific components

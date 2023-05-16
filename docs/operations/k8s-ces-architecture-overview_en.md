@@ -73,7 +73,7 @@ The following table compares the functionalities and respective mapping componen
 
 | theme                   | K8s-CES               | conventional CES                                  |
 |-------------------------|-----------------------|---------------------------------------------------|
-| reverse proxy           | k8s/nginx-ingress     | official/nginx                                    |
+| Reverse proxy           | k8s/nginx-ingress     | official/nginx                                    |
 | Ingress Controller      | k8s/nginx-ingress     | -/-                                               |
 | HTTP Response Injection | k8s/nginx-ingress     | official/nginx                                    |
 | Static Content Hosting  | k8s/nginx-static      | official/nginx                                    |

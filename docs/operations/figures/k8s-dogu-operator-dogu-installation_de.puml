@@ -47,21 +47,22 @@ rectangle "Cluster" as cluster <<$k8s>> {
 actor admin
 
 'styling
-creds1 -[hidden]d- creds2
-deleteMgr -[hidden]d- upgradeMgr
+installMgr -[hidden]d- upgradeMgr
+cloudogusvc -[hidden]r-> cluster
 
-admin ====d=> dogures : installiert \nDogu-Ressource
+admin =====> dogures : installiert \nDogu-Ressource
 
 dogurator <=== dogures : "erkennt Änderung \nim Cluster-Zustand"
 
-installMgr <--- dogujson   : "lädt dogu.json herunter (mit Credentials)"
+installMgr <--- dogujson   : "lädt dogu.json herunter \n(mit Credentials)"
 installMgr -> resourceGen  : "übergibt dogu.json"
 dogurator <-.-d- credentials  : "benutzt Credentials für\nZugang zu Registry-Diensten"
 deploymentres <-.-d- credentials  : "benutzt Credentials für\nZugang zu Registry-Diensten"
-resourceGen ====> doguResources : "legt Ressourcen anhand \nvon dogu.json an (upsert)"
+resourceGen =====> doguResources : "legt Ressourcen anhand \nvon dogu.json an (upsert)"
 installMgr ----> k8setcd    : "schreibt dogu.json und \nggf. Konfigurationswerte in etcd"
 servdisc -> k8setcd        : "beobachtet auf Änderungen"
-deploymentres <----- doguimage : "pPullt Container-Image \n(Credentials als Docker-Secret \nim Pod-Template)"
+deploymentres <----- doguimage : "pullt Container-Image \n(Credentials als Docker-Secret \nim Pod-Template)"
+servdisc --> svcres : "beobachtet auf Service-Änderungen""
 
 legend right
   | Color | Bedeutung |

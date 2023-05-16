@@ -9,14 +9,14 @@
 !define MIXED_INSTALLATION #yellow|55EE55
 
 'cloud cloudogusvc as "Cloudogu services" <<$cloudogu>>
-cloud publicimgs as "public images\n(ohne Credentials)" #white
+cloud publicimgs as "public images\n(without Credentials)" #white
 cloud github as "Github"
 
 rectangle "Cluster" as cluster <<$k8s>> {
   rectangle "Namespace" as namespace <<$k8s>> #white {
 
     rectangle credentials as " " #white {
-      file cert as "<<secret>>\neigenes oder \nself signed \nZertifikat" MIXED_INSTALLATION
+      file cert as "<<secret>>\n3rd-party or \nself signed \ncertificate" MIXED_INSTALLATION
       file creds1 as "<<secret>>\nDogu registry credentials" MANUAL_INSTALLATION
       file creds2 as "<<secret>>\nImage registry credentials" MANUAL_INSTALLATION
     }
@@ -24,12 +24,12 @@ rectangle "Cluster" as cluster <<$k8s>> {
     file setupjson as "<<configmap>>\nk8s-ces-setup-json" MANUAL_INSTALLATION
 
       note top of setupjson #ffffee
-        enthält übliche
+        contains usual
         setup.json
       end note
 
 
-    file setupres as "<<viele Ressourcen>>\nk8s-ces-setup" MANUAL_INSTALLATION
+    file setupres as "<<many resources>>\nk8s-ces-setup" MANUAL_INSTALLATION
     
     file servdiscres as "<<deployment>>\nk8s-service-discovery" SECONDARY_COLOR
     file k8scesctlres as "<<deployment>>\nk8s-ces-control" SECONDARY_COLOR
@@ -56,25 +56,25 @@ actor admin
 creds1 -[hidden]d- creds2
 
 github .. setupres 
-admin <-- github : bezieht von Github
-admin --> setupres : patched mit Namespaces und installiert
-admin --> setupjson : installiert
-admin --> credentials : installiert
+admin <-- github : fetches from Github
+admin --> setupres : patches with Namespaces\n for installation
+admin --> setupjson : installs
+admin --> credentials : installs
 setupjson -> setup
-servdisc -d-> cert : erzeugt
-servdisc <-> k8setcd : schreibt/liest \ngewähltes Zertifikat
-setup -r-> compOpres : installiert
-compOp --d-> doguratorres : installiert
-compOp --d-> servdiscres : installiert
-compOp --d-> k8scesctlres : installiert
-compOp --d-> k8setcdres : installiert
+servdisc -d-> cert : creates
+servdisc <-> k8setcd : reads/writes \nselected certificate
+setup -r-> compOpres : installs
+compOp --d-> doguratorres : installs
+compOp --d-> servdiscres : installs
+compOp --d-> k8scesctlres : installs
+compOp --d-> k8setcdres : installs
 
-setupres --> setup         : erzeugt
-compOpres --> compOp       : erzeugt
-doguratorres --> dogurator : erzeugt
-servdiscres  --> servdisc  : erzeugt
-k8scesctlres --> k8scesctl : erzeugt
-k8setcdres --> k8setcd     : erzeugt
+setupres --> setup         : creates
+compOpres --> compOp       : creates
+doguratorres --> dogurator : creates
+servdiscres  --> servdisc  : creates
+k8scesctlres --> k8scesctl : creates
+k8setcdres --> k8setcd     : creates
 
 setupres     <-.- publicimgs
 compOpres    <-.- publicimgs
@@ -85,11 +85,11 @@ k8setcdres   <-.- publicimgs
 
 
 legend right
-  | Farbe | Bedeutung |
-  |<SECONDARY_COLOR>| automatisch erzeugte Ressource |
-  |<MANUAL_INSTALLATION>        | manuell erzeugte Ressource |
-  |<#23a3dd>        | von K8s erzeugte Arbeitslast |
+  | Color | Meaning |
+  |<SECONDARY_COLOR>| automatically created resource |
+  |<MANUAL_INSTALLATION>        | manually created resource |
+  |<#23a3dd>        | from K8s created workload |
 endlegend
 
-caption k8s-ces-setup initialisiert den Cluster und ermöglicht so ein Cloudogu EcoSystem in Kubernetes
+caption k8s-ces-setup initializes the cluster and prepares the way for a Cloudogu EcoSystem in Kubernetes
 @enduml

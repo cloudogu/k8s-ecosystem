@@ -5,7 +5,7 @@ set -o pipefail
 
 source .env.sh
 
-kubectl config set-context gke_ces-operations-internal_europe-west3-a_ces-multinode
+kubectl config set-context ${kube_context}"
 NAMESPACE="ecosystem"
 ./createNamespace.sh "${NAMESPACE}"
 #./installLonghorn.sh

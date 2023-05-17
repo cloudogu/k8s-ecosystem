@@ -10,7 +10,6 @@
   - Clusterrolebinding
   - Roles
   - ...
-- ETCD-Client sollte als Deployment und nicht nur als POD deployed werden.
 
 - Daten werden ohne extra Storage-Provisioner repliziert.
 
@@ -51,11 +50,7 @@ Wenn IP-Adresse als FQDN:
   - evtl. Neuinstallation von CAS oder zumindest `cas_config.sh` ausführen.
 - Nginx-Ingress hat zwei LoadBalancer-Services, jeweils für HTTP und HTTPS. Ist das wirklich nötig?
 
-- FQDN nachträglich geändert und Dogus neu gestartet: To many redirects bei Aufruf `/nexus`
-  - Anschließend muss das Zertifikat neu generiert werden:
-    - IP von `k8s-service-discovery` ermitteln
-    - `curl <pod_ip>/api/v1/ssl 365`
-
+## Postgres
 - Postgres-Container hat eine andere Routing-Tabelle. Das Dogu verarbeitet nur die genaue. 0.0.0.0 wir ignoriert. 
   - Muss im Dogu behoben werden
   - Reload der Config: 

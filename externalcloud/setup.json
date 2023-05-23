@@ -1,6 +1,6 @@
 {
   "naming": {
-    "fqdn": "192.168.56.2",
+    "fqdn": "34.107.96.225",
     "domain": "k3ces.local",
     "certificateType": "selfsigned",
     "relayHost": "asdf",
@@ -12,7 +12,7 @@
     "defaultDogu": "ldap",
     "install": [
       "official/ldap",
-      "official/postfix",
+      "testing/postfix:3.7.4-1",
       "k8s/nginx-static",
       "k8s/nginx-ingress",
       "official/cas"
@@ -22,7 +22,7 @@
   "admin": {
     "username": "admin",
     "mail": "admin@admin.admin",
-    "password": "adminpw",
+    "password": "admin123cloudogu$",
     "adminGroup": "cesAdmin",
     "completed": true,
     "adminMember": true,

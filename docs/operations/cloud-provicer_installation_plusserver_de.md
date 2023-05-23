@@ -13,7 +13,7 @@
 ### Longhorn
 
 - Man muss beachten, dass nur eine Storage-class default ist.
-- 2 CPU könnten schon zu wenig für Longhorn sein, wenn zum Beispiel der Google-Metrics-Server auf einem Node läuft
+- 2 CPU könnten schon zu wenig für Longhorn sein.
 
 ## Load-Balancer
 

@@ -13,7 +13,7 @@
 ### Longhorn
 
 - Note that only one storage class is default.
-- 2 CPU could be too little for Longhorn, if for example the Google Metrics server is running on one node.
+- 2 CPU could be too little for Longhorn.
 
 ## Load balancer
 

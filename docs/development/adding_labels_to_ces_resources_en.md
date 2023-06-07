@@ -127,11 +127,14 @@ A fresh setup run should be still possible after these two calls.
 
 ```bash
 # delete dogus first because the dogu operator is supposed to manage those resources 
-kubectl delete dogu --ignore-not-found -l app=ces -n ecosystem
+kubectl delete dogus -l app=ces -n ecosystem
+```
+
+```bash
 # delete all other resources
-kubectl api-resources --verbs=list -o name | sort | xargs -t -n 1 \
-  kubectl get --ignore-not-found \
-    -l app=ces -n ecosystem
+kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
+&& kubectl patch cm udp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
+&& kubectl delete statefulsets,deploy,secrets,cm,svc,sa,rolebindings,roles,clusterrolebindings,clusterroles,cronjob,pvc,pv --ignore-not-found -l app=ces -n ecosystem
 ```
 
 ### Delete resources from one or more components

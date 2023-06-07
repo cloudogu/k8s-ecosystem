@@ -127,11 +127,14 @@ Ein erneuter Setup-Lauf sollte nach diesen beiden Aufrufen noch möglich sein.
 
 ```bash
 # zuerst alle Dogus löschen, da der dogu-Operator diese Ressourcen verwalten sollte
-kubectl delete dogu --ignore-not-found -l app=ces -n ecosystem
+kubectl delete dogus -l app=ces -n ecosystem
+```
+
+```bash
 # alle anderen Ressourcen löschen
-kubectl api-resources --verbs=list -o name | sort | xargs -t -n 1 \
-  kubectl get --ignore-not-found \
-    -l app=ces -n ecosystem
+kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
+&& kubectl patch cm udp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
+&& kubectl delete statefulsets,deploy,secrets,cm,svc,sa,rolebindings,roles,clusterrolebindings,clusterroles,cronjob,pvc,pv --ignore-not-found -l app=ces -n ecosystem
 ```
 
 ### Ressourcen von einer oder mehreren Komponenten löschen
@@ -140,7 +143,7 @@ Die Installation einer Komponente geht oft mit verschiedenen Ressourcentypen ein
 
 Dieses Beispiel löscht alle Ressourcen der Komponente, die sich als `app.kubernetes.io/name=k8s-ces-setup` identifiziert, aus dem Namespace `ecosystem`:
 
-``bash
+```bash
 kubectl api-resources --verbs=list -o name | sort | xargs -t -n 1 \
 kubectl delete --ignore-not-found \
 -l app.kubernetes.io/name=k8s-ces-setup -n ecosystem

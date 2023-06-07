@@ -7,7 +7,7 @@ kubectl rollout restart deployment k8s-service-discovery-controller-manager -n e
 kubectl rollout status deployment k8s-service-discovery-controller-manager -n ecosystem
 
 etcdClientPod="$(kubectl -n ecosystem get pod | grep etcd-client | awk '{print $1}')"
-fqdn=$(kubectl get -n ecosystem svc nginx-ingress-exposed-443 -o json | jq -r '.status.loadBalancer.ingress[0].ip')
+fqdn=$(kubectl get -n ecosystem svc ces-loadbalancer -o json | jq -r '.status.loadBalancer.ingress[0].ip')
 kubectl exec -n ecosystem -it "${etcdClientPod}" -- etcdctl set config/_global/fqdn "${fqdn}"
 sleep 15
 

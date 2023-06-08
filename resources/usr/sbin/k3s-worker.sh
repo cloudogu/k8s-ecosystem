@@ -23,7 +23,3 @@ INSTALL_K3S_EXEC="--node-external-ip=${nodeExternalIp}
  --flannel-iface=${flannelInterface}" \
 K3S_TOKEN="${k3sToken}" \
 /home/"${username}"/install.sh
-
-echo "Increasing virtual address space for sonar dogu..."
-# see https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-virtual-memory.html
-sysctl -w vm.max_map_count=262144

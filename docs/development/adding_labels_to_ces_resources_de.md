@@ -132,8 +132,8 @@ kubectl delete dogus -l app=ces -n ecosystem
 
 ```bash
 # alle anderen Ressourcen löschen
-kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
-&& kubectl patch cm udp-services -p '{"metadata":{"finalizers":null}}' --type=merge || true \
+kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge -n ecosystem || true \
+&& kubectl patch cm udp-services -p '{"metadata":{"finalizers":null}}' --type=merge -n ecosystem || true \
 && kubectl delete statefulsets,deploy,secrets,cm,svc,sa,rolebindings,roles,clusterrolebindings,clusterroles,cronjob,pvc,pv --ignore-not-found -l app=ces -n ecosystem
 ```
 

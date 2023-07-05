@@ -2,8 +2,8 @@
 
 ## Hinweise
 
-- Credentials bekommen: `gcloud container clusters get-credentials ces-multinode`
-- Cluster auf 0 skalieren: `gcloud container clusters resize ces-multinode --num-nodes=0`
+- Credentials bekommen: `gcloud container clusters get-credentials ces-multinode --zone europe-west3-a --project ces-operations-internal`
+- Cluster auf 0 skalieren: `gcloud container clusters resize ces-multinode --num-nodes=0 --zone europe-west3-a --project ces-operations-internal`
 - Dies CES-Role hat keine Berechtigungen um die alle Ressourcen zu verwalten:
     - Clusterroles
     - Clusterrolebinding

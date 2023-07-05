@@ -28,9 +28,9 @@ Hier können u.a. der FQDN und der Admin-User konfiguriert werden.
 ### Cloud-Provider
 
 Hinweise zu einzelnen Cloud-Providern sind hier zu finden:
-- [GoogleCloud](cloud-provicer_installation_google_cloud_de.md)
-- [Azure AKS](cloud-provicer_installation_azure_aks_de.md)
-- [Plusserver](cloud-provicer_installation_plusserver_de.md)
+- [GoogleCloud](cloud-provider_installation_google_cloud_de.md)
+- [Azure AKS](cloud-provider_installation_azure_aks_de.md)
+- [Plusserver](cloud-provider_installation_plusserver_de.md)
 
 ## Installation
 

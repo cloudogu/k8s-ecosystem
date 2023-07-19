@@ -3,7 +3,7 @@
     "fqdn": "",
     "domain": "k3ces.local",
     "certificateType": "selfsigned",
-    "relayHost": "asdf",
+    "relayHost": "foobar",
     "completed": true,
     "useInternalIp": false,
     "internalIp": ""
@@ -16,6 +16,9 @@
       "k8s/nginx-static",
       "k8s/nginx-ingress",
       "official/cas"
+      %{ for dogu in additional_dogus ~}
+      , "${dogu}"
+      %{ endfor ~}
     ],
     "completed": true
   },

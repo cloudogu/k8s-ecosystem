@@ -3,35 +3,35 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "default" {
-  name     = "${var.cluster_name}-rg"
+  name     = "${var.aks_cluster_name}-rg"
   location = "West Europe"
 
   tags = {
-    environment = "Demo"
+    environment = "CES"
   }
 }
 
 resource "azurerm_kubernetes_cluster" "default" {
-  name                = "${var.cluster_name}-aks"
+  name                = "${var.aks_cluster_name}-aks"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
-  dns_prefix          = "${var.cluster_name}-k8s"
+  dns_prefix          = "${var.aks_cluster_name}-k8s"
 
   default_node_pool {
     name            = "default"
-    node_count      = 2
-    vm_size         = "Standard_B2s"
+    node_count      = var.aks_node_count
+    vm_size         = var.aks_vm_size
     os_disk_size_gb = 30
   }
 
   service_principal {
-    client_id     = var.appId
-    client_secret = var.password
+    client_id     = var.azure_appId
+    client_secret = var.azure_password
   }
 
   role_based_access_control_enabled  = true
 
   tags = {
-    environment = "Demo"
+    environment = "CES"
   }
 }

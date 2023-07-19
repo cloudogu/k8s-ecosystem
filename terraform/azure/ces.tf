@@ -13,16 +13,15 @@ provider "kubectl" {
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.cluster_ca_certificate)
 }
 
-resource "kubernetes_namespace" "ecosystem" {
-  metadata {
-    name = var.namespace
-  }
+resource "kubectl_manifest" "ces-namespace" {
+  apply_only = true
+  yaml_body =  yamlencode({"apiVersion":"v1", "kind":"Namespace", "metadata":{"name": var.ecosystem_namespace}})
 }
 
 resource "kubernetes_secret" "k8s-dogu-operator-docker-registry" {
   metadata {
     name = "k8s-dogu-operator-docker-registry"
-    namespace = var.namespace
+    namespace = var.ecosystem_namespace
   }
 
   type = "kubernetes.io/dockerconfigjson"
@@ -39,12 +38,16 @@ resource "kubernetes_secret" "k8s-dogu-operator-docker-registry" {
       }
     })
   }
+
+  depends_on = [
+    kubectl_manifest.ces-namespace
+  ]
 }
 
 resource "kubernetes_secret" "k8s-dogu-operator-dogu-registry" {
   metadata {
     name = "k8s-dogu-operator-dogu-registry"
-    namespace = var.namespace
+    namespace = var.ecosystem_namespace
   }
 
   type = "Opaque"
@@ -54,6 +57,10 @@ resource "kubernetes_secret" "k8s-dogu-operator-dogu-registry" {
     password = var.dogu_registry_password
     endpoint = var.dogu_registry_endpoint
   }
+
+  depends_on = [
+    kubectl_manifest.ces-namespace
+  ]
 }
 
 
@@ -61,26 +68,35 @@ resource "kubernetes_secret" "k8s-dogu-operator-dogu-registry" {
 resource "kubernetes_config_map" "k8s-ces-setup-json" {
   metadata {
     name = "k8s-ces-setup-json"
-    namespace = var.namespace
+    namespace = var.ecosystem_namespace
   }
 
   data = {
     "setup.json" = templatefile(
       "${path.module}/setup.json.tftpl",
       {
-        "admin_password" = var.ces_admin_password
+        "admin_password" = var.ces_admin_password,
+        "additional_dogus" = var.additional_dogus,
       }
     )
   }
+
+  depends_on = [
+    kubectl_manifest.ces-namespace
+  ]
 }
 
-data "http" "setup_config" {
+data "http" "setup_config_file" {
   url = "https://raw.githubusercontent.com/cloudogu/k8s-ces-setup/develop/k8s/k8s-ces-setup-config.yaml"
 }
 
-resource "kubectl_manifest" "setup_config_map" {
-  override_namespace = var.namespace
-  yaml_body = replace(data.http.setup_config.response_body, "/\\{\\{ .Namespace \\}\\}/", var.namespace)
+resource "kubectl_manifest" "setup_config" {
+  override_namespace = var.ecosystem_namespace
+  yaml_body = replace(data.http.setup_config_file.response_body, "/\\{\\{ .Namespace \\}\\}/", var.ecosystem_namespace)
+
+  depends_on = [
+    kubectl_manifest.ces-namespace
+  ]
 }
 
 data "http" "setup_resources_file" {
@@ -88,11 +104,15 @@ data "http" "setup_resources_file" {
 }
 
 data "kubectl_file_documents" "setup_resources" {
-  content = replace(data.http.setup_resources_file.response_body, "/\\{\\{ .Namespace \\}\\}/", var.namespace)
+  content = replace(data.http.setup_resources_file.response_body, "/\\{\\{ .Namespace \\}\\}/", var.ecosystem_namespace)
 }
 
 resource "kubectl_manifest" "setup_resources_apply" {
-  override_namespace = var.namespace
+  override_namespace = var.ecosystem_namespace
   for_each  = data.kubectl_file_documents.setup_resources.manifests
   yaml_body = each.value
+
+  depends_on = [
+    kubectl_manifest.setup_config
+  ]
 }

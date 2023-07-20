@@ -39,7 +39,7 @@ In der `setup.json.tftpl` kann die Konfiguration für das CES angepasst werden.
 Einige Werte werden bereits durch Terraform-Variablen befüllt.
 
 ### Azure Service Principal erstellen
-Damit Terraform bei Azure Ressourcen verwalten kann, wird ein "Service Princial" benötigt, das den Zugriff gewährt.
+Damit Terraform bei Azure Ressourcen verwalten kann, wird ein "Service Principal" benötigt, das den Zugriff gewährt.
 Ein Service Principal kann mit der Azure CLI erstellt werden:
 ```shell
 az ad sp create-for-rbac --skip-assignment

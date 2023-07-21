@@ -2,6 +2,11 @@ provider "azurerm" {
   features {}
 }
 
+resource "random_integer" "storage-account-id" {
+  min = 1
+  max = 9999999
+}
+
 resource "azurerm_resource_group" "default" {
   name     = "${var.aks_cluster_name}-rg"
   location = "West Europe"
@@ -10,6 +15,19 @@ resource "azurerm_resource_group" "default" {
     environment = "CES"
   }
 }
+
+resource "azurerm_storage_account" "jenkins_agents_storage" {
+  name                     = "jenkinsagentstore${random_integer.storage-account-id.result}"
+  resource_group_name      = azurerm_resource_group.default.name
+  location                 = azurerm_resource_group.default.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    environment = "CES"
+  }
+}
+
 
 resource "azurerm_virtual_network" "vnet" {
   name                        = "${var.aks_cluster_name}-vnet"

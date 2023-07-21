@@ -12,3 +12,4 @@ tmp
 authorized_keys
 
 .env.sh
+terraform.tfvars

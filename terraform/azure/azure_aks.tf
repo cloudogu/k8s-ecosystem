@@ -17,6 +17,9 @@ resource "azurerm_resource_group" "default" {
 }
 
 resource "azurerm_storage_account" "jenkins_agents_storage" {
+  # Only lowercase alphanumeric characters allowed. It must be between 3 und 24 characters long.
+  # It must be unique across the entire Azure service, not just within the resource group.
+  # To meet this requirement we use a radom ID.
   name                     = "jenkinsagentstore${random_integer.storage-account-id.result}"
   resource_group_name      = azurerm_resource_group.default.name
   location                 = azurerm_resource_group.default.location

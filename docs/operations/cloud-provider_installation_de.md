@@ -41,30 +41,3 @@ Die Installation wird durch Ausführung der `install.sh`-Datei gestartet:
 ```
 
 > Longhorn: Um Longhorn zu installieren, muss `./installLonghorn.sh` in der `install.sh` einkommentiert werden.
-
-## Nacharbeiten
-
-### FQDN-Änderung
-
-Wenn als FQDN eine IP-Adresse verwendet wird und diese vor der Installation nicht korrekt in der `setup.json` angegeben wurde, muss diese nachträglich geändert werden.
-Wenn dem LoadBalancer-Service `nginx-ingress-exposed-443` eine IP zugewiesen wurde, kann dazu das Skript `syncFQDN.sh` ausgeführt werden.
-
-- Es liest die externe IP aus dem k8s-Service
-- Im "etcd-client"-Deployment wird die IP als FQDN gesetzt `etcdctl set /config/_global/fqdn <IP>`
-- Anschließend wird das selbst-signierte Zertifikat von der `k8s-service-discovery` automatisch neu erstellt
-- Zuletzt werden alle Pods der Dogus neu gestartet
-
-### Postgresql
-
-Der Postgres-Container hat eine andere Routing-Tabelle. Das Dogu verarbeitet nur die genaue. 0.0.0.0 wir ignoriert.
-Zur Behebung muss das Skript `fixPostgresql.sh` ausgeführt werden. Inhalte des Skripts:
-
-- Bearbeitung der Subnetzmaske von `/var/lib/postgresql/pg_hba.conf` im Container-Netzwerk. Zum Beispiel von `32` auf `16`:
-```
-      # container networks
-      host    all             all             10.244.0.0/16  password
-```
-
-    
-- Reload der Config:
-`su postgres -c "pg_ctl reload`

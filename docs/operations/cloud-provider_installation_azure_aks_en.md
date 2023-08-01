@@ -4,8 +4,6 @@
 
 - Getting credentials: `az aks get-credentials --resource-group ces-multinode_group --name ces-multinode`
 - Stop cluster (cannot scale to 0): `az aks stop --resource-group ces-multinode_group --name ces-multinode`
-- The watch on the FQDN change in the service-discovery worked only after a restart
-    - It seems that the first time the service-discovery is started, the watches are not started.
 - The ElasticSearch in SonarQube needs higher `virtual memory areas`.
     - This has to be adjusted directly on the node:
       ```bash

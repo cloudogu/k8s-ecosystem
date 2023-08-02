@@ -3,7 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudogu/k8s-longhorn/develop/manifests/longhorn.yaml
 
 COUNTER=0
 until [ $COUNTER -gt 50 ] || kubectl get storageclass longhorn >> /dev/null 2>&1; do

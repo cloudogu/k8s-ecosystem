@@ -108,7 +108,7 @@ Example for a cluster of one main node and three worker nodes:
 }
 ```
 
-If a air-gapped environment is used where docker and dogu registry are mirrored,
+If an air-gapped environment is used where docker and dogu registry are mirrored,
 a mirror for the Docker registry must be configured here.
 
 Example of registry setup for mirrored images:

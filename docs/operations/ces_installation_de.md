@@ -179,6 +179,8 @@ Mit dieser Kubeconfig lässt sich auch von anderen Maschinen auf den Cluster zug
 
 #### Download der Skripte
 
+Wenn das Cloudogu EcoSystem auf einer OVF in einer abgeschotteten Umgebung basiert, sollte dieser Skript-Download-Abschnitt übersprungen und stattdessen die vorhandenen Provisionierungsskripte verwendet werden.
+
 ```bash
 installDir="ces_scripts" && \
 mkdir -p ${installDir} && \

@@ -178,6 +178,8 @@ This Kubeconfig can also be used to access the cluster from other machines.
 
 #### Download the scripts
 
+If the Cloudogu EcoSystem is based on an OVF in an air-gapped environment, this script download section should be skipped and the existing provisioning scripts should be used instead.
+
 ```bash
 installDir="ces_scripts" && \
 mkdir -p ${installDir} && \

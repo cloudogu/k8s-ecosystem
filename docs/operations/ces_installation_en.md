@@ -323,7 +323,7 @@ example.com/
 ```
 
 In this case, a rewrite must be created for the container configuration of `k3s` so that images
-such as `example.com/longhorn/manager` can be obtained from `example.com/organization/longhorn/manager`.
+such as `example.com/longhorn/manager` can be obtained e.g. from `example.com/organization/longhorn/manager`.
 
 Example `k3sConfig.json`:
 
@@ -384,7 +384,7 @@ Example `k3sConfig.json`:
 After a new certificate creation, the services `k3s` (on the main node) or `k3s-agent` must be restarted:
 
 ```bash
-# ssh in die jeweilige Maschine
+# ssh into the respective machine
 sudo systemctl restart k3s
 sudo systemctl restart k3s-agent
 ```

@@ -4,9 +4,8 @@ This document describes in detail how to install the Cloudogu EcoSystem in a Kub
 Trivially, a Kubernetes cluster is required for the installation.
 
 If running a cluster on an external cloud provider is not an option, Cloudogu provides an OVF,
-which is used for main **and** worker nodes. In it, the Kubernetes implementation.
-[`k3s`](https://docs.k3s.io/) with [`longhorn`](https://longhorn.io/docs/) as the storage provisioner. For external cloud providers, `longhorn` can also be used as a storage
-can also be used as a storage provisioner. However, the cloud providers' internal provisioners are recommended.
+which is used for main **and** worker nodes. In it, the Kubernetes implementation 
+[`k3s`](https://docs.k3s.io/) with [`longhorn`](https://longhorn.io/docs/) as the storage provisioner will be used. However, the cloud providers' internal provisioners are recommended.
 
 This document shows which components need to be installed and configured. A distinction is made between the setup of a
 Kubernetes cluster and that of the actual Cloudogu EcoSystem within the cluster.

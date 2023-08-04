@@ -20,10 +20,10 @@ Danach folgt die eigentliche Installationsanleitung mit Hinweisen für verschied
 Diese Option ist geeignet, wenn externe Cloud-Provider keine Option darstellt. Ansonsten kann ab Abschnitt 2. weiter gearbeitet werden.
 
 - `k3sConfig.json`
-  - Eine Konfiguration, die Informationen über alle Nodes des Clusters enthält. Sie wird von einem Service ausgelesen, der `k3s` konfiguriert. 
+  - Eine Konfiguration, die Informationen über alle Nodes des Clusters enthält. Sie wird von einem Service ausgelesen, der `k3s` konfiguriert.
   - Diese Datei enthält:
-    - Token als gemeinsames Geheimnis zur gegenseitigen Node-Anmeldung im Cluster, 
-    - IP-Adressen der verwendeten Maschinen und 
+    - Token als gemeinsames Geheimnis zur gegenseitigen Node-Anmeldung im Cluster,
+    - IP-Adressen der verwendeten Maschinen und
     - Registry-Konfigurationen
   - Das File muss in **jeden** Node gemounted werden.
 - `authorized_keys`
@@ -162,7 +162,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCJi7dJnW9zB3m5iakfUwmntYLahA82WqYKM3f9VQh
 - Die Installationsroutinen, die den Kubernetes-Cluster initialisieren, lassen sich via `journalctl -f -u k3s-conf.service` verfolgen.
 - Ob alle Nodes im Cluster verfügbar sind, lässt sich via `kubectl get nodes` erkennen.
 - Ob alle Pods erfolgreich gestartet wurden, lässt sich mit `kubectl get pods` erkennen.
-  - Alternativ kann das grafische Tool `k9s` verwendet werden. Allgemeine Information zur grafischen Kubernetesverwaltung im Terminal k9s gibt es hier: https://k9scli.io/
+  - Alternativ kann das grafische Tool `k9s` verwendet werden. Allgemeine Information zur grafischen Kubernetesverwaltung im Terminal k9s gibt es hier: [https://k9scli.io/](https://k9scli.io/)
 
 #### Kubeconfig setzen
 
@@ -291,7 +291,9 @@ Ansonsten kann das Setup manuell gestartet werden:
 Das Cloudogu EcoSystem kann mit folgenden Befehlen **komplett** aus dem Cluster gelöscht werden (die angelegten Registry-Credentials bleiben hiervon unberührt):
 
 - Dogus löschen
-`kubectl delete dogus -l app=ces -n ecosystem`
+```bash
+kubectl delete dogus -l app=ces -n ecosystem
+```
 
 - Restliche Ressourcen löschen
 ```bash
@@ -312,13 +314,13 @@ Beispielstruktur:
 example.com/
 ├── organization <-
 │   ├── k8s
-│   │   ├── k8s-dogu-operator
-│   │   │   ├── 0.1.0
+│   │   ╰── k8s-dogu-operator
+│   │       ╰── 0.1.0
 │   ├── official
-│   │   ├── cas
-│   │   │   ├── 0.1.0
+│   │   ╰── cas
+│   │       ╰── 0.1.0
 │   ├── premium
-│   ├── other namespace
+│   ╰── other namespace
 ```
 
 In diesem Fall muss ein Rewrite für die Container-Konfiguration von `k3s` erstellt werden, damit Images
@@ -380,11 +382,12 @@ Beispiel `k3sConfig.json`:
 }
 ```
 
-Nach einer Neuanlage der Zertifikate müssen die Dienste `k3s` (auf dem Main-Nodes) bzw. `k3s-agent` neugestartet werden;
+Nach einer Neuanlage der Zertifikate müssen die Dienste `k3s` (auf dem Main-Nodes) bzw. `k3s-agent` neugestartet werden:
+
 ```bash
 # ssh in die jeweilige Maschine
-$ sudo systemctl restart k3s
-$ sudo systemctl restart k3s-agent
+sudo systemctl restart k3s
+sudo systemctl restart k3s-agent
 ```
 
 #### #### Selbstsignierte Zertifikate im Cluster-state ablegen

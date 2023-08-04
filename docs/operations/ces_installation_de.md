@@ -2,35 +2,43 @@
 
 Dieses Dokument beschreibt im Detail, wie das Cloudogu EcoSystem in einem Kubernetes Cluster installiert wird.
 Trivialerweise wird für die Installation ein Kubernetes Cluster benötigt.
-Falls es keine Option ist ein Cluster bei einem externen Cloud-Provider zu betreiben, bietet Cloudogu ein OVF an,
-welches für die Verwendung von Main- **und** Worker-Nodes verwendet wird. Die darin verwendete Kubernetes-Implementierung
-ist ein `k3s` mit `longhorn` als Storage-Provisioner. Bei externen Cloud-Anbietern kann `longhorn` ebenfalls
+
+Falls es keine Option ist, einen Cluster bei einem externen Cloud-Provider zu betreiben, bietet Cloudogu ein OVF an,
+welches für die Verwendung von Main- **und** Worker-Nodes verwendet wird. Darin wird die Kubernetes-Implementierung
+ [`k3s`](https://docs.k3s.io/) mit [`longhorn`](https://longhorn.io/docs/) als Storage-Provisioner verwendet. Bei externen Cloud-Anbietern kann `longhorn` ebenfalls
 als Storage-Provisioner verwendet werden. Empfohlen werden allerdings die internen Provisioner der Cloud-Provider.
 
-In diesem Dokument wird zunächst genannt welche Komponenten installiert und konfiguriert werden müssen. Dabei wird zwischen dem Setup eines
+Dieses Dokument zeigt, welche Komponenten installiert und konfiguriert werden müssen. Dabei wird zwischen dem Setup eines
 Kubernetes-Cluster und dem des eigentlichen Cloudogu EcoSystems innerhalb des Clusters unterschieden.
 Daraufhin werden stichpunktartig Voraussetzungen gelistet, um eine Installation vorzubereiten.
-Danach folgt die eigentliche Installationsanleitung mit Hinweisen für verschiedene Betriebsumgebungen wie z.B. Google oder Microsoft.
+Danach folgt die eigentliche Installationsanleitung mit Hinweisen für verschiedene Betriebsumgebungen wie z. B. Google oder Microsoft.
 
-## Was ist zu installieren/konfigurieren?
+## 1. Was ist zu installieren/konfigurieren?
 
-### Kubernetes Cluster Setup mit Cloudogu K3s Image (Falls externe Cloud-Provider keine Optionen sind)
+### Kubernetes Cluster Setup mit Cloudogu K3s-Image
+
+Diese Option ist geeignet, wenn externe Cloud-Provider keine Option darstellt. Ansonsten kann ab Abschnitt 2. weiter gearbeitet werden.
 
 - `k3sConfig.json`
-  - Eine Konfiguration, die Informationen über alle Nodes des Clusters enthält. Sie wird von einem Service ausgelesen, der `k3s` konfiguriert. Sie enthält Token, IPs und Registry-Konfigurationen. Das File muss in **jeden** Node gemounted werden.
+  - Eine Konfiguration, die Informationen über alle Nodes des Clusters enthält. Sie wird von einem Service ausgelesen, der `k3s` konfiguriert. 
+  - Diese Datei enthält:
+    - Token als gemeinsames Geheimnis zur gegenseitigen Node-Anmeldung im Cluster, 
+    - IP-Adressen der verwendeten Maschinen und 
+    - Registry-Konfigurationen
+  - Das File muss in **jeden** Node gemounted werden.
 - `authorized_keys`
-  - Zum debuggen ist es sinnvoll SSH-Zugriff auf jeden Node zu erlangen. Hierbei muss in jedem Node eine Liste von akzeptierten Keys gemounted werden.
+  - Zum Debuggen kann es nützlich sein, SSH-Zugriff auf jeden Node zu erlangen. Hierbei muss in jedem Node eine Liste von akzeptierten Keys gemounted werden.
 
 ### Cloudogu EcoSystem Setup
 
 - Namespace: `ecosystem`
 - Secret: `k8s-dogu-operator-docker-registry` - enthält Credentials zur verwendeten Image-Registry.
 - Secret: `k8s-dogu-operator-dogu-registry` - enthält Credentials zur verwendeten Dogu-Registry.
-- Configmap: `k8s-ces-setup-config` - enthält Konfiguration für das Setup unter anderem Versionen von CES Komponenten z.B. Dogu-Operator, die installiert werden sollen.
+- Configmap: `k8s-ces-setup-config` - enthält Konfiguration für das Setup unter anderem Versionen von CES Komponenten z. B. Dogu-Operator, die installiert werden sollen.
 - Configmap: `k8s-ces-setup-json` - enthält Konfiguration für das Setup unter anderem FQDN oder Dogu-Versionen.
 - Setup-Applikation: beinhaltet ein Deployment, Service, Rollen usw. um den Setup-Prozess zu starten.
 
-## Vorbereitung
+## 2. Vorbereitung
 
 ### Welche Informationen werden benötigt
 
@@ -45,7 +53,7 @@ Danach folgt die eigentliche Installationsanleitung mit Hinweisen für verschied
   - Password
   - E-Mail
 
-## Installationsanleitung
+## 3. Installationsanleitung
 
 Soll das Cloudogu EcoSystem auf einem schon bestehenden Cluster installiert werden kann mit [Cloudogu EcoSystem Installation](#cloudogu-ecosystem-installation) fortgefahren werden.
 
@@ -65,7 +73,7 @@ Für die Bereitstellung des OVF kontaktieren Sie bitte hello@cloudogu.com.
   - IPs und Interfaces der Knoten müssen entsprechend angepasst werden.
 - Die `k3sConfig.json` muss in jeden Node in `/etc/ces/nodeconfig/k3sConfig.json` gemounted werden.
 
-Beispiel:
+Beispiel für einen Cluster aus einem Main-Node und drei Worker-Nodes:
 
 ```json
 {
@@ -104,7 +112,7 @@ Beispiel:
 Wenn eine abgeschottete Umgebung verwendet wird, bei der Docker- und Dogu-Registry gespiegelt sind,
 muss hier ein Mirror für die Docker-Registry konfiguriert werden.
 
-Beispiel:
+Beispiel für die Registry-Einrichtung für gespiegelte Images:
 
 ```json
 {
@@ -137,8 +145,8 @@ Beispiel:
 
 #### SSH-Pub-Key(s) mounten
 
-- Alle Public Keys, die in den Nodes für den SSH-Zugang zum Einsatz kommen sollen, in eine Datei authorized_keys schreiben.
-- Jeden Node des Clusters so anpassen, dass beim Start die authorized_keys-Datei nach /etc/ces/authorized_keys gemountet wird.
+- Alle Public Keys, die in den Nodes für den SSH-Zugang zum Einsatz kommen sollen, in eine Datei `authorized_keys` schreiben.
+- Jeden Node des Clusters so anpassen, dass beim Start die `authorized_keys`-Datei nach `/etc/ces/authorized_keys` gemountet wird.
 - Weitere Informationen sind [hier](https://github.com/cloudogu/k8s-ecosystem/blob/develop/docs/operations/ssh_authentication_de.md) zu finden.
 
 Beispiel:
@@ -156,6 +164,8 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCJi7dJnW9zB3m5iakfUwmntYLahA82WqYKM3f9VQh
 - Ob alle Pods erfolgreich gestartet wurden, lässt sich mit `kubectl get pods` erkennen.
   - Alternativ kann das grafische Tool `k9s` verwendet werden. Allgemeine Information zur grafischen Kubernetesverwaltung im Terminal k9s gibt es hier: https://k9scli.io/
 
+#### Kubeconfig setzen
+
 Damit für weitere Schritte auf dem Host gearbeitet werden kann, ist es sinnvoll die Cluster-Konfigurationen zu kopieren:
 - Die Konfiguration steht als yaml-Datei in der VM unter `/etc/rancher/k3s/k3s.yaml` bereit
 - Nutzen der Cluster-Konfiguration auf dem Host
@@ -163,13 +173,15 @@ Damit für weitere Schritte auf dem Host gearbeitet werden kann, ist es sinnvoll
   - Konfiguration setzen, bsp. via `export KUBECONFIG=~/.kube/k3s.yaml`
   - Testen der Konfiguration, bsp. via `kubectl get all --all-namespaces`
 
+Mit dieser Kubeconfig lässt sich auch von anderen Maschinen auf den Cluster zugreifen.
+
 ### Cloudogu EcoSystem Installation
 
 #### Download der Skripte
 
 ```bash
 installDir="ces_scripts" && \
-mkdir ${installDir} && \
+mkdir -p ${installDir} && \
 wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/install.sh && \
 wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/createNamespace.sh && \
 wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/createCredentials.sh && \
@@ -211,7 +223,7 @@ Beispiel:
     "fqdn": "",
     "domain": "k3ces.local",
     "certificateType": "selfsigned",
-    "relayHost": "asdf",
+    "relayHost": "your-mail-relay-host",
     "completed": true,
     "useInternalIp": false,
     "internalIp": ""
@@ -266,7 +278,7 @@ Beispiel:
 
 #### Installation
 
-`./install.sh`
+Die Installation mit der oben genannten `./install.sh` starten.
 
 Das Setup startet automatisch, wenn in jeder Sektion der `setup.json` `completed: true` ist.
 Ansonsten kann das Setup manuell gestartet werden:
@@ -276,7 +288,7 @@ Ansonsten kann das Setup manuell gestartet werden:
 > Info: Falls der Setup Prozess abbricht, weil ein invalider Wert in der `setup.json` angegeben wurde, muss nach Korrektur der `setup.json` die Configmap `k8s-setup-config` gelöscht werden.
 > Danach kann das Setup wieder gestartet werden.
 
-Das Cloudogu EcoSystem kann mit folgenden Befehlen **komplett** aus dem Cluster gelöscht werden:
+Das Cloudogu EcoSystem kann mit folgenden Befehlen **komplett** aus dem Cluster gelöscht werden (die angelegten Registry-Credentials bleiben hiervon unberührt):
 
 - Dogus löschen
 `kubectl delete dogus -l app=ces -n ecosystem`
@@ -288,17 +300,17 @@ kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge
 && kubectl delete statefulsets,deploy,secrets,cm,svc,sa,rolebindings,roles,clusterrolebindings,clusterroles,cronjob,pvc,pv --ignore-not-found -l app=ces -n ecosystem
 ```
 
-## Hinweise für verschiedene Infrastrukturen und Cloud-Provider
+## 4. Hinweise für verschiedene Infrastrukturen und Cloud-Provider
 
 ### Verwendung von gespiegelten Registrys
 
 Werden gespiegelte Registrys verwendet, ist es durchaus möglich, dass sich alle Docker-Images in einem
-Unterprojekt in der Registry befinden.
+Unterprojekt in der Registry befinden (hier z. B. `organization`).
 
 Beispielstruktur:
 ```
 example.com/
-├── orginazation <-
+├── organization <-
 │   ├── k8s
 │   │   ├── k8s-dogu-operator
 │   │   │   ├── 0.1.0
@@ -331,11 +343,11 @@ Beispiel `k3sConfig.json`:
 }
 ```
 
-### Gespiegelte Registrys verwenden selbstsignierte Zertifikate
+### Gespiegelte Registrys verwenden selbstsignierte Zertifikate mit K3s
 
-Selbstsignierte Zertifikate müssen `k3s` und den Operatoren bekannt gemacht werden.
+Selbstsignierte Zertifikate müssen `k3s` auf den jeweiligen Nodes und den Operatoren bekannt gemacht werden.
 
-#### k3s
+#### Selbstsignierte Zertifikate in k3s ablegen
 
 Beispiel `k3sConfig.json`:
 
@@ -368,20 +380,26 @@ Beispiel `k3sConfig.json`:
 }
 ```
 
-#### Ablage im Cluster-state
+Nach einer Neuanlage der Zertifikate müssen die Dienste `k3s` (auf dem Main-Nodes) bzw. `k3s-agent` neugestartet werden;
+```bash
+# ssh in die jeweilige Maschine
+$ sudo systemctl restart k3s
+$ sudo systemctl restart k3s-agent
+```
+
+#### #### Selbstsignierte Zertifikate im Cluster-state ablegen
 
 ```bash
 kubectl --namespace ecosystem create secret generic docker-registry-cert --from-file=docker-registry-cert.pem=<cert_name>.pem
 kubectl --namespace ecosystem create secret generic dogu-registry-cert --from-file=dogu-registry-cert.pem=<cert_name>.pem
 ```
 
-
 - Weitere Informationen sind [hier](https://github.com/cloudogu/k8s-dogu-operator/blob/develop/docs/operations/using_self_signed_certs_de.md) zu finden.
 
 
 ### Hinweise für verschiedene Cloud-Provider
 
-Das sich die Umgebungen der Cloud-Provider unterscheiden kommen, ist es möglich, dass zusätzliche Konfigurationen
+Da sich die Umgebungen der Cloud-Provider unterscheiden können, ist es möglich, dass zusätzliche Konfigurationen
 für den Betrieb des CES notwendig sind. In den folgenden Links sind Hinweise für den Betrieb bei Google, Microsoft und Plusserver zu finden:
 
 - [Google](cloud-provider_installation_google_cloud_de.md)

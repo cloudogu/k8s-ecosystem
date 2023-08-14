@@ -29,5 +29,24 @@
 - Note that only one storage class is default. The default Azure StorageClass must not be default anymore:
     - `kubectl annotate storageclass default storageclass.kubernetes.io/is-default-class="false"`
 
+## Air-gapped environment without external load balancer service IP address
 
+In air-gapped clusters, the cloud provider may not be able to assign an external IP address.
+With the annotation `"service.beta.kubernetes.io/azure-load-balancer-internal": "true"` on the load balancer service, you can configure Azure to assign an external IP address from the internal network to the service.
 
+In the [Setup-Config](https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/configuration_guide_en.md#resource_patches) this can be configured as follows:
+
+```yaml
+...
+resource_patches:
+  - phase: loadbalancer
+    resource:
+      apiVersion: v1
+      kind: Service
+      name: ces-loadbalancer
+    patches:
+      - op: add
+        path: /metadata/annotations
+        value:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+```

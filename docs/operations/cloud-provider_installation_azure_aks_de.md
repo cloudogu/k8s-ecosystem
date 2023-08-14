@@ -30,5 +30,24 @@
 - Man muss beachten, dass nur eine Storage-class default ist. Die Default-Azure-StorageClass darf nicht mehr default sein:
     - `kubectl annotate storageclass default storageclass.kubernetes.io/is-default-class="false"`
 
+## Airgapped-Umgebung ohne externe Loadbalancer-Service-IP-Adresse
 
+In abgeschotteten Clustern kann es sein, dass der Cloud-Provider keine externe IP-Adresse vergeben kann.
+Mit der Annotation `"service.beta.kubernetes.io/azure-load-balancer-internal": "true"` am Loadbalancer-Service kann man in Azure konfigurieren, um dem Service eine externe IP-Adresse aus dem internen Netzwerk zuzuweisen.
 
+In der [Setup-Config](https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/configuration_guide_de.md#resource_patches) lässt sich das folgendermaßen konfigurieren:
+
+```yaml
+...
+resource_patches:
+  - phase: loadbalancer
+    resource:
+      apiVersion: v1
+      kind: Service
+      name: ces-loadbalancer
+    patches:
+      - op: add
+        path: /metadata/annotations
+        value:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+```

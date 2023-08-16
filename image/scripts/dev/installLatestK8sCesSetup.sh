@@ -12,6 +12,9 @@ dogu_registry_url=${5}
 image_registry_username=${6}
 image_registry_password=${7}
 image_registry_url=${8}
+helm_registry_username=${9}
+helm_registry_password=${10}
+helm_registry_url=${11}
 
 # Apply the setup resources to the current namespace.
 applyResources() {
@@ -25,7 +28,10 @@ applyResources() {
     --set=dogu_registry_secret.password="${dogu_registry_password//,/\\,}" \
     --set=docker_registry_secret.url="${image_registry_url}" \
     --set=docker_registry_secret.username="${image_registry_username}" \
-    --set=docker_registry_secret.password="${image_registry_password//,/\\,}"
+    --set=docker_registry_secret.password="${image_registry_password//,/\\,}" \
+    --set=helm_registry_secret.url="${helm_registry_url}" \
+    --set=helm_registry_secret.username="${helm_registry_username}" \
+    --set=helm_registry_secret.password="${helm_registry_password//,/\\,}"
 }
 
 

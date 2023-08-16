@@ -9,10 +9,12 @@ main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
 fqdn = "k3ces.local"
 docker_registry_namespace = "ecosystem"
+helm_repository_namespace = "k8s"
 install_setup = true
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
+image_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
@@ -54,7 +56,7 @@ Vagrant.configure("2") do |config|
 
     main.trigger.before :provision do |trigger|
       if dogu_registry_url == "" || dogu_registry_username == "" || dogu_registry_password == "" ||
-        image_registry_email == "" || image_registry_username == "" || image_registry_password == ""
+        image_registry_url == "" || image_registry_email == "" || image_registry_username == "" || image_registry_password == ""
         trigger.info = 'One of the required credentials (dogu- or image registry) is missing!'
         trigger.abort = true
       end
@@ -65,15 +67,7 @@ Vagrant.configure("2") do |config|
                       path: "image/scripts/dev/waitForK3sConfService.sh"
 
     main.vm.provision "Setup main node", type: "shell",
-                      path: "image/scripts/dev/mainSetup.sh",
-                      args: [
-                        dogu_registry_username,
-                        dogu_registry_password,
-                        dogu_registry_url,
-                        image_registry_username,
-                        image_registry_password,
-                        image_registry_email,
-                      ]
+                      path: "image/scripts/dev/mainSetup.sh"
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
@@ -137,7 +131,14 @@ Vagrant.configure("2") do |config|
         trigger.only_on = "main"
       end
       trigger.info = "Install ces-setup"
-      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace] }
+      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace,
+                                                                                    helm_repository_namespace,
+                                                                                    dogu_registry_username,
+                                                                                    dogu_registry_password,
+                                                                                    dogu_registry_url,
+                                                                                    image_registry_username,
+                                                                                    image_registry_password,
+                                                                                    image_registry_url] }
     end
   end
 end

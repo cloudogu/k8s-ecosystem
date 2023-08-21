@@ -19,8 +19,8 @@ helm_registry_url=${11}
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."
-  helm registry login "${image_registry_url}" --username "${image_registry_username}" --password "${image_registry_password}"
-  helm upgrade -i k8s-ces-setup "oci://${image_registry_url}/${helm_repository_namespace}/k8s-ces-setup" \
+  helm registry login "${helm_registry_url}" --username "${helm_registry_username}" --password "${helm_registry_password}"
+  helm upgrade -i k8s-ces-setup "oci://${helm_registry_url}/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
     --set-file=setup_json=image/scripts/dev/setup.json \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \

@@ -9,7 +9,7 @@ main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
 fqdn = "k3ces.local"
 docker_registry_namespace = "ecosystem"
-helm_repository_namespace = "k8s-testing"
+helm_repository_namespace = "k8s"
 install_setup = true
 dogu_registry_username = ""
 dogu_registry_password = ""
@@ -21,6 +21,7 @@ image_registry_email = ""
 helm_registry_url = ""
 helm_registry_username = ""
 helm_registry_password = ""
+# TODO Change this to the new basebox built in the review/release process.
 basebox_version = "v1.3.0"
 basebox_checksum = "eb2b9eb3e95379da28092d3bc9301a7061b1089cc87f4800ae2b90446fcac10f"
 basebox_checksum_type = "sha256"
@@ -36,11 +37,10 @@ Vagrant.configure("2") do |config|
   config.vm.define "main", primary: true do |main|
     main.vm.hostname = "ces-main"
 
-    main.vm.box = "helm"
-    # main.vm.box = basebox_name
-    # main.vm.box_url = basebox_url
-    # main.vm.box_download_checksum = basebox_checksum
-    # main.vm.box_download_checksum_type = basebox_checksum_type
+    main.vm.box = basebox_name
+    main.vm.box_url = basebox_url
+    main.vm.box_download_checksum = basebox_checksum
+    main.vm.box_download_checksum_type = basebox_checksum_type
 
     main.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 
@@ -88,11 +88,10 @@ Vagrant.configure("2") do |config|
     config.vm.define "worker-#{i}" do |worker|
       worker.vm.hostname = "ces-worker-#{i}"
 
-      worker.vm.box = "helm"
-      # worker.vm.box = basebox_name
-      # worker.vm.box_url = basebox_url
-      # worker.vm.box_download_checksum = basebox_checksum
-      # worker.vm.box_download_checksum_type = basebox_checksum_type
+      worker.vm.box = basebox_name
+      worker.vm.box_url = basebox_url
+      worker.vm.box_download_checksum = basebox_checksum
+      worker.vm.box_download_checksum_type = basebox_checksum_type
 
       worker.vm.synced_folder "nodeconfig/", "/etc/ces/nodeconfig"
 

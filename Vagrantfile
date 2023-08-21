@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
         image_registry_url == "" || image_registry_email == "" || image_registry_username == "" ||
         image_registry_password == "" || helm_registry_url == "" || helm_registry_username == "" ||
         helm_registry_password == ""
-        trigger.info = 'One of the required credentials (dogu-, helm or image registry) is missing!'
+        trigger.info = 'At least one of the required credentials (dogu-, helm or image registry) is missing!'
         trigger.abort = true
       end
     end

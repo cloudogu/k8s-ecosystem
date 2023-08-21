@@ -269,7 +269,7 @@ helm_registry_secret:
 #  }
 ```
 
-> For other configurations such as versions of operators, see [values.yaml](https://github.com/cloudogu/k8s-ces-setup/blob/feature/59_helm_release/k8s/helm/values.yaml).
+> For other configurations such as versions of operators, see [values.yaml](https://github.com/cloudogu/k8s-ces-setup/blob/develop/k8s/helm/values.yaml).
 
 ### Installation
 

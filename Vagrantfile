@@ -21,9 +21,8 @@ image_registry_email = ""
 helm_registry_url = ""
 helm_registry_username = ""
 helm_registry_password = ""
-# TODO Change this to the new basebox built in the review/release process.
-basebox_version = "v1.3.0"
-basebox_checksum = "eb2b9eb3e95379da28092d3bc9301a7061b1089cc87f4800ae2b90446fcac10f"
+basebox_version = "v1.4.0"
+basebox_checksum = "9f031617c1f21a172d01b6fc273c4ef95b539a5e35359773eaebdcabdff2d00f"
 basebox_checksum_type = "sha256"
 basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
 basebox_name = "basebox-mn-" + basebox_version

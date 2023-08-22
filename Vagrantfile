@@ -8,7 +8,7 @@ vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
 fqdn = "k3ces.local"
-docker_registry_namespace = "ecosystem"
+ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
 install_setup = true
 dogu_registry_username = ""
@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
-                      args: [fqdn, docker_registry_namespace]
+                      args: [fqdn, ces_namespace]
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
@@ -137,7 +137,7 @@ Vagrant.configure("2") do |config|
         trigger.only_on = "main"
       end
       trigger.info = "Install ces-setup"
-      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [docker_registry_namespace,
+      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [ces_namespace,
                                                                                     helm_repository_namespace,
                                                                                     dogu_registry_username,
                                                                                     dogu_registry_password,

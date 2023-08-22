@@ -32,11 +32,13 @@ Diese Option ist geeignet, wenn externe Cloud-Provider keine Option darstellt. A
 ### Cloudogu EcoSystem Setup
 
 - Namespace: `ecosystem`
-- Secret: `k8s-dogu-operator-docker-registry` - enthält Credentials zur verwendeten Image-Registry.
-- Secret: `k8s-dogu-operator-dogu-registry` - enthält Credentials zur verwendeten Dogu-Registry.
-- Configmap: `k8s-ces-setup-config` - enthält Konfiguration für das Setup unter anderem Versionen von CES Komponenten z. B. Dogu-Operator, die installiert werden sollen.
-- Configmap: `k8s-ces-setup-json` - enthält Konfiguration für das Setup unter anderem FQDN oder Dogu-Versionen.
-- Setup-Applikation: beinhaltet ein Deployment, Service, Rollen usw. um den Setup-Prozess zu starten.
+- Helm-Chart `k8s-ces-setup` mit Konfiguration von `values.yaml`:
+  - Secret: `k8s-dogu-operator-docker-registry` - enthält Credentials zur verwendeten Image-Registry.
+  - Secret: `k8s-dogu-operator-dogu-registry` - enthält Credentials zur verwendeten Dogu-Registry.
+  - Secret: `component-operator-helm-registry` - enthält Credentials zur verwendeten Helm-Registry für CES-Komponenten.
+  - Configmap: `component-operator-helm-repository` - enthält URL zur verwendeten Helm-Registry für CES-Komponenten.
+  - Configmap: `k8s-ces-setup-config` - enthält Konfiguration für das Setup unter anderem Versionen von CES Komponenten z. B. Dogu-Operator, die installiert werden sollen.
+  - Configmap: `k8s-ces-setup-json` - enthält Konfiguration für das Setup unter anderem FQDN oder Dogu-Versionen.
 
 ## 2. Vorbereitung
 
@@ -46,16 +48,18 @@ Diese Option ist geeignet, wenn externe Cloud-Provider keine Option darstellt. A
   - URL: registry.cloudogu.com
   - Username
   - Password
-  - E-Mail
 - Dogu-Registry-Credentials
   - URL: https://dogu.cloudogu.com/api/v2/dogus
   - Username
   - Password
-  - E-Mail
+- Helm-Registry-Credentials
+  - URL: https://registry.cloudogu.com
+  - Username
+  - Password
 
 ## 3. Installationsanleitung
 
-Soll das Cloudogu EcoSystem auf einem schon bestehenden Cluster installiert werden kann mit [Cloudogu EcoSystem Installation](#cloudogu-ecosystem-installation) fortgefahren werden.
+Soll das Cloudogu EcoSystem auf einem schon bestehenden Cluster installiert werden, kann mit [Cloudogu EcoSystem Installation](#cloudogu-ecosystem-installation) fortgefahren werden.
 
 ### Cluster Setup mit K3s Image
 
@@ -177,117 +181,109 @@ Mit dieser Kubeconfig lässt sich auch von anderen Maschinen auf den Cluster zug
 
 ### Cloudogu EcoSystem Installation
 
-#### Download der Skripte
+### Erstellung des Namespaces
 
-Wenn das Cloudogu EcoSystem auf einer OVF in einer abgeschotteten Umgebung basiert, sollte dieser Skript-Download-Abschnitt übersprungen und stattdessen die vorhandenen Provisionierungsskripte verwendet werden.
+`kubectl create namespace ecosystem`
 
-```bash
-installDir="ces_scripts" && \
-mkdir -p ${installDir} && \
-wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/install.sh && \
-wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/createNamespace.sh && \
-wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/createCredentials.sh && \
-wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/installLonghorn.sh && \
-wget -P ${installDir} https://raw.githubusercontent.com/cloudogu/k8s-ecosystem/develop/externalcloud/installLatestK8sCesSetup.sh && \
-chmod +x ${installDir}/*.sh
+### Konfiguration von Helm-Values
+
+Das Cloudogu EcoSystem wird mit dem Package-Manager [`helm`](https://helm.sh/) installiert. Für die Installation
+müssen benötigte Credentials mit einem `values.yaml` File konfiguriert werden.
+
+Minimales Beispiel:
+
+```yaml
+docker_registry_secret:
+  url: https://registry.cloudogu.com
+  username:
+  password:
+
+dogu_registry_secret:
+  url: https://dogu.cloudogu.com/api/v2/dogus
+  username:
+  password:
+
+helm_registry_secret:
+  url: https://registry.cloudogu.com
+  username:
+  password:
+
+# Example test setup.json
+#setup_json:
+#  {
+#    "naming": {
+#      "fqdn": "",
+#      "domain": "k3ces.local",
+#      "certificateType": "selfsigned",
+#      "relayHost": "yourrelayhost.com",
+#      "useInternalIp": false,
+#      "internalIp": ""
+#      "completed": true,
+#    },
+#    "dogus": {
+#      "defaultDogu": "redmine",
+#      "install": [
+#        "official/ldap",
+#        "official/postfix",
+#        "k8s/nginx-static",
+#        "k8s/nginx-ingress",
+#        "official/cas",
+#        "official/postgresql",
+#        "official/redmine",
+#      ],
+#      "completed": true
+#    },
+#    "admin": {
+#      "username": "admin",
+#      "mail": "admin@admin.admin",
+#      "password": "adminpw",
+#      "adminGroup": "cesAdmin",
+#      "adminMember": true,
+#      "sendWelcomeMail": false,
+#      "completed": true
+#    },
+#    "userBackend": {
+#      "dsType": "embedded",
+#      "server": "",
+#      "attributeID": "uid",
+#      "attributeGivenName": "",
+#      "attributeSurname": "",
+#      "attributeFullname": "cn",
+#      "attributeMail": "mail",
+#      "attributeGroup": "memberOf",
+#      "baseDN": "",
+#      "searchFilter": "(objectClass=person)",
+#      "connectionDN": "",
+#      "password": "",
+#      "host": "ldap",
+#      "port": "389",
+#      "loginID": "",
+#      "loginPassword": "",
+#      "encryption": "",
+#      "groupBaseDN": "",
+#      "groupSearchFilter": "",
+#      "groupAttributeName": "",
+#      "groupAttributeDescription": "",
+#      "groupAttributeMember": "",
+#      "completed": true
+#    }
+#  }
 ```
 
-#### Konfiguration der Skripte
+> Für weitere Konfigurationen wie z.B. Versionen der Operatoren siehe [values.yaml](https://github.com/cloudogu/k8s-ces-setup/blob/develop/k8s/helm/values.yaml).
 
-##### Credentials
+### Installation
 
-Im gleichen Verzeichnis muss ein `.env.sh` File erzeugt werden:
-
-```bash
-export kube_context="k3ces.local"
-export dogu_registry_url="https://dogu.cloudogu.com/api/v2/dogus"
-export dogu_registry_username=""
-export dogu_registry_password=""
-export image_registry_url="registry.cloudogu.com"
-export image_registry_username=""
-export image_registry_password=""
-export image_registry_email=""
-```
-
-Verfügbare Kube-Kontexte anzeigen:
-
-- `kubectl config get-contexts`
-
-#### Setup.json
-
-Im gleichen Verzeichnis muss ein `setup.json` File erzeugt werden:
-
-Beispiel:
-
-```json
-{
-  "naming": {
-    "fqdn": "",
-    "domain": "k3ces.local",
-    "certificateType": "selfsigned",
-    "relayHost": "your-mail-relay-host",
-    "completed": true,
-    "useInternalIp": false,
-    "internalIp": ""
-  },
-  "dogus": {
-    "defaultDogu": "cas",
-    "install": [
-      "official/ldap",
-      "official/postfix",
-      "k8s/nginx-static",
-      "k8s/nginx-ingress",
-      "official/cas"
-    ],
-    "completed": true
-  },
-  "admin": {
-    "username": "admin",
-    "mail": "admin@admin.admin",
-    "password": "changeme",
-    "adminGroup": "cesAdmin",
-    "completed": true,
-    "adminMember": true,
-    "sendWelcomeMail": false
-  },
-  "userBackend": {
-    "dsType": "embedded",
-    "server": "",
-    "attributeID": "uid",
-    "attributeGivenName": "",
-    "attributeSurname": "",
-    "attributeFullname": "cn",
-    "attributeMail": "mail",
-    "attributeGroup": "memberOf",
-    "baseDN": "",
-    "searchFilter": "(objectClass=person)",
-    "connectionDN": "",
-    "password": "",
-    "host": "ldap",
-    "port": "389",
-    "loginID": "",
-    "loginPassword": "",
-    "encryption": "",
-    "completed": true,
-    "groupBaseDN": "",
-    "groupSearchFilter": "",
-    "groupAttributeName": "",
-    "groupAttributeDescription": "",
-    "groupAttributeMember": ""
-  }
-}
-```
-
-#### Installation
-
-Die Installation mit der oben genannten `./install.sh` starten.
+- `helm registry login registry.cloudogu.com --username yourusername --password yourpassword`
+- `helm upgrade -i -f values.yaml k8s-ces-setup oci//:registry.cloudogu.com/k8s/k8s-ces-setup `
 
 Das Setup startet automatisch, wenn in jeder Sektion der `setup.json` `completed: true` ist.
 Ansonsten kann das Setup manuell gestartet werden:
 
-`curl -I --request POST --url http://<any-node-ip>:30080/api/v1/setup`
+- `kubectl port-forward service/k8s-ces-setup 30080:8080`
+- `curl -I --request POST --url http://localhost:30080/api/v1/setup`
 
-> Info: Falls der Setup Prozess abbricht, weil ein invalider Wert in der `setup.json` angegeben wurde, muss nach Korrektur der `setup.json` die Configmap `k8s-setup-config` gelöscht werden.
+> Information: Falls der Setup Prozess abbricht, weil ein invalider Wert in der `setup.json` angegeben wurde, muss nach Korrektur der `setup.json` die Configmap `k8s-setup-config` gelöscht werden.
 > Danach kann das Setup wieder gestartet werden.
 
 Das Cloudogu EcoSystem kann mit folgenden Befehlen **komplett** aus dem Cluster gelöscht werden (die angelegten Registry-Credentials bleiben hiervon unberührt):
@@ -295,6 +291,11 @@ Das Cloudogu EcoSystem kann mit folgenden Befehlen **komplett** aus dem Cluster 
 - Dogus löschen
 ```bash
 kubectl delete dogus -l app=ces -n ecosystem
+```
+
+- Components löschen
+```bash
+kubectl delete components -l app=ces -n ecosystem
 ```
 
 - Restliche Ressourcen löschen

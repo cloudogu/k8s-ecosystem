@@ -16,7 +16,3 @@ for (( i = 1; i <=10; i++ )); do
         break
     fi
 done
-
-echo "Generating registry.cloudogu.com secret..."
-kubectl create secret docker-registry k8s-dogu-operator-docker-registry --namespace=ecosystem --docker-server=registry.cloudogu.com --docker-username="$4" --docker-email="$6" --docker-password="$5"
-kubectl create secret generic k8s-dogu-operator-dogu-registry --namespace=ecosystem --from-literal=username="$1" --from-literal=password="$2" --from-literal=endpoint="$3"

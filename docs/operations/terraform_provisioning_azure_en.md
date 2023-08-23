@@ -38,14 +38,22 @@ additional_dogus = ["official/jenkins", "official/scm"]
 In the `setup.json.tftpl` the configuration for the CES can be adjusted.
 Some values are already populated by terraform variables.
 
+### values.yaml.tftpl
+
+In the `values.yaml.tftpl` the configuration for the setup Helm-Chart can be adjusted.
+Some values are already populated by terraform variables.
+
 ### Create Azure Service Principal
+
 In order for Terraform to manage resources at Azure, a "Service Principal" is needed to grant access.
 A service principal can be created using the Azure CLI:
+
 ```shell
 az ad sp create-for-rbac --skip-assignment
 ```
 
 The output of the command looks like this:
+
 ```json
 {
   "appId": "72c7cffa-2bf0-4025-999c-898054066080",
@@ -54,6 +62,7 @@ The output of the command looks like this:
   "tenant": "24458c45-b187-458e-8b08-c55d017dd2c2"
 }
 ```
+
 The data must be transferred to the variables `azure_appId` and `azure_password`.
 
 ## Variables
@@ -68,12 +77,18 @@ The following variables are available
 | aks_node_count          | The number of nodes to create                                         | 2             |
 | aks_vm_size             | The size of the Virtual Machine fo the nodes, such as Standard_DS2_v2 | Standard_B2s  |
 | ecosystem_namespace     | The namespace for the CES                                             | ecosystem     |
+| image_registry_url      | The endpoint for the docker-image-registry                            | -             |
 | image_registry_username | The username for the docker-image-registry                            | -             |
 | image_registry_password | The password for the docker-image-registry                            | -             |
-| image_registry_password | The email for the docker-image-registry                               | -             |
 | dogu_registry_username  | The username for the dogu-registry                                    | -             |
 | dogu_registry_password  | The password for the dogu-registry                                    | -             |
 | dogu_registry_endpoint  | The endpoint for the dogu-registry                                    | -             |
+| helm_registry_url       | The endpoint for the helm-registry                                    | -             |
+| helm_registry_username  | The username for the helm-registry                                    | -             |
+| helm_registry_password  | The password for the helm-registry                                    | -             |
+| setup_chart_version     | The chart version from k8s-ces-setup to install                       |               |
+| setup_chart_namespace   | The repository of the k8s-ces-setup chart                             |               |
+| ces_admin_password      | The CES admin password                                                | -             |
 | ces_admin_password      | The CES admin password                                                | -             |
 | additional_dogus        | A list of additional Dogus to install                                 | []            |
 
@@ -103,5 +118,6 @@ terraform destroy
 
 ### CAS
 
-Additional dogus installed after setup may require the `CAS` to be restarted in order for login for the dogus is possible.
+Additional dogus installed after setup may require the `CAS` to be restarted in order for login for the dogus is
+possible.
 To do this, simply delete the `CAS` pod.

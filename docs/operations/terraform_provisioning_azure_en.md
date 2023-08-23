@@ -118,6 +118,5 @@ terraform destroy
 
 ### CAS
 
-Additional dogus installed after setup may require the `CAS` to be restarted in order for login for the dogus is
-possible.
+Additional dogus installed after setup may require the `CAS` to be restarted in order for login for the dogus is possible.
 To do this, simply delete the `CAS` pod.

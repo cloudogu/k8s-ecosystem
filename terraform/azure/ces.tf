@@ -41,6 +41,7 @@ resource "helm_release" "k8s-ces-setup" {
             "additional_dogus" = var.additional_dogus,
           }
         ))
+        "resource_patches" = file("${path.module}/resource_patches.yaml")
       })
   ]
 }

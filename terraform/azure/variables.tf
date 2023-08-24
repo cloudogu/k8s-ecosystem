@@ -27,6 +27,10 @@ variable "ecosystem_namespace" {
   default = "ecosystem"
 }
 
+variable "image_registry_url" {
+  description = "The url for the docker-image-registry"
+}
+
 variable "image_registry_username" {
   description = "The username for the docker-image-registry"
 }
@@ -49,6 +53,26 @@ variable "dogu_registry_password" {
 
 variable "dogu_registry_endpoint" {
   description = "The endpoint for the dogu-registry"
+}
+
+variable "helm_registry_url" {
+  description = "The url for the helm-registry"
+}
+
+variable "helm_registry_username" {
+  description = "The username for the helm-registry"
+}
+
+variable "helm_registry_password" {
+  description = "The password for the helm-registry"
+}
+
+variable "setup_chart_version" {
+  description = "The version of the k8s-ces-setup chart"
+}
+
+variable "setup_chart_namespace" {
+  description = "The namespace of k8s-ces-setup chart"
 }
 
 variable "ces_admin_password" {

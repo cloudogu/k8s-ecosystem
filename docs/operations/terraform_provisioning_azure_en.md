@@ -89,7 +89,6 @@ The following variables are available
 | setup_chart_version     | The chart version from k8s-ces-setup to install                       |               |
 | setup_chart_namespace   | The repository of the k8s-ces-setup chart                             |               |
 | ces_admin_password      | The CES admin password                                                | -             |
-| ces_admin_password      | The CES admin password                                                | -             |
 | additional_dogus        | A list of additional Dogus to install                                 | []            |
 
 ## Provisioning

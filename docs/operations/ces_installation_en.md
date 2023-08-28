@@ -274,7 +274,7 @@ helm_registry_secret:
 ### Installation
 
 - `helm registry login registry.cloudogu.com --username yourusername --password yourpassword`
-- `helm upgrade -i -f values.yaml k8s-ces-setup oci//:registry.cloudogu.com/k8s/k8s-ces-setup `
+- `helm upgrade -i -f values.yaml k8s-ces-setup oci://registry.cloudogu.com/k8s/k8s-ces-setup `
 
 The setup will start automatically if `completed: true` is in each section of `setup.json`.
 Otherwise, the setup can be started manually:

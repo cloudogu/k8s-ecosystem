@@ -27,6 +27,14 @@ basebox_checksum_type = "sha256"
 basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
 basebox_name = "basebox-mn-" + basebox_version
 
+# Load gpg encrypted custom configurations from .vagrant.rb.asc file.
+# To encrypt an existing .vgarant.eb file run the following command:
+# gpg --encrypt --armor --default-recipient-self .vagrant.rb
+if File.file?(".vagrant.rb.asc")
+  decrypted = `gpg --decrypt .vagrant.rb.asc`
+  eval decrypted
+end
+
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
   eval File.read(".vagrant.rb")

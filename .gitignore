@@ -13,3 +13,6 @@ authorized_keys
 
 .env.sh
 terraform.tfvars
+
+# generated setup.json
+.setup.json

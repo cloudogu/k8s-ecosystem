@@ -20,9 +20,16 @@ helm_registry_url=${11}
 applyResources() {
   echo "Applying resources for setup..."
   helm registry login "${helm_registry_url}" --username "${helm_registry_username}" --password "${helm_registry_password}"
+
+  # use generated .setup.json if it exists, otherwise use setup.json
+  SETUP_JSON=image/scripts/dev/setup.json
+  if [ -f image/scripts/dev/.setup.json ]; then
+    SETUP_JSON=image/scripts/dev/.setup.json
+  fi
+
   helm upgrade -i k8s-ces-setup "oci://${helm_registry_url}/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
-    --set-file=setup_json=image/scripts/dev/setup.json \
+    --set-file=setup_json=${SETUP_JSON} \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
     --set=dogu_registry_secret.username="${dogu_registry_username}" \
     --set=dogu_registry_secret.password="${dogu_registry_password//,/\\,}" \

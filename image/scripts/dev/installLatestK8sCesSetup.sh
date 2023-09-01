@@ -14,13 +14,15 @@ image_registry_password=${7}
 image_registry_url=${8}
 helm_registry_username=${9}
 helm_registry_password=${10}
-helm_registry_url=${11}
+helm_registry_host=${11}
+helm_registry_schema=${12}
+helm_registry_plaint_http=${13}
 
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."
-  helm registry login "${helm_registry_url}" --username "${helm_registry_username}" --password "${helm_registry_password}"
-  helm upgrade -i k8s-ces-setup "oci://${helm_registry_url}/${helm_repository_namespace}/k8s-ces-setup" \
+  helm registry login "${helm_registry_host}" --username "${helm_registry_username}" --password "${helm_registry_password}"
+  helm upgrade -i k8s-ces-setup "${helm_registry_schema}://${helm_registry_host}/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
     --set-file=setup_json=image/scripts/dev/setup.json \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
@@ -29,7 +31,9 @@ applyResources() {
     --set=docker_registry_secret.url="${image_registry_url}" \
     --set=docker_registry_secret.username="${image_registry_username}" \
     --set=docker_registry_secret.password="${image_registry_password//,/\\,}" \
-    --set=helm_registry_secret.url="${helm_registry_url}" \
+    --set=helm_registry_secret.host="${helm_registry_host}" \
+    --set=helm_registry_secret.schema="${helm_registry_host}" \
+    --set=helm_registry_secret.plainHttp="${helm_registry_plaint_http}" \
     --set=helm_registry_secret.username="${helm_registry_username}" \
     --set=helm_registry_secret.password="${helm_registry_password//,/\\,}"
 }

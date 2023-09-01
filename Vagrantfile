@@ -18,7 +18,9 @@ image_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-helm_registry_url = ""
+helm_registry_host = ""
+helm_registry_schema = ""
+helm_registry_plain_http = ""
 helm_registry_username = ""
 helm_registry_password = ""
 basebox_version = "v1.4.0"
@@ -60,8 +62,8 @@ Vagrant.configure("2") do |config|
     main.trigger.before :provision do |trigger|
       if dogu_registry_url == "" || dogu_registry_username == "" || dogu_registry_password == "" ||
         image_registry_url == "" || image_registry_email == "" || image_registry_username == "" ||
-        image_registry_password == "" || helm_registry_url == "" || helm_registry_username == "" ||
-        helm_registry_password == ""
+        image_registry_password == "" || helm_registry_host == "" || helm_registry_username == "" ||
+        helm_registry_password == "" || helm_registry_schema == "" || helm_registry_plain_http == ""
         trigger.info = 'At least one of the required credentials (dogu-, helm or image registry) is missing!'
         trigger.abort = true
       end
@@ -146,7 +148,9 @@ Vagrant.configure("2") do |config|
                                                                                     image_registry_url,
                                                                                     helm_registry_username,
                                                                                     helm_registry_password,
-                                                                                    helm_registry_url] }
+                                                                                    helm_registry_host,
+                                                                                    helm_registry_schema,
+                                                                                    helm_registry_plain_http] }
     end
   end
 end

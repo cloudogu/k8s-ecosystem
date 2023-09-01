@@ -7,7 +7,9 @@ docker_registry_secret:
   username: "${docker_registry_username}"
   password: "${docker_registry_password}"
 helm_registry_secret:
-  url: "${helm_registry_url}"
+  host: "${helm_registry_host}"
+  schema: "${helm_registry_schema}"
+  plainHttp: "${helm_registry_plain_http}"
   username: "${helm_registry_username}"
   password: "${helm_registry_password}"
 resource_patches:

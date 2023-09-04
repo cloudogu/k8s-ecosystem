@@ -32,7 +32,7 @@ applyResources() {
     --set=docker_registry_secret.username="${image_registry_username}" \
     --set=docker_registry_secret.password="${image_registry_password//,/\\,}" \
     --set=helm_registry_secret.host="${helm_registry_host}" \
-    --set=helm_registry_secret.schema="${helm_registry_host}" \
+    --set=helm_registry_secret.schema="${helm_registry_schema}" \
     --set=helm_registry_secret.plainHttp="${helm_registry_plaint_http}" \
     --set=helm_registry_secret.username="${helm_registry_username}" \
     --set=helm_registry_secret.password="${helm_registry_password//,/\\,}"

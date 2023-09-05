@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
-                      args: [fqdn, ces_namespace]
+                      args: [fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password]
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",

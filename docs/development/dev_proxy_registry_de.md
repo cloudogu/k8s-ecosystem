@@ -1,5 +1,8 @@
 # Registry Proxy für Helm Charts
 
+
+![Überblick Entwicklungsumgebung](figures/registry_overview.png)
+
 Im EcoSystem wird über eine Configmap und ein Secret eine zentrale Helm-Registry definiert, die vom Komponenten-Operator verwendet wird.
 Bei der Entwicklung muss die Konfiguration auf die im Cluster befindliche Registry zeigen, um Helm-Charts dort zu testen.
 Allerdings lässt der Operator dann nicht mehr zu Komponenten zu installieren, die man gerade nicht entwickelt.

@@ -31,8 +31,8 @@ rectangle "Cluster" as cluster <<$k8s>> {
 actor dev
 
 registry --> sharedvolume : push/pull
-registryproxy --> sharedvolume #line:red;line.bold;text:red : pull
-registryproxy --> registryextern #line:red;line.bold;text:red : pull if chart is not found
+registryproxy --> sharedvolume #line:red;line.bold;text:red : pull if chart is not found\n(dev images)
+registryproxy --> registryextern #line:red;line.bold;text:red : pull
 helm --> registryproxy
 image --> registryextern
 dev -> registry : push image/chart

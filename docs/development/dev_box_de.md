@@ -39,6 +39,7 @@ Um die Konfiguration in der `.vagrant.rb`-Datei zu verschlüsseln, muss folgende
 ```shell
 gpg --encrypt --armor --default-recipient-self .vagrant.rb
 ```
+Di verschlüsselte Datei hat den Namen `.vagrant.rb.asc`.
 
 Anschließend kann die unverschlüsselte `.vagrant.rb`-Datei gelöscht werden.
 

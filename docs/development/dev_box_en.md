@@ -38,6 +38,7 @@ To encrypt the configuration in the `.vagrant.rb` file, the following command mu
 gpg --encrypt --armor --default-recipient-self .vagrant.rb
 
 ```
+The encrypted file is named `.vagrant.rb.asc`.
 
 Then the unencrypted `.vagrant.rb` file can be deleted.
 

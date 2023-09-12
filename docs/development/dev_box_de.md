@@ -6,9 +6,8 @@ finden.
 
 ### Konfiguration
 
-Die Konfiguration für die Dev-Box erfolgt über eine `.vgarant.rb`-Datei. Diese wird vom `Vagrantfile` eingelesen und
-kann
-die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
+Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Diese wird vom `Vagrantfile` eingelesen und
+kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 
 | Wert                    | Beschreibung                                        |
@@ -32,17 +31,21 @@ Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 
 Da die Konfiguration sensible Daten enthält, sollte sie nicht Klartext gespeichert werden.
 Daher ist es möglich die Daten mit `gpg` und dem Yubi-Key zu verschlüsseln und so zu speichern.
-Wenn verschlüsselte Konfigurations-Daten vorhanden sind, werden diese vom `Vagrantfile` mit `gpg` und dem Yubi-Key entschlüsselt.
+Wenn verschlüsselte Konfigurations-Daten vorhanden sind, werden diese vom `Vagrantfile` mit `gpg` und dem Yubi-Key
+entschlüsselt.
 
-Um die Konfiguration in der `.vgarant.rb`-Datei zu verschlüsseln, muss folgender Befehl ausgeführt werden:
+Um die Konfiguration in der `.vagrant.rb`-Datei zu verschlüsseln, muss folgender Befehl ausgeführt werden:
+
 ```shell
 gpg --encrypt --armor --default-recipient-self .vagrant.rb
 ```
-Anschließend kann die unverschlüsselte `.vgarant.rb`-Datei gelöscht werden.
+
+Anschließend kann die unverschlüsselte `.vagrant.rb`-Datei gelöscht werden.
 
 Zum Entschlüssen kann folgender Befehl verwendet werden:
+
 ```shell
 gpg --decrypt .vagrant.rb.asc > .vagrant.rb
 ```
 
-> **Hinweis:** Bei Änderungen in der `.vgarant.rb` muss diese erneut verschlüsselt und anschließend gelöscht werden! 
+> **Hinweis:** Bei Änderungen in der `.vagrant.rb` muss diese erneut verschlüsselt und anschließend gelöscht werden! 

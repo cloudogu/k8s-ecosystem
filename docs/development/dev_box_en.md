@@ -5,7 +5,7 @@ Instructions for building the image for the development basebox can be found [he
 
 ### Configuration
 
-The configuration for the dev box is done via a `.vgarant.rb` file. This is read in from the `Vagrantfile` and can
+The configuration for the dev box is done via a `.vagrant.rb` file. This is read in from the `Vagrantfile` and can
 overwrite the configuration values from the `Vagrantfile`.
 The following configuration values can be specified (among others):
 
@@ -13,14 +13,14 @@ The following configuration values can be specified (among others):
 |-------------------------|------------------------------------------------|
 | dogu_registry_url       | The URL of the dogu registry                   |
 | dogu_registry_username  | The username to login to the dogu registry     |
-| dogu_registry_password  | The password to login to the Dogu Registry     |
+| dogu_registry_password  | The password to login to the dogu Registry     |
 | image_registry_url      | The URL of the image registry                  |
 | image_registry_username | The username to login to the image registry    |
 | image_registry_password | The password to login to the image registry    |
 | image_registry_email    | The e-mail address of the image registry user  |
-| helm_registry_url       | URL of the helmet registry                     |
-| helm_registry_username  | The username to login to the helmet registry   |
-| helm_registry_password  | The password to login to the helmet registry   |
+| helm_registry_url       | URL of the helm registry                       |
+| helm_registry_username  | The username to login to the helm registry     |
+| helm_registry_password  | The password to login to the helm registry     |
 | vm_memory               | The VMs memory                                 |
 | vm_cpus                 | The number of CPUs in the VMs                  |
 | worker_count            | The number of worker nodes of the cluster      |
@@ -32,16 +32,19 @@ Since the configuration contains sensitive data, it should not be stored in plai
 Therefore it is possible to encrypt the data with `gpg` and the Yubi key and store it this way.
 If encrypted configuration data is present, it will be decrypted from the `vagrantfile` with `gpg` and the Yubi key.
 
-To encrypt the configuration in the `.vgarant.rb` file, the following command must be executed:
+To encrypt the configuration in the `.vagrant.rb` file, the following command must be executed:
+
 ```shell
 gpg --encrypt --armor --default-recipient-self .vagrant.rb
 
 ```
-Then the unencrypted `.vgarant.rb` file can be deleted.
+
+Then the unencrypted `.vagrant.rb` file can be deleted.
 
 The following command can be used to decrypt it:
+
 ```shell
 gpg --decrypt .vagrant.rb.asc > .vagrant.rb
 ```
 
-> **Note:** If changes are made to the `.vgarant.rb`, it must be re-encrypted and then deleted!
+> **Note:** If changes are made to the `.vagrant.rb`, it must be re-encrypted and then deleted!

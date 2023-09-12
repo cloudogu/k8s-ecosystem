@@ -28,7 +28,7 @@ basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + 
 basebox_name = "basebox-mn-" + basebox_version
 
 # Load gpg encrypted custom configurations from .vagrant.rb.asc file.
-# To encrypt an existing .vgarant.eb file run the following command:
+# To encrypt an existing .vgarant.rb file run the following command:
 # gpg --encrypt --armor --default-recipient-self .vagrant.rb
 if File.file?(".vagrant.rb.asc")
   decrypted = `gpg --decrypt .vagrant.rb.asc`

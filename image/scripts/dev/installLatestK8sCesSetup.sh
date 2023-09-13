@@ -14,12 +14,15 @@ image_registry_password=${7}
 image_registry_url=${8}
 helm_registry_username=${9}
 helm_registry_password=${10}
-helm_registry_url=${11}
+helm_registry_host=${11}
+helm_registry_schema=${12}
+helm_registry_plain_http=${13}
 
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."
-  helm registry login "${helm_registry_url}" --username "${helm_registry_username}" --password "${helm_registry_password}"
+  # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
+  helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password "${helm_registry_password}"
 
   # use generated .setup.json if it exists, otherwise use setup.json
   SETUP_JSON=image/scripts/dev/setup.json
@@ -27,7 +30,7 @@ applyResources() {
     SETUP_JSON=image/scripts/dev/.setup.json
   fi
 
-  helm upgrade -i k8s-ces-setup "oci://${helm_registry_url}/${helm_repository_namespace}/k8s-ces-setup" \
+  helm upgrade -i k8s-ces-setup "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
     --set-file=setup_json=${SETUP_JSON} \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
@@ -36,7 +39,9 @@ applyResources() {
     --set=docker_registry_secret.url="${image_registry_url}" \
     --set=docker_registry_secret.username="${image_registry_username}" \
     --set=docker_registry_secret.password="${image_registry_password//,/\\,}" \
-    --set=helm_registry_secret.url="${helm_registry_url}" \
+    --set=helm_registry_secret.host="${helm_registry_host}" \
+    --set=helm_registry_secret.schema="${helm_registry_schema}" \
+    --set=helm_registry_secret.plainHttp="${helm_registry_plain_http}" \
     --set=helm_registry_secret.username="${helm_registry_username}" \
     --set=helm_registry_secret.password="${helm_registry_password//,/\\,}"
 }

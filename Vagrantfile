@@ -18,7 +18,9 @@ image_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
 image_registry_email = ""
-helm_registry_url = ""
+helm_registry_host = ""
+helm_registry_schema = ""
+helm_registry_plain_http = ""
 helm_registry_username = ""
 helm_registry_password = ""
 basebox_version = "v1.4.0"
@@ -31,6 +33,14 @@ basebox_name = "basebox-mn-" + basebox_version
 # - selfsigned: the ces-setup will create a selfsigned certificate
 # - mkcert: local mkcert installation will be used to create a certificate
 certificate_type = "selfsigned"
+
+# Load gpg encrypted custom configurations from .vagrant.rb.asc file.
+# To encrypt an existing .vgarant.rb file run the following command:
+# gpg --encrypt --armor --default-recipient-self .vagrant.rb
+if File.file?(".vagrant.rb.asc")
+  decrypted = `gpg --decrypt .vagrant.rb.asc`
+  eval decrypted
+end
 
 # Load custom configurations from .vagrant.rb file, if existent
 if File.file?(".vagrant.rb")
@@ -65,8 +75,8 @@ Vagrant.configure("2") do |config|
     main.trigger.before :provision do |trigger|
       if dogu_registry_url == "" || dogu_registry_username == "" || dogu_registry_password == "" ||
         image_registry_url == "" || image_registry_email == "" || image_registry_username == "" ||
-        image_registry_password == "" || helm_registry_url == "" || helm_registry_username == "" ||
-        helm_registry_password == ""
+        image_registry_password == "" || helm_registry_host == "" || helm_registry_username == "" ||
+        helm_registry_password == "" || helm_registry_schema == "" || helm_registry_plain_http == ""
         trigger.info = 'At least one of the required credentials (dogu-, helm or image registry) is missing!'
         trigger.abort = true
       end
@@ -112,7 +122,7 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
-                      args: [fqdn, ces_namespace]
+                      args: [fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password]
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
@@ -182,7 +192,9 @@ Vagrant.configure("2") do |config|
                                                                                     image_registry_url,
                                                                                     helm_registry_username,
                                                                                     helm_registry_password,
-                                                                                    helm_registry_url] }
+                                                                                    helm_registry_host,
+                                                                                    helm_registry_schema,
+                                                                                    helm_registry_plain_http] }
     end
   end
 end

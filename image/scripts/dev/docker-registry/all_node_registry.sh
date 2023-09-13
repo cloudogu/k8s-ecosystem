@@ -7,6 +7,7 @@ set -o pipefail
 # This file must run as root.
 export ETC_HOSTS=/etc/hosts
 DOCKER_REGISTRY_PORT=30099
+DOCKER_REGISTRY_PROXY_PORT=30098
 FQDN="${1}"
 HOST_IP="${2}"
 
@@ -28,10 +29,12 @@ function addEtcHostsEntryForRegistry() {
 
 function echoPushHint() {
   echo "INFO: You can test image pushing from your development computer to the cluster registry like this:
-    1. add ${FQDN}:${DOCKER_REGISTRY_PORT} to /etc/docker/daemon.json's insecure registry list
+    1. add ${FQDN}:${DOCKER_REGISTRY_PORT} and ${FQDN}:${DOCKER_REGISTRY_PROXY_PORT} to /etc/docker/daemon.json's insecure registry list
     2. docker pull ubuntu
     3. docker tag ubuntu ${FQDN}:${DOCKER_REGISTRY_PORT}/ubuntu
     4. docker push ${FQDN}:${DOCKER_REGISTRY_PORT}/ubuntu
+    5. docker pull ${FQDN}:${DOCKER_REGISTRY_PORT}/ubuntu
+    6. docker pull ${FQDN}:${DOCKER_REGISTRY_PROXY_PORT}/ubuntu
 "
 }
 

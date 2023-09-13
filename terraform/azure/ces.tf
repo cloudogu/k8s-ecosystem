@@ -7,7 +7,7 @@ provider "helm" {
   }
 
   registry {
-    url      = var.helm_registry_url
+    url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
     username = var.helm_registry_username
     password = var.helm_registry_password
   }
@@ -15,7 +15,7 @@ provider "helm" {
 
 resource "helm_release" "k8s-ces-setup" {
   name       = "k8s-ces-setup"
-  repository = "${var.helm_registry_url}/${var.setup_chart_namespace}"
+  repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
   chart      = "k8s-ces-setup"
   version    = var.setup_chart_version
 
@@ -31,7 +31,9 @@ resource "helm_release" "k8s-ces-setup" {
         "docker_registry_url"      = var.image_registry_url
         "docker_registry_username" = var.image_registry_username
         "docker_registry_password" = var.image_registry_password
-        "helm_registry_url"        = var.helm_registry_url
+        "helm_registry_host"       = var.helm_registry_host
+        "helm_registry_schema"     = var.helm_registry_schema
+        "helm_registry_plain_http" = var.helm_registry_plain_http
         "helm_registry_username"   = var.helm_registry_username
         "helm_registry_password"   = var.helm_registry_password
         "setup_json"               = yamlencode(templatefile(

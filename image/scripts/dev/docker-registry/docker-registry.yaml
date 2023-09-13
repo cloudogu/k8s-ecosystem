@@ -1,17 +1,3 @@
-# generated from https://helm.twun.io/docker-registry v2.1.0
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: docker-registry-secret
-  labels:
-    app: docker-registry
-type: Opaque
-data:
-  haSharedSecret: "Z0ZyZ29TQnZ0TTBablk5WA=="
-  proxyUsername: ""
-  proxyPassword: ""
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -44,6 +30,37 @@ data:
     version: 0.1
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-registry-proxy-config
+  labels:
+    app: docker-registry-proxy
+data:
+  config.yml: |-
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    http:
+      addr: :30098
+      debug:
+        addr: :5000
+        prometheus:
+          enabled: false
+          path: /metrics
+      headers:
+        X-Content-Type-Options:
+          - nosniff
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    version: 0.1
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: docker-registry
@@ -56,6 +73,12 @@ spec:
       protocol: TCP
       targetPort: docker-api
       nodePort: 30099
+      name: docker-api
+    - port: 30098
+      protocol: TCP
+      targetPort: api-proxy
+      nodePort: 30098
+      name: api-proxy
   selector:
     app: docker-registry
 ---
@@ -83,8 +106,56 @@ spec:
         fsGroup: 1000
         runAsUser: 1000
       containers:
+        - name: docker-registry-proxy
+          image: "registry:2.8.2"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/registry
+            - serve
+            - /etc/docker/registry/config.yml
+          ports:
+            - name: api-proxy
+              containerPort: 30098
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api-proxy
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api-proxy
+          resources:
+            {}
+          env:
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyHaSharedSecret
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: "/var/lib/registry"
+            - name: REGISTRY_PROXY_REMOTEURL
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyRemoteUrl
+            - name: REGISTRY_PROXY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyUsername
+            - name: REGISTRY_PROXY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyPassword
+          volumeMounts:
+            - name: "docker-registry-proxy-config"
+              mountPath: "/etc/docker/registry"
+            - name: data
+              mountPath: /var/lib/registry/
         - name: docker-registry
-          image: "registry:2.7.1"
+          image: "registry:2.8.2"
           imagePullPolicy: IfNotPresent
           command:
           - /bin/registry
@@ -122,3 +193,6 @@ spec:
         - name: docker-registry-config
           configMap:
             name: docker-registry-config
+        - name: docker-registry-proxy-config
+          configMap:
+            name: docker-registry-proxy-config

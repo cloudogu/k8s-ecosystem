@@ -55,8 +55,16 @@ variable "dogu_registry_endpoint" {
   description = "The endpoint for the dogu-registry"
 }
 
-variable "helm_registry_url" {
-  description = "The url for the helm-registry"
+variable "helm_registry_host" {
+  description = "The host for the helm-registry"
+}
+
+variable "helm_registry_schema" {
+  description = "The schema for the helm-registry"
+}
+
+variable "helm_registry_plain_http" {
+  description = "A flag which indicates if the component-operator should use plain http"
 }
 
 variable "helm_registry_username" {

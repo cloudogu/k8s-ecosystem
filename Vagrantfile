@@ -29,6 +29,11 @@ basebox_checksum_type = "sha256"
 basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
 basebox_name = "basebox-mn-" + basebox_version
 
+# type of ssl certificate
+# - selfsigned: the ces-setup will create a selfsigned certificate
+# - mkcert: local mkcert installation will be used to create a certificate
+certificate_type = "selfsigned"
+
 # Load gpg encrypted custom configurations from .vagrant.rb.asc file.
 # To encrypt an existing .vgarant.rb file run the following command:
 # gpg --encrypt --armor --default-recipient-self .vagrant.rb
@@ -74,6 +79,37 @@ Vagrant.configure("2") do |config|
         helm_registry_password == "" || helm_registry_schema == "" || helm_registry_plain_http == ""
         trigger.info = 'At least one of the required credentials (dogu-, helm or image registry) is missing!'
         trigger.abort = true
+      end
+    end
+
+    # configure ssl certificate
+    main.trigger.before :up do |trigger|
+      if certificate_type == "mkcert"
+        # check if mkcert is installed
+        if `which mkcert`.empty?
+          print "mkcert not found. Please install mkcert and run 'mkcert -install' to install the root certificate.\n\n"
+          print "https://github.com/FiloSottile/mkcert\n"
+          exit 1
+        end
+
+        # create certificates
+        if ! File.file?(".vagrant/certs/k3ces.local.crt") || !File.file?(".vagrant/certs/k3ces.local.key")
+          `mkdir -p .vagrant/certs`
+          `mkcert -cert-file .vagrant/certs/k3ces.local.crt -key-file .vagrant/certs/k3ces.local.key #{fqdn} #{main_k3s_ip_address}`
+        end
+
+        # create a copy of the setup.json file and replace the certificate settings
+        require 'json'
+        setup = JSON.parse(File.read("image/scripts/dev/setup.json"))
+        setup["naming"]["certificateType"] = "external"
+        setup["naming"]["certificate"] = File.read(".vagrant/certs/k3ces.local.crt")
+        setup["naming"]["certificateKey"] = File.read(".vagrant/certs/k3ces.local.key")
+        File.write("image/scripts/dev/.setup.json", JSON.pretty_generate(setup))
+      else
+        # remove geneated .setup.json file, if an old version exists
+        if File.file?("image/scripts/dev/.setup.json")
+          File.delete("image/scripts/dev/.setup.json")
+        end
       end
     end
 

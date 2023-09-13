@@ -10,22 +10,23 @@ Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Diese
 kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 
-| Wert                    | Beschreibung                                        |
-|-------------------------|-----------------------------------------------------|
-| dogu_registry_url       | Die URL der Dogu-Registry                           |
-| dogu_registry_username  | Der Benutzername zu Login in die Dogu-Registry      |
-| dogu_registry_password  | Das Passwort zu Login in die Dogu-Registry          |
-| image_registry_url      | Die URL der Image-Registry                          |
-| image_registry_username | Der Benutzername zu Login in die Image-Registry     |
-| image_registry_password | Das Passwort zu Login in die Image-Registry         |
-| image_registry_email    | Die E-Mail-Adresse des Benutzers der Image-Registry |
-| helm_registry_url       | Die URL der Helm-Registry                           |
-| helm_registry_username  | Der Benutzername zu Login in die Helm-Registry      |
-| helm_registry_password  | Das Passwort zu Login in die Helm-Registry          |
-| vm_memory               | Der Arbeitsspeicher der VMs                         |
-| vm_cpus                 | Die Anzahl der CPUs der VMs                         |
-| worker_count            | Die Anzahl der Worker-Nodes des Cluster             |
-| main_k3s_ip_address     | Die IP-Adresse des Main-Nodes des Cluster           |
+| Wert                    | Beschreibung                                                  |
+|-------------------------|---------------------------------------------------------------|
+| dogu_registry_url       | Die URL der Dogu-Registry                                     |
+| dogu_registry_username  | Der Benutzername zu Login in die Dogu-Registry                |
+| dogu_registry_password  | Das Passwort zu Login in die Dogu-Registry                    |
+| image_registry_url      | Die URL der Image-Registry                                    |
+| image_registry_username | Der Benutzername zu Login in die Image-Registry               |
+| image_registry_password | Das Passwort zu Login in die Image-Registry                   |
+| image_registry_email    | Die E-Mail-Adresse des Benutzers der Image-Registry           |
+| helm_registry_url       | Die URL der Helm-Registry                                     |
+| helm_registry_username  | Der Benutzername zu Login in die Helm-Registry                |
+| helm_registry_password  | Das Passwort zu Login in die Helm-Registry                    |
+| vm_memory               | Der Arbeitsspeicher der VMs                                   |
+| vm_cpus                 | Die Anzahl der CPUs der VMs                                   |
+| worker_count            | Die Anzahl der Worker-Nodes des Cluster                       |
+| main_k3s_ip_address     | Die IP-Adresse des Main-Nodes des Cluster                     |
+| certificate_type        | `selfsigned` oder `mkcert`; siehe [Zertifikate](#zertifikate) |
 
 #### Verschlüsselung der Konfiguration
 
@@ -49,4 +50,18 @@ Zum Entschlüssen kann folgender Befehl verwendet werden:
 gpg --decrypt .vagrant.rb.asc > .vagrant.rb
 ```
 
-> **Hinweis:** Bei Änderungen in der `.vagrant.rb` muss diese erneut verschlüsselt und anschließend gelöscht werden! 
+> **Hinweis:** Bei Änderungen in der `.vagrant.rb` muss diese erneut verschlüsselt und anschließend gelöscht werden!
+
+### Zertifikate
+In der DEV-Box erstellt das Setup des CES standardmäßig ein selbstsigniertes SSL-Zertifikat für die Absicherung der HTTPS-Verbindungen.
+Das hat den Nachteil, dass Browser diesem Zertifikat nicht vertrauen und dafür Ausnahmen im Browser eingerichtet werden müssen.
+Um das zu vermeiden, kann für die Entwicklung beim Erstellen der Dev-Box ein Zertifikat verwendet werden, das mit dem Tool [mkcert](https://github.com/FiloSottile/mkcert) erstellt wird. 
+Diesem Zertifikat wird lokal auf dem Entwicklungs-Rechner vertraut.
+
+Nachdem `mkcert`[installiert](https://github.com/FiloSottile/mkcert#installation) wurde, muss es einmalig mit folgendem Befehl initialisiert werden:
+```shell
+mkcert -install
+```
+
+Anschließend kann in der [Konfiguration](#konfiguration) der Wert für `certificate_type` auf `mkcert` gesetzt werden.
+Wenn noch kein Zertifikat existiert, erstellt das `Vagrantfile` dann mit `mkcert` ein neues Zertifikat, das im CES verwendet wird.

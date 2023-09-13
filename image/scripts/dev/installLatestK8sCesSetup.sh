@@ -26,9 +26,16 @@ applyResources() {
   echo "Applying resources for setup..."
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
   helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password "${helm_registry_password}"
+
+  # use generated .setup.json if it exists, otherwise use setup.json
+  SETUP_JSON=image/scripts/dev/setup.json
+  if [ -f image/scripts/dev/.setup.json ]; then
+    SETUP_JSON=image/scripts/dev/.setup.json
+  fi
+
   helm upgrade -i k8s-ces-setup "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
-    --set-file=setup_json=image/scripts/dev/setup.json \
+    --set-file=setup_json=${SETUP_JSON} \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
     --set=dogu_registry_secret.username="${dogu_registry_username}" \
     --set=dogu_registry_secret.password="${dogu_registry_password//,/\\,}" \

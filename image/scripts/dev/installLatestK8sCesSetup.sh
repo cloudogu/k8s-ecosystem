@@ -18,6 +18,9 @@ helm_registry_host=${11}
 helm_registry_schema=${12}
 helm_registry_plain_http=${13}
 
+# set environment for helm and kubectl
+export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local
+
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."

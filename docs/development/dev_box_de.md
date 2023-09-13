@@ -53,7 +53,7 @@ gpg --decrypt .vagrant.rb.asc > .vagrant.rb
 > **Hinweis:** Bei Änderungen in der `.vagrant.rb` muss diese erneut verschlüsselt und anschließend gelöscht werden!
 
 ### Zertifikate
-Standardmäßig erstellt das Setup des CES ein selbstsigniertes SSL-Zertifikat für die Absicherung der HTTPS-Verbindungen.
+In der DEV-Box erstellt das Setup des CES standardmäßig ein selbstsigniertes SSL-Zertifikat für die Absicherung der HTTPS-Verbindungen.
 Das hat den Nachteil, dass Browser diesem Zertifikat nicht vertrauen und dafür Ausnahmen im Browser eingerichtet werden müssen.
 Um das zu vermeiden, kann für die Entwicklung beim Erstellen der Dev-Box ein Zertifikat verwendet werden, das mit dem Tool [mkcert](https://github.com/FiloSottile/mkcert) erstellt wird. 
 Diesem Zertifikat wird lokal auf dem Entwicklungs-Rechner vertraut.
@@ -64,4 +64,4 @@ mkcert -install
 ```
 
 Anschließend kann in der [Konfiguration](#konfiguration) der Wert für `certificate_type` auf `mkcert` gesetzt werden.
-Im Setup wird nun ein con `mkcert` erstelltes Zertifikat verwendet.
+Wenn noch kein Zertifikat existiert, erstellt das `Vagrantfile` dann mit `mkcert` ein neues Zertifikat, das im CES verwendet wird.

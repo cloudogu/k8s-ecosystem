@@ -54,7 +54,7 @@ gpg --decrypt .vagrant.rb.asc > .vagrant.rb
 
 ### Certificates
 
-By default, the CES setup creates a self-signed SSL certificate for securing HTTPS connections.
+In the DEV box the CES setup creates a self-signed SSL certificate by default to secure the HTTPS connections.
 This has the disadvantage that browsers do not trust this certificate and exceptions have to be set up in the browser
 for this.
 To avoid this, a certificate can be used for development when creating the dev box, which can be created with the
@@ -69,4 +69,4 @@ mkcert -install
 ```
 
 Then in the [configuration](#configuration) the value for `certificate_type` can be set to `mkcert`.
-A certificate created with `mkcert` is now used in the setup.
+If no certificate exists yet, the `vagrantfile` then creates a new certificate with `mkcert` which is used by the CES.

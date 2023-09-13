@@ -25,3 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restart chrony during k3s installation if it has replaced systemd-timesyncd
 - Add proxy registry to simplify the development process of k8s components; #49
 - Add support for mkcert-generated certificates
+
+### Fixed
+- Added missing KUBECONFIG export to setup

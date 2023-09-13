@@ -19,7 +19,7 @@ EOF
   vagrant ssh -- -t "${vagrantSetupCluster}"
   sed 's/default/k3ces.local/g' < k3s.yaml > ~/.kube/k3ces.local || true
 
-  export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local
+  export KUBECONFIG=~/.kube/k3ces.local
   kubectl config use k3ces.local
   rm -f k3s.yaml
   echo "The export of the \"export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local\" should be added to the startup enviroment (e.g.: bashrc, zshrc, profile)."

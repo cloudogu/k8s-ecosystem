@@ -1,0 +1,47 @@
+@startuml
+!define CLOUDOGUURL https://raw.githubusercontent.com/cloudogu/plantuml-cloudogu-sprites/master
+
+!includeurl CLOUDOGUURL/common.puml
+!includeurl CLOUDOGUURL/dogus/cloudogu.puml
+!includeurl CLOUDOGUURL/tools/k8s.puml
+
+cloud registryextern as "registry.cloudogu.com"
+cloud dockerhub as "docker hub"
+
+rectangle "Cluster" as cluster <<$k8s>> {
+  rectangle "Namespace" as namespace <<$k8s>> #white {
+    rectangle "Pod docker-registry" as dev-registry <<$k8s>> {
+        rectangle registry as "registry"
+        rectangle registryproxy as "registry-proxy"
+        rectangle sharedvolume as "shared-volume"
+    }
+
+    rectangle "Secrets" as "secrets" {
+        rectangle helm as "helm-secret"
+        rectangle image as "image-secret"
+    }
+
+    rectangle "Operators" as Operators <<$cloudogu>> {
+        rectangle "dogu-operator" as doguop
+        rectangle "component-operator" as compop
+      }
+  }
+}
+
+actor dev
+
+registry --> sharedvolume : push/pull
+registryproxy --> sharedvolume #line:red;line.bold;text:red : pull if chart is not found\n(dev images)
+registryproxy --> registryextern #line:red;line.bold;text:red : pull
+helm --> registryproxy
+image --> registryextern
+dev -> registry : push image/chart
+doguop -> dockerhub : pull component images
+doguop --> registry : pull dev component\nimages
+doguop --> registryextern : pull dogu images
+compop --> registryproxy #line:red;line.bold;text:red : pull charts
+compop --> helm : read
+doguop --> image : read
+
+caption Überblick Container Registrys in Entwicklungsumgebung
+@enduml

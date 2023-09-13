@@ -17,7 +17,7 @@ helm_registry_password=${10}
 helm_registry_url=${11}
 
 # set environment for helm and kubectl
-export KUBECONFIG=~/.kube/k3ces.local
+export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local
 
 # Apply the setup resources to the current namespace.
 applyResources() {

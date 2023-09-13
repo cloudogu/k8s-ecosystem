@@ -23,3 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add env var `KUBECONFIG` to sudoers thereby k9s can be used with `sudo` to edit resources; #21
 - Describe the CES label policy; #24
 - Restart chrony during k3s installation if it has replaced systemd-timesyncd
+
+### Fixed
+- Added missing KUBECONFIG export to setup

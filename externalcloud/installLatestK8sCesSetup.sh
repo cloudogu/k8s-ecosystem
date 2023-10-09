@@ -54,29 +54,9 @@ checkIfSetupIsInstalled() {
     fi
 }
 
-waitForLonghorn() {
-  echo "Waiting for longhorn to start up"
-
-  # wait for pods to spawn
-  sleep 10s
-
-  for (( i = 0; i <=19; i++ )); do
-      local sleepInterval=10
-      if kubectl -n longhorn-system get pods -o custom-columns=READY-true:status.containerStatuses[*].ready | grep false > /dev/null; then
-          echo "Some longhorn pods are still starting ($((i * sleepInterval))s)"
-          sleep $sleepInterval
-      else
-          echo "Longhorn has started"
-          break
-      fi
-  done
-}
-
 echo "**** Executing installLatestK8sCesSetup.sh..."
 
 checkIfSetupIsInstalled
-# Wait for longhorn pods again because on additional nodes longhorn pods need some time again to start.
-waitForLonghorn
 applyResources
 
 echo "**** Finished installLatestK8sCesSetup.sh"

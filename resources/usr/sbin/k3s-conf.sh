@@ -234,7 +234,6 @@ function installK3s() {
     echo "This machine has been configured as a main node"
     /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER}
     /usr/sbin/createNamespace.sh "${cesNamespace}"
-    /usr/sbin/installLonghorn.sh ${DEFAULT_USER}
   else
     echo "This machine has been configured as a worker node"
     local mainNodeIp

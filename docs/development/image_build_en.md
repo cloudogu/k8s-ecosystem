@@ -30,13 +30,13 @@
 
 ## 5. Test the built image in Vagrant
 
-You can now test the previously built image. Vagrant needs to know know the image in order to use it, so it needs to be imported with a name (e.g. `testbox`).
+You can now test the previously built image. Vagrant needs to know the image in order to use it, so it needs to be imported with a name (e.g. `testbox`).
 
 ```bash
 vagrant box import --name testbox build/ecosystem-basebox.box
 ```
 
-To finish the test preparation, the `Vagrantfile` must be locally modified in three sections::
+To finish the test preparation, the `Vagrantfile` must be locally modified in three sections:
 
 1. the definition section at the start
    - comment out the URL and checksums elements

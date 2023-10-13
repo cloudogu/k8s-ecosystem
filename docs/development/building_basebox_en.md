@@ -28,4 +28,4 @@ packer build k8s-dev.json
 **3. Wait**
 
 The image building process takes about 15 minutes, depending on your hardware and internet connection. Packer should
-create a resulting basebox named `ecosystem-basebox.box` in the `build` folder.
+create a resulting basebox named `ecosystem-basebox.box` in the `image/build` folder.

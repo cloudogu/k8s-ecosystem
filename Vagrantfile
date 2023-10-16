@@ -129,7 +129,7 @@ Vagrant.configure("2") do |config|
                       args: [fqdn, main_k3s_ip_address]
 
     main.trigger.before [:halt, :reload] do |trigger|
-      trigger.info = "Running k3s-killall.sh to shut down k3s..."
+      trigger.info = "Shutting down k3s..."
       trigger.run_remote = {inline: "/usr/local/bin/k3s-killall.sh"}
     end
   end
@@ -170,7 +170,7 @@ Vagrant.configure("2") do |config|
                           args: [fqdn, "192.168.56.#{worker_ip_octet}"]
 
       worker.trigger.before [:halt, :reload] do |trigger|
-        trigger.info = "Running k3s-killall.sh to shut down k3s..."
+        trigger.info = "Shutting down k3s..."
         trigger.run_remote = {inline: "/usr/local/bin/k3s-killall.sh"}
       end
     end

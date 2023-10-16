@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `cloudogu/k8s-longhorn` instead of the official release #18
 - Add the dev registry configuration to the node config so that it will always apply to `/etc/rancher/k3s/registries.yaml` #17
 - update installation manual #37
+- Install longhorn as a component and remove it from the base image #52
 
 ### Added
 - Packer templates for CES production images

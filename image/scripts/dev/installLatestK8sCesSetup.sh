@@ -46,7 +46,10 @@ applyResources() {
     --set=helm_registry_secret.schema="${helm_registry_schema}" \
     --set=helm_registry_secret.plainHttp="${helm_registry_plain_http}" \
     --set=helm_registry_secret.username="${helm_registry_username}" \
-    --set=helm_registry_secret.password="${helm_registry_password//,/\\,}"
+    --set=helm_registry_secret.password="${helm_registry_password//,/\\,}" \
+    --set=components.k8s-longhorn.version="latest" \
+    --set=components.k8s-longhorn.helmRepositoryNamespace="k8s" \
+    --set=components.k8s-longhorn.deployNamespace="longhorn-system"
 }
 
 
@@ -65,29 +68,9 @@ checkIfSetupIsInstalled() {
     fi
 }
 
-waitForLonghorn() {
-  echo "Waiting for longhorn to start up"
-
-  # wait for pods to spawn
-  sleep 10s
-
-  for (( i = 0; i <=19; i++ )); do
-      local sleepInterval=10
-      if kubectl -n longhorn-system get pods -o custom-columns=READY-true:status.containerStatuses[*].ready | grep false > /dev/null; then
-          echo "Some longhorn pods are still starting ($((i * sleepInterval))s)"
-          sleep $sleepInterval
-      else
-          echo "Longhorn has started"
-          break
-      fi
-  done
-}
-
 echo "**** Executing installLatestK8sCesSetup.sh..."
 
 checkIfSetupIsInstalled
-# Wait for longhorn pods again because on additional nodes longhorn pods need some time again to start.
-waitForLonghorn
 applyResources
 
 echo "**** Finished installLatestK8sCesSetup.sh"

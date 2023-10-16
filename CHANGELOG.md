@@ -28,3 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Added missing KUBECONFIG export to setup
+- Gracefully shutdown k3s on vagrant halt/reload

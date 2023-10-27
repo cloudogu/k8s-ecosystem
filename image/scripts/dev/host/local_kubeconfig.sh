@@ -9,7 +9,9 @@ set -o pipefail
 export ETC_HOSTS=/etc/hosts
 
 function updateKubectlAccess() {
-  echo "Setting up k3ces.local cluster access ..."
+  local port="${1}"
+  local ctxName="${2}"
+  echo "Setting up $ctxName cluster access ..."
   vagrantSetupCluster="$(cat <<EOF
 cd /vagrant \
 && sudo cp /etc/rancher/k3s/k3s.yaml k3s.yaml
@@ -17,12 +19,13 @@ EOF
   )"
 
   vagrant ssh -- -t "${vagrantSetupCluster}"
-  sed 's/default/k3ces.local/g' < k3s.yaml > ~/.kube/k3ces.local || true
+  sed "s/default/$ctxName/g" < k3s.yaml > "${HOME}/.kube/$ctxName" || true
+  sed "s/127.0.0.1:6443/127.0.0.1:$port/g" -i "${HOME}/.kube/$ctxName" || true
 
-  export KUBECONFIG=~/.kube/k3ces.local
-  kubectl config use k3ces.local
+  export KUBECONFIG="${HOME}/.kube/$ctxName"
+  kubectl config use "$ctxName"
   rm -f k3s.yaml
-  echo "The export of the \"export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local\" should be added to the startup enviroment (e.g.: bashrc, zshrc, profile)."
+  echo "The export of the \"export KUBECONFIG=~/.kube/config:~/.kube/$ctxName\" should be added to the startup enviroment (e.g.: bashrc, zshrc, profile)."
 }
 
 function detectFqdnInEtcHosts() {
@@ -39,7 +42,9 @@ function detectFqdnInEtcHosts() {
 function runSetup() {
   local fqdn="${1}"
   local ip="${2}"
-  updateKubectlAccess
+  local port="${3:-6443}"
+  local ctxName="${4:-k3ces.local}"
+  updateKubectlAccess "${port}" "${ctxName}"
   detectFqdnInEtcHosts "${fqdn}" "${ip}"
 }
 

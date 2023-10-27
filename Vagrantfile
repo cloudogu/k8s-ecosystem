@@ -8,6 +8,7 @@ vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
 fqdn = "k3ces.local"
+kube_ctx_name= "k3ces.local"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
 install_setup = true
@@ -180,7 +181,7 @@ Vagrant.configure("2") do |config|
   config.trigger.after :up do |trigger|
     trigger.info = "Adjusting local kubeconfig..."
     trigger.only_on = "main"
-    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
   if install_setup

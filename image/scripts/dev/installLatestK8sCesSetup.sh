@@ -17,9 +17,10 @@ helm_registry_password=${10}
 helm_registry_host=${11}
 helm_registry_schema=${12}
 helm_registry_plain_http=${13}
+kube_ctx_name=${14}
 
 # set environment for helm and kubectl
-export KUBECONFIG=~/.kube/k3ces.local
+export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 
 # Apply the setup resources to the current namespace.
 applyResources() {

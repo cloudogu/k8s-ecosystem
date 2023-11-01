@@ -19,9 +19,14 @@ EOF
   )"
 
   vagrant ssh -- -t "${vagrantSetupCluster}"
+  # create kubeconfig if it does not exist and give write permissions
+  # also avoid the following k3s warning: "Kubernetes configuration file is world/group-readable"
+  touch "${HOME}/.kube/$ctxName"
+  chmod 600 "${HOME}/.kube/$ctxName"
   sed "s/default/$ctxName/g" < k3s.yaml > "${HOME}/.kube/$ctxName" || true
   sed "s/127.0.0.1:6443/127.0.0.1:$port/g" -i "${HOME}/.kube/$ctxName" || true
-
+  # remove write permission again
+  chmod 400 "${HOME}/.kube/$ctxName"
   export KUBECONFIG="${HOME}/.kube/$ctxName"
   kubectl config use "$ctxName"
   rm -f k3s.yaml

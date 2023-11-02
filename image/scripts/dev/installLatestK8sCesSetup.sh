@@ -26,7 +26,7 @@ export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 applyResources() {
   echo "Applying resources for setup..."
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
-  helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password "${helm_registry_password}"
+  echo "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
 
   # use generated .setup.json if it exists, otherwise use setup.json
   SETUP_JSON=image/scripts/dev/setup.json

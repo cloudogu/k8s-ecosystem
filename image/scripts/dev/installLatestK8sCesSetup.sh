@@ -56,13 +56,13 @@ applyResources() {
 
 checkIfSetupIsInstalled() {
     echo "Check if setup is already installed or executed"
-    if kubectl --namespace "${CES_NAMESPACE}" get deployments k8s-ces-setup | grep -q k8s-ces-setup
+    if kubectl -n "${CES_NAMESPACE}" get deployments k8s-ces-setup > /dev/null
     then
       echo "Setup is already installed: Found k8s-ces-setup deployment"
       exit 0
     fi
 
-    if kubectl --namespace "${CES_NAMESPACE}" get deployments k8s-dogu-operator-controller-manager | grep -q k8s-dogu-operator
+    if kubectl -n "${CES_NAMESPACE}" get deployments k8s-dogu-operator-controller-manager > /dev/null
     then
       echo "Setup is already executed: Found k8s-dogu-operator deployment"
       exit 0

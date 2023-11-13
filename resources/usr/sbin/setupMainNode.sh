@@ -28,7 +28,7 @@ K3S_TOKEN=${k3sToken} \
 K3S_EXTERNAL_IP="${nodeExternalIp}" \
 INSTALL_K3S_EXEC="--disable local-storage
  --node-label svccontroller.k3s.cattle.io/enablelb=true
- --no-deploy=traefik
+ --disable traefik
  --node-external-ip=${nodeExternalIp}
  --node-ip=${nodeIp}
  --flannel-iface=${flannelInterface}" \

@@ -13,6 +13,7 @@ An upgrade can be carried out by re-executing the installation script:
 `INSTALL_K3S_VERSION=vX.Y.Z-rc1 /home/<user>/install.sh <EXISTING_K3S_ARGS>`
 
 For current arguments see: [setupMainNode.sh](../../resources/usr/sbin/setupMainNode.sh)
+Hint: The upgrade will fail if INSTALL_K3S_SKIP_DOWNLOAD=true is set.
 
 For more information see: [Rancher documentation](https://docs.k3s.io/upgrades/manual#upgrade-k3s-using-the-installation-script)
 

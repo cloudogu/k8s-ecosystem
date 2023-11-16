@@ -17,15 +17,16 @@ helm_registry_password=${10}
 helm_registry_host=${11}
 helm_registry_schema=${12}
 helm_registry_plain_http=${13}
+kube_ctx_name=${14}
 
 # set environment for helm and kubectl
-export KUBECONFIG=~/.kube/k3ces.local
+export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
-  helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password "${helm_registry_password}"
+  echo "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
 
   # use generated .setup.json if it exists, otherwise use setup.json
   SETUP_JSON=image/scripts/dev/setup.json
@@ -55,13 +56,13 @@ applyResources() {
 
 checkIfSetupIsInstalled() {
     echo "Check if setup is already installed or executed"
-    if kubectl --namespace "${CES_NAMESPACE}" get deployments k8s-ces-setup | grep -q k8s-ces-setup
+    if kubectl -n "${CES_NAMESPACE}" get deployments k8s-ces-setup > /dev/null
     then
       echo "Setup is already installed: Found k8s-ces-setup deployment"
       exit 0
     fi
 
-    if kubectl --namespace "${CES_NAMESPACE}" get deployments k8s-dogu-operator-controller-manager | grep -q k8s-dogu-operator
+    if kubectl -n "${CES_NAMESPACE}" get deployments k8s-dogu-operator-controller-manager > /dev/null
     then
       echo "Setup is already executed: Found k8s-dogu-operator deployment"
       exit 0

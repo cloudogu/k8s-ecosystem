@@ -3,8 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# This file executes settings and installations only on the K8s main node.
-export DOCKER_REGISTRY_DIR=/vagrant/image/scripts/dev/docker-registry
+# This script executes settings and installations only on the K8s main node.
 
 registryHaSharedSecret=JLdfd343MnfsI
 proxyRegistryHaSharedSecret=LFD83nmdfHD
@@ -20,9 +19,9 @@ function createRegistryProxySecret() {
 
 function deployRegistry() {
   local targetNamespace="${1}"
-  local deploymentTargetPath="${DOCKER_REGISTRY_DIR}/docker-registry.yaml"
+  local imageRegistryYaml="${2}"
 
-  kubectl --namespace "${targetNamespace}" apply -f "${deploymentTargetPath}"
+  kubectl --namespace "${targetNamespace}" apply -f "${imageRegistryYaml}"
 }
 
 function runInstallRegistry() {
@@ -31,11 +30,12 @@ function runInstallRegistry() {
   local registryProxyRemoteUrl="${3}"
   local registryProxyUsername="${4}"
   local registryProxyPassword="${5}"
+  local imageRegistryYaml="${6}"
 
   echo "Installing Docker registry with FQDN=${fqdn} and namespace=${targetNamespace}"
 
-  createRegistryProxySecret "${registryProxyRemoteUrl}" "${registryProxyUsername}" "${registryProxyPassword}" ${targetNamespace}
-  deployRegistry "${targetNamespace}"
+  createRegistryProxySecret "${registryProxyRemoteUrl}" "${registryProxyUsername}" "${registryProxyPassword}" "${targetNamespace}"
+  deployRegistry "${targetNamespace}" "${imageRegistryYaml}"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

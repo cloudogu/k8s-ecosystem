@@ -7,7 +7,9 @@ vm_cpus = (ENV["K8S_VM_CPUS"] || "2").to_i
 vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
+worker_k3s_network_prefix = "192.168.56"
 fqdn = "k3ces.local"
+kube_ctx_name= "k3ces.local"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
 install_setup = true
@@ -122,7 +124,7 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
-                      args: [fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password]
+                      args: [fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password, "/vagrant/image/scripts/dev/docker-registry/docker-registry.yaml"]
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
@@ -152,7 +154,8 @@ Vagrant.configure("2") do |config|
       # Create a private network, which allows host-only access to the machine
       # using a specific IP.
       worker_ip_octet = 3 + i.to_i
-      worker.vm.network "private_network", ip: "192.168.56.#{worker_ip_octet}"
+
+      worker.vm.network "private_network", ip: "#{worker_k3s_network_prefix}.#{worker_ip_octet}"
 
       # Define the resources for the virtualbox
       worker.vm.provider "virtualbox" do |vb|
@@ -167,7 +170,7 @@ Vagrant.configure("2") do |config|
 
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
-                          args: [fqdn, "192.168.56.#{worker_ip_octet}"]
+                          args: [fqdn, "#{worker_k3s_network_prefix}.#{worker_ip_octet}"]
 
       worker.trigger.before [:halt, :reload] do |trigger|
         trigger.info = "Shutting down k3s..."
@@ -180,7 +183,7 @@ Vagrant.configure("2") do |config|
   config.trigger.after :up do |trigger|
     trigger.info = "Adjusting local kubeconfig..."
     trigger.only_on = "main"
-    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address] }
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
   if install_setup
@@ -203,7 +206,8 @@ Vagrant.configure("2") do |config|
                                                                                     helm_registry_password,
                                                                                     helm_registry_host,
                                                                                     helm_registry_schema,
-                                                                                    helm_registry_plain_http] }
+                                                                                    helm_registry_plain_http,
+                                                                                    kube_ctx_name] }
     end
   end
 end

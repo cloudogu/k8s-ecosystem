@@ -22,7 +22,9 @@ The following applications are recommended for easier handling:
 - If necessary, the folder `~/.kube` must be created
 - Add the following entry to `/etc/hosts`: `192.168.56.2 k3ces.local`
 - Set environment variable: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local`
-- 
+- add the following entry to `/etc/docker/daemon.json`: `{ "insecure-registries": ["k3ces.local:30099"] }`
+  (required to push custom images to the Helm registry during development)
+
 ### Configuration
 
 The configuration for the dev box is done via a `.vagrant.rb` file. There is a template file `.vagrant.rb.template`,

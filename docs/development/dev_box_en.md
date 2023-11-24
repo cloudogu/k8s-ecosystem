@@ -3,29 +3,54 @@
 This document contains the necessary information to start the development basebox locally with Vagrant.
 Instructions for building the image for the development basebox can be found [here](./building_basebox_en.md).
 
+### Preconditions
+
+#### Applications
+
+The following applications must be installed:
+
+- [kubectl](https://kubernetes.io/de/docs/tasks/tools/install-kubectl/) - Command line tool for managing the Kubernetes cluster
+- [Helm](https://helm.sh/docs/intro/quickstart/) - package manager for Kubernetes
+
+The following applications are recommended for easier handling:
+
+- [kubectx + kubens](https://github.com/ahmetb/kubectx) - Easier switching between Kubernetes contexts and namespaces
+- [k9s](https://k9scli.io/topics/install/) - UI (in the terminal) for easier management of the cluster
+
+#### File system
+
+- If necessary, the folder `~/.kube` must be created
+- Add the following entry to `/etc/hosts`: `192.168.56.2 k3ces.local`
+- Set environment variable: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local`
+- add the following entry to `/etc/docker/daemon.json`: `{ "insecure-registries": ["k3ces.local:30099"] }`
+  (required to push custom images to the Helm registry during development)
+
 ### Configuration
 
-The configuration for the dev box is done via a `.vagrant.rb` file. This is read in from the `Vagrantfile` and can
+The configuration for the dev box is done via a `.vagrant.rb` file. There is a template file `.vagrant.rb.template`,
+which can serve as a good starting point. The `.vagrant.rb` file is read in from the `Vagrantfile` and can
 overwrite the configuration values from the `Vagrantfile`.
 The following configuration values can be specified (among others):
 
-| value                   | description                                                 |
-|-------------------------|-------------------------------------------------------------|
-| dogu_registry_url       | The URL of the dogu registry                                |
-| dogu_registry_username  | The username to login to the dogu registry                  |
-| dogu_registry_password  | The password to login to the dogu Registry                  |
-| image_registry_url      | The URL of the image registry                               |
-| image_registry_username | The username to login to the image registry                 |
-| image_registry_password | The password to login to the image registry                 |
-| image_registry_email    | The e-mail address of the image registry user               |
-| helm_registry_url       | URL of the helm registry                                    |
-| helm_registry_username  | The username to login to the helm registry                  |
-| helm_registry_password  | The password to login to the helm registry                  |
-| vm_memory               | The VMs memory                                              |
-| vm_cpus                 | The number of CPUs in the VMs                               |
-| worker_count            | The number of worker nodes of the cluster                   |
-| main_k3s_ip_address     | The IP address of the main node of the cluster              |
-| certificate_type        | `selfsigned` or `mkcert`; see [certificates](#certificates) |
+| value                    | description                                                 |
+|--------------------------|-------------------------------------------------------------|
+| dogu_registry_url        | The URL of the dogu registry                                |
+| dogu_registry_username   | The username to login to the dogu registry                  |
+| dogu_registry_password   | The password to login to the dogu Registry                  |
+| image_registry_url       | The URL of the image registry                               |
+| image_registry_username  | The username to login to the image registry                 |
+| image_registry_password  | The password to login to the image registry                 |
+| image_registry_email     | The e-mail address of the image registry user               |
+| helm_registry_host       | The host of the helm registry                               |
+| helm_registry_schema     | The schema of the helm registry                             |
+| helm_registry_plain_http | Is the helm registry accessed via HTTP or HTTPS?            |
+| helm_registry_username   | The username to login to the helm registry                  |
+| helm_registry_password   | The password to login to the helm registry                  |
+| vm_memory                | The VMs memory                                              |
+| vm_cpus                  | The number of CPUs in the VMs                               |
+| worker_count             | The number of worker nodes of the cluster                   |
+| main_k3s_ip_address      | The IP address of the main node of the cluster              |
+| certificate_type         | `selfsigned` or `mkcert`; see [certificates](#certificates) |
 
 #### Encryption of the configuration
 

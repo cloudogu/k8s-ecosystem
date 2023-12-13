@@ -1,6 +1,7 @@
 dogu_registry_url="https://dogu.cloudogu.com/api/v2/dogus"
 dogu_registry_username=""
 dogu_registry_password=""
+dogu_registry_urlschema="default"
 image_registry_url="https://registry.cloudogu.com"
 image_registry_username=""
 image_registry_password=""

@@ -9,15 +9,16 @@ helm_repository_namespace=${2}
 dogu_registry_username=${3}
 dogu_registry_password=${4}
 dogu_registry_url=${5}
-image_registry_username=${6}
-image_registry_password=${7}
-image_registry_url=${8}
-helm_registry_username=${9}
-helm_registry_password=${10}
-helm_registry_host=${11}
-helm_registry_schema=${12}
-helm_registry_plain_http=${13}
-kube_ctx_name=${14}
+dogu_registry_urlschema=${6}
+image_registry_username=${7}
+image_registry_password=${8}
+image_registry_url=${9}
+helm_registry_username=${10}
+helm_registry_password=${11}
+helm_registry_host=${12}
+helm_registry_schema=${13}
+helm_registry_plain_http=${14}
+kube_ctx_name=${15}
 
 # set environment for helm and kubectl
 export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
@@ -38,6 +39,7 @@ applyResources() {
     --namespace="${CES_NAMESPACE}" \
     --set-file=setup_json=${SETUP_JSON} \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
+    --set=dogu_registry_secret.urlschema="${dogu_registry_urlschema}" \
     --set=dogu_registry_secret.username="${dogu_registry_username}" \
     --set=dogu_registry_secret.password="${dogu_registry_password//,/\\,}" \
     --set=docker_registry_secret.url="${image_registry_url}" \

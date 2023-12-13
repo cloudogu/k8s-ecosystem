@@ -16,6 +16,7 @@ install_setup = true
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
+dogu_registry_urlschema = ""
 image_registry_url = ""
 image_registry_username = ""
 image_registry_password = ""
@@ -199,6 +200,7 @@ Vagrant.configure("2") do |config|
                                                                                     dogu_registry_username,
                                                                                     dogu_registry_password,
                                                                                     dogu_registry_url,
+                                                                                    dogu_registry_urlschema,
                                                                                     image_registry_username,
                                                                                     image_registry_password,
                                                                                     image_registry_url,

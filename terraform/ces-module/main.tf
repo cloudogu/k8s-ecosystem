@@ -1,9 +1,25 @@
+terraform {
+  required_providers {
+    helm = {
+      source = "hashicorp/helm"
+      version = ">=2.12.1"
+    }
+  }
+}
+
+locals {
+  split_fqdn = split(".", var.ces_fqdn)
+  # Top Level Domain extracted from fully qualified domain name
+  tld = "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}"
+}
+
+
 provider "helm" {
   kubernetes {
-    host                   = azurerm_kubernetes_cluster.default.kube_config.0.host
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.cluster_ca_certificate)
+    host                   = var.kubernetes_host
+    client_certificate     = var.kubernetes_client_certificate
+    client_key             = var.kubernetes_client_key
+    cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
   }
 
   registry {
@@ -19,7 +35,7 @@ resource "helm_release" "k8s-ces-setup" {
   chart      = "k8s-ces-setup"
   version    = var.setup_chart_version
 
-  namespace        = var.ecosystem_namespace
+  namespace        = var.ces_namespace
   create_namespace = true
 
   values = [
@@ -39,8 +55,14 @@ resource "helm_release" "k8s-ces-setup" {
         "setup_json"               = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {
+            # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/
             "admin_password"   = var.ces_admin_password,
             "additional_dogus" = var.additional_dogus,
+            "fqdn": var.ces_fqdn,
+            "domain": local.tld
+            "certificateType": var.ces_certificate_path == null ? "selfsigned" : "external"
+            "certificate": var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n")  : ""
+            "certificateKey": var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n")  : ""
           }
         ))
         "resource_patches" = file("${path.module}/resource_patches.yaml")

@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     helm = {
-      source = "hashicorp/helm"
+      source  = "hashicorp/helm"
       version = ">=2.12.1"
     }
   }
@@ -10,7 +10,7 @@ terraform {
 locals {
   split_fqdn = split(".", var.ces_fqdn)
   # Top Level Domain extracted from fully qualified domain name
-  tld = "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}"
+  tld        = "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}"
 }
 
 
@@ -41,31 +41,35 @@ resource "helm_release" "k8s-ces-setup" {
   values = [
     templatefile("${path.module}/values.yaml.tftpl",
       {
-        "dogu_registry_endpoint"   = var.dogu_registry_endpoint
-        "dogu_registry_username"   = var.dogu_registry_username
-        "dogu_registry_password"   = var.dogu_registry_password
-        "docker_registry_url"      = var.image_registry_url
-        "docker_registry_username" = var.image_registry_username
-        "docker_registry_password" = var.image_registry_password
-        "helm_registry_host"       = var.helm_registry_host
-        "helm_registry_schema"     = var.helm_registry_schema
-        "helm_registry_plain_http" = var.helm_registry_plain_http
-        "helm_registry_username"   = var.helm_registry_username
-        "helm_registry_password"   = var.helm_registry_password
-        "setup_json"               = yamlencode(templatefile(
+        "dogu_registry_endpoint"     = var.dogu_registry_endpoint
+        "dogu_registry_username"     = var.dogu_registry_username
+        "dogu_registry_password"     = var.dogu_registry_password
+        "dogu_registry_url_schema"   = var.dogu_registry_url_schema
+        "docker_registry_url"        = var.image_registry_url
+        "docker_registry_username"   = var.image_registry_username
+        "docker_registry_password"   = var.image_registry_password
+        "helm_registry_host"         = var.helm_registry_host
+        "helm_registry_schema"       = var.helm_registry_schema
+        "helm_registry_plain_http"   = var.helm_registry_plain_http
+        "helm_registry_insecure_tls" = var.helm_registry_insecure_tls
+        "helm_registry_username"     = var.helm_registry_username
+        "helm_registry_password"     = var.helm_registry_password
+        "setup_json"                 = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {
             # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/
+            "admin_username"   = var.ces_admin_username,
             "admin_password"   = var.ces_admin_password,
+            "admin_email"      = var.ces_admin_email,
             "additional_dogus" = var.additional_dogus,
-            "fqdn": var.ces_fqdn,
-            "domain": local.tld
-            "certificateType": var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate": var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n")  : ""
-            "certificateKey": var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n")  : ""
+            "fqdn" : var.ces_fqdn,
+            "domain" : local.tld
+            "certificateType" : var.ces_certificate_path == null ? "selfsigned" : "external"
+            "certificate" : var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
+            "certificateKey" : var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
           }
         ))
-        "resource_patches" = file("${path.module}/resource_patches.yaml")
+        "resource_patches" = var.resource_patches_file != null ? file("${path.root}/${var.resource_patches_file}") : ""
       })
   ]
 }

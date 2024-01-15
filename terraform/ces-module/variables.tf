@@ -74,7 +74,7 @@ variable "ces_certificate_key_path" {
 variable "default_dogu" {
   description = "The default Dogu of the EcoSystem"
   type    = string
-  default = "ldap"
+  default = "cas"
 }
 
 variable "additional_dogus" {

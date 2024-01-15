@@ -9,3 +9,7 @@
       path: /spec/additionalIngressAnnotations
       value:
         nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    - op: add
+      path: /spec/resources
+      value:
+        dataVolumeSize: 5Gi

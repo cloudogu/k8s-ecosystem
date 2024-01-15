@@ -61,6 +61,7 @@ resource "helm_release" "k8s-ces-setup" {
             "admin_username"   = var.ces_admin_username,
             "admin_password"   = var.ces_admin_password,
             "admin_email"      = var.ces_admin_email,
+            "default_dogu"     = var.default_dogu,
             "additional_dogus" = var.additional_dogus,
             "fqdn" : var.ces_fqdn,
             "domain" : local.tld

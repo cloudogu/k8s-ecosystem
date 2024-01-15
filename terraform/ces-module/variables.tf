@@ -71,6 +71,12 @@ variable "ces_certificate_key_path" {
   default = null
 }
 
+variable "default_dogu" {
+  description = "The default Dogu of the EcoSystem"
+  type    = string
+  default = "ldap"
+}
+
 variable "additional_dogus" {
   description = "A list of additional Dogus to install"
   type    = list(string)

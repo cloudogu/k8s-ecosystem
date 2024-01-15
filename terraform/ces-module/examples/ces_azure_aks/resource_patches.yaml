@@ -1,10 +1,11 @@
-- phase: loadbalancer
+- phase: dogu
   resource:
-    apiVersion: v1
-    kind: Service
-    name: ces-loadbalancer
+    apiVersion: k8s.cloudogu.com/v1
+    kind: dogu
+    name: nexus
   patches:
+    # Add an ingress annotation for the nexus-dogu
     - op: add
-      path: /metadata/annotations
+      path: /spec/additionalIngressAnnotations
       value:
-        service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"

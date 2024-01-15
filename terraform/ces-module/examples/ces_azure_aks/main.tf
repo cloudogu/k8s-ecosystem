@@ -67,7 +67,7 @@ module "ces" {
   setup_chart_namespace = "k8s"
   ces_fqdn              = "ces-aks.local"
   ces_admin_password    = "test123"
-  additional_dogus      = ["official/jenkins", "official/scm"]
+  additional_dogus      = ["official/jenkins", "official/scm", "official/nexus"]
   resource_patches_file = "resource_patches.yaml"
 
   # Configure access for the registries

@@ -43,6 +43,11 @@ function detectFqdnInEtcHosts() {
 }
 
 function runSetup() {
+    echo "fqdn: ${1}"
+    echo "ip: ${2}"
+    echo "port: ${3}"
+    echo "ctxName: ${4}"
+
   local fqdn="${1}"
   local ip="${2}"
   local port="${3:-6443}"

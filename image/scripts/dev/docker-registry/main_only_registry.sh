@@ -32,6 +32,13 @@ function runInstallRegistry() {
   local registryProxyPassword="${5}"
   local imageRegistryYaml="${6}"
 
+  echo "fqdn: ${1}"
+  echo "targetNamespace: ${2}"
+  echo "registryProxyRemoteUrl: ${3}"
+  echo "registryProxyUsername: ${4}"
+  echo "registryProxyPassword: ${5}"
+  echo "imageRegistryYaml: ${6}"
+
   echo "Installing Docker registry with FQDN=${fqdn} and namespace=${targetNamespace}"
 
   createRegistryProxySecret "${registryProxyRemoteUrl}" "${registryProxyUsername}" "${registryProxyPassword}" "${targetNamespace}"

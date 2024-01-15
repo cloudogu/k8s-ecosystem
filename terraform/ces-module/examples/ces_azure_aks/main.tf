@@ -65,7 +65,7 @@ module "ces" {
   # Configure CES installation options
   setup_chart_version   = "0.20.2"
   setup_chart_namespace = "k8s"
-  ces_fqdn              = "ces-aks.local"
+  ces_fqdn              = ""
   ces_admin_password    = "test123"
   additional_dogus      = ["official/jenkins", "official/scm", "official/nexus"]
   resource_patches_file = "resource_patches.yaml"

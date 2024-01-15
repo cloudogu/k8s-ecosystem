@@ -12,7 +12,7 @@ Das benötigte Terraform-Modul ist im Ordner [`terraform/ces-module`](../../terr
 Ein Beispiel zur Installation in Azure ist in [`examples/ces_azure_aks`](../../terraform/ces-module/examples/ces_azure_aks) zu finden.
 Dort müssen einige Variablen für die Erstellung des AKS-Cluster und die Installation des CES angegeben werden:
 
-#### lokale Variablen
+#### Lokale Variablen
 * `azure_client_id`: Die ID des Azure ServicePrincipal (siehe [unten](#azure-service-principal-erstellen))
 * `azure_client_secret`: Das Passwort des Azure ServicePrincipal (siehe [unten](#azure-service-principal-erstellen))
 

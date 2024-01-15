@@ -119,9 +119,9 @@ variable "dogu_registry_endpoint" {
 }
 
 variable "dogu_registry_url_schema" {
-  description = "The URL schema for the dogu-registry ('api' or 'index')"
+  description = "The URL schema for the dogu-registry ('default' or 'index')"
   type = string
-  default = "api"
+  default = "default"
 }
 
 variable "helm_registry_host" {

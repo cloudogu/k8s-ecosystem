@@ -10,10 +10,9 @@ Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Diese
 kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
 
 **Um sicherzustellen, dass Sonderzeichen von der Vagrantdatei oder nachfolgenden Shell-Skripten wörtlich behandelt werden, 
-geben Sie bitte die Werte in einfachen Anführungszeichen (') an. Alle einfachen Anführungszeichen innerhalb Ihrer Werte 
-müssen mit einem Backslash versehen werden (\\'). Und wenn Sie doppelte Backslashes (\\\\) in Ihren Konfigurationswerten 
-haben, verwandeln Sie diese in vier Backslashes (\\\\\\\\).
-[Siehe hier für eine Erklärung.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
+geben Sie bitte die Werte in einfachen Anführungszeichen (') an. Doppelte Anführungszeichen (") und Backslashes (\) führen
+zu Problemen und dürfen nicht benutzt werden! Alle einfachen Anführungszeichen innerhalb Ihrer Werte müssen mit einem 
+Backslash versehen werden (\\'). [Siehe hier für eine Erklärung.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
 
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 

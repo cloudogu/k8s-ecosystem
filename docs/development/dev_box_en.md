@@ -9,9 +9,8 @@ The configuration for the dev box is done via a `.vagrant.rb` file. This is read
 overwrite the configuration values from the `Vagrantfile`.
 
 **To ensure that special characters are treated literally by the Vagrantfile or subsequent shell scripts, please provide 
-the information quoted in single quotes ('). Any single quotes within your information must be escaped with a backslash 
-(\\'). And if you have any double backslashes (\\\\) in your information, turn them into four backslashes (\\\\\\\\). 
-[See here for an explanation.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
+the information quoted in single quotes ('). Double quotes (") and backslashes (\) lead to problems and must not be 
+used! Any single quotes within your information must be escaped with a backslash (\\'). [See here for an explanation.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
 
 The following configuration values can be specified (among others):
 

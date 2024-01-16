@@ -98,11 +98,6 @@ variable "image_registry_password" {
   type = string
 }
 
-variable "image_registry_email" {
-  description = "The email for the docker-image-registry"
-  type = string
-}
-
 variable "dogu_registry_username" {
   description = "The username for the dogu-registry"
   type = string

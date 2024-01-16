@@ -57,10 +57,10 @@ module "ces" {
   source = "../../"
 
   # Configure the access to the Kubernetes-Cluster
-  kubernetes_host                   = azurerm_kubernetes_cluster.default.kube_config.0.host
-  kubernetes_client_certificate     = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.client_certificate)
-  kubernetes_client_key             = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.client_key)
-  kubernetes_cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.default.kube_config.0.cluster_ca_certificate)
+  kubernetes_host                   = azurerm_kubernetes_cluster.default.kube_config[0].host
+  kubernetes_client_certificate     = base64decode(azurerm_kubernetes_cluster.default.kube_config[0].client_certificate)
+  kubernetes_client_key             = base64decode(azurerm_kubernetes_cluster.default.kube_config[0].client_key)
+  kubernetes_cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.default.kube_config[0].cluster_ca_certificate)
 
   # Configure CES installation options
   setup_chart_version   = "0.20.2"

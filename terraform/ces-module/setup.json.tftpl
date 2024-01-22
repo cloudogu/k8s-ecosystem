@@ -1,15 +1,17 @@
 {
   "naming": {
-    "fqdn": "",
-    "domain": "k3ces.local",
-    "certificateType": "selfsigned",
+    "fqdn": "${fqdn}",
+    "domain": "${domain}",
+    "certificateType": "${certificateType}",
+    "certificate": "${certificate}",
+    "certificateKey": "${certificateKey}",
     "relayHost": "foobar",
     "completed": true,
     "useInternalIp": false,
     "internalIp": ""
   },
   "dogus": {
-    "defaultDogu": "ldap",
+    "defaultDogu": "${default_dogu}",
     "install": [
       "official/ldap",
       "official/postfix",
@@ -23,8 +25,8 @@
     "completed": true
   },
   "admin": {
-    "username": "admin",
-    "mail": "admin@admin.admin",
+    "username": "${admin_username}",
+    "mail": "${admin_email}",
     "password": "${admin_password}",
     "adminGroup": "cesAdmin",
     "completed": true,

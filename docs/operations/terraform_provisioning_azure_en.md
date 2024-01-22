@@ -3,45 +3,21 @@
 CES Multinode can be provisioned in Azure with the help of Terraform.
 This involves first creating an Azure AKS cluster and then installing CES-Multinode in it.
 
-## Preparation
+## Terraform-Modul
 
-The required Terraform files can be found in the folder `terraform/azure`.
+The required Terraform module can be found in the folder [`terraform/ces-module`](../../terraform/ces-module).
 
-### terraform.tfvars
+### Example
 
-The `terraform.tfvars` file contains the values for the variables used for provisioning.
-All variables for which no values are specified in `terraform.tfvars` must be specified when running Terraform
-must be specified.
+An example of the installation in Azure can be found in [`examples/ces_azure_aks`](../../terraform/ces-module/examples/ces_azure_aks).
+Some variables for the creation of the AKS cluster and the installation of the CES must be specified there:
 
-As a template, the file `terraform.tfvars.template` can be copied and renamed to `terraform.tfvars`.
+#### local variables
+* `azure_client_id`: The ID of the Azure ServicePrincipal (see [below](#create-azure-service-principal))
+* `azure_client_secret`: The password of the Azure ServicePrincipal (see [below](#create-azure-service-principal))
 
-An example `terraform.tfvars` might look like this:
-
-```
-azure_appId = "aaaaaa"
-azure_password = "pppppp"
-image_registry_username = "user".
-image_registry_password = "password
-image_registry_email = "mail@foo.bar"
-dogu_registry_username = "user
-dogu_registry_password = "password
-dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
-aks_cluster_name="my-ces"
-aks_node_count = 3
-aks_vm_size = "Standard_D2_v2"
-ces_admin_password="password"
-additional_dogus = ["official/jenkins", "official/scm"]
-```
-
-### setup.json.tftpl
-
-In the `setup.json.tftpl` the configuration for the CES can be adjusted.
-Some values are already populated by terraform variables.
-
-### values.yaml.tftpl
-
-In the `values.yaml.tftpl` the configuration for the setup Helm-Chart can be adjusted.
-Some values are already populated by terraform variables.
+#### CES module variables
+The configuration of the Terraform CES module is described in its [documentation](../../terraform/ces-module/README.md).
 
 ### Create Azure Service Principal
 
@@ -64,32 +40,6 @@ The output of the command looks like this:
 ```
 
 The data must be transferred to the variables `azure_appId` and `azure_password`.
-
-## Variables
-
-The following variables are available
-
-| name                    | description                                                           | default value |
-|-------------------------|-----------------------------------------------------------------------|---------------|
-| azure_appId             | Azure Kubernetes Service Cluster service principal                    | -             |
-| azure_password          | Azure Kubernetes Service Cluster password                             | -             |
-| aks_cluster_name        | The name of the Azure AKS Cluster                                     | -             |
-| aks_node_count          | The number of nodes to create                                         | 2             |
-| aks_vm_size             | The size of the Virtual Machine fo the nodes, such as Standard_DS2_v2 | Standard_B2s  |
-| ecosystem_namespace     | The namespace for the CES                                             | ecosystem     |
-| image_registry_url      | The endpoint for the docker-image-registry                            | -             |
-| image_registry_username | The username for the docker-image-registry                            | -             |
-| image_registry_password | The password for the docker-image-registry                            | -             |
-| dogu_registry_username  | The username for the dogu-registry                                    | -             |
-| dogu_registry_password  | The password for the dogu-registry                                    | -             |
-| dogu_registry_endpoint  | The endpoint for the dogu-registry                                    | -             |
-| helm_registry_url       | The endpoint for the helm-registry                                    | -             |
-| helm_registry_username  | The username for the helm-registry                                    | -             |
-| helm_registry_password  | The password for the helm-registry                                    | -             |
-| setup_chart_version     | The chart version from k8s-ces-setup to install                       |               |
-| setup_chart_namespace   | The repository of the k8s-ces-setup chart                             |               |
-| ces_admin_password      | The CES admin password                                                | -             |
-| additional_dogus        | A list of additional Dogus to install                                 | []            |
 
 ## Provisioning
 

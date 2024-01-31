@@ -32,8 +32,7 @@ which can serve as a good starting point. The `.vagrant.rb` file is read in from
 overwrite the configuration values from the `Vagrantfile`.
 
 **To ensure that special characters are treated literally by the Vagrantfile or subsequent shell scripts, please provide 
-the information quoted in single quotes ('). Double quotes (") and backslashes (\) lead to problems and must not be 
-used! Any single quotes within your information must be escaped with a backslash (\\'). [See here for an explanation.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
+your passwords with base64-encoding. Use the following command: `printf '%s' 'password' | base64 -w0`**
 
 The following configuration values can be specified (among others):
 

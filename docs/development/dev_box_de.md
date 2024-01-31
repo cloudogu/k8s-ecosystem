@@ -33,9 +33,8 @@ die als guter Startpunkt dienen kann. Die `.vagrant.rb`-Datei wird vom `Vagrantf
 kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
 
 **Um sicherzustellen, dass Sonderzeichen von der Vagrantdatei oder nachfolgenden Shell-Skripten wörtlich behandelt werden, 
-geben Sie bitte die Werte in einfachen Anführungszeichen (') an. Doppelte Anführungszeichen (") und Backslashes (\) führen
-zu Problemen und dürfen nicht benutzt werden! Alle einfachen Anführungszeichen innerhalb Ihrer Werte müssen mit einem 
-Backslash versehen werden (\\'). [Siehe hier für eine Erklärung.](https://en.wikibooks.org/wiki/Ruby_Programming/Strings#Single_quotes)**
+geben Sie bitte Ihre Passwörter in der Base64-Kodierung an. Bitte nutzen Sie dafür folgenden Befehl: 
+`printf '%s' 'password' | base64 -w0`**
 
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 

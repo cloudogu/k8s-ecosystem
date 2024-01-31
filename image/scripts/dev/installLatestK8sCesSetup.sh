@@ -27,8 +27,7 @@ export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 applyResources() {
   echo "Applying resources for setup..."
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
-  echo "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
-#  base64 --decode <<< "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
+  base64 --decode <<< "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
 
   # use generated .setup.json if it exists, otherwise use setup.json
   SETUP_JSON=image/scripts/dev/setup.json
@@ -36,25 +35,21 @@ applyResources() {
     SETUP_JSON=image/scripts/dev/.setup.json
   fi
 
-#    --set=dogu_registry_secret.password="${dogu_registry_password}" \
-#    --set=docker_registry_secret.password="${image_registry_password}" \
-#    --set=helm_registry_secret.password="${helm_registry_password}" \
-
   helm upgrade -i k8s-ces-setup "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-ces-setup" \
     --namespace="${CES_NAMESPACE}" \
     --set-file=setup_json=${SETUP_JSON} \
     --set=dogu_registry_secret.url="${dogu_registry_url}" \
     --set=dogu_registry_secret.urlschema="${dogu_registry_urlschema}" \
     --set=dogu_registry_secret.username="${dogu_registry_username}" \
-    --set=dogu_registry_secret.password="${dogu_registry_password//,/\\,}" \
+    --set=dogu_registry_secret.password="${dogu_registry_password}" \
     --set=docker_registry_secret.url="${image_registry_url}" \
     --set=docker_registry_secret.username="${image_registry_username}" \
-    --set=docker_registry_secret.password="${image_registry_password//,/\\,}" \
+    --set=docker_registry_secret.password="${image_registry_password}" \
     --set=helm_registry_secret.host="${helm_registry_host}" \
     --set=helm_registry_secret.schema="${helm_registry_schema}" \
     --set=helm_registry_secret.plainHttp="${helm_registry_plain_http}" \
     --set=helm_registry_secret.username="${helm_registry_username}" \
-    --set=helm_registry_secret.password="${helm_registry_password//,/\\,}" \
+    --set=helm_registry_secret.password="${helm_registry_password}" \
     --set=components.k8s-longhorn.version="latest" \
     --set=components.k8s-longhorn.helmRepositoryNamespace="k8s" \
     --set=components.k8s-longhorn.deployNamespace="longhorn-system"

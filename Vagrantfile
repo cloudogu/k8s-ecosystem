@@ -125,11 +125,11 @@ Vagrant.configure("2") do |config|
 
     main.vm.provision "Install local Docker registry", type: "shell",
                       path: "image/scripts/dev/docker-registry/main_only_registry.sh",
-                      args: create_args_string([fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password, "/vagrant/image/scripts/dev/docker-registry/docker-registry.yaml"])
+                      args: [fqdn, ces_namespace, image_registry_url, image_registry_username, image_registry_password, "/vagrant/image/scripts/dev/docker-registry/docker-registry.yaml"]
 
     main.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                       path: "image/scripts/dev/docker-registry/all_node_registry.sh",
-                      args: create_args_string([fqdn, main_k3s_ip_address])
+                      args: [fqdn, main_k3s_ip_address]
 
     main.trigger.before [:halt, :reload] do |trigger|
       trigger.info = "Shutting down k3s..."
@@ -171,7 +171,7 @@ Vagrant.configure("2") do |config|
 
       worker.vm.provision "Run local Docker registry script for all nodes", type: "shell",
                           path: "image/scripts/dev/docker-registry/all_node_registry.sh",
-                          args: create_args_string([fqdn, "#{worker_k3s_network_prefix}.#{worker_ip_octet}"])
+                          args: [fqdn, "#{worker_k3s_network_prefix}.#{worker_ip_octet}"]
 
       worker.trigger.before [:halt, :reload] do |trigger|
         trigger.info = "Shutting down k3s..."
@@ -185,7 +185,7 @@ Vagrant.configure("2") do |config|
     trigger.info = "Adjusting local kubeconfig..."
     trigger.only_on = "main"
     trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh",
-                    args: create_args_string([fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name]) }
+                    args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
   if install_setup
@@ -197,41 +197,20 @@ Vagrant.configure("2") do |config|
       end
       trigger.info = "Install ces-setup"
       trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh",
-                      args: create_args_string([ces_namespace,
-                                                helm_repository_namespace,
-                                                dogu_registry_username,
-                                                dogu_registry_password,
-                                                dogu_registry_url,
-                                                dogu_registry_urlschema,image_registry_username,
-                                                image_registry_password,
-                                                image_registry_url,
-                                                helm_registry_username,
-                                                helm_registry_password,
-                                                helm_registry_host,
-                                                helm_registry_schema,
-                                                helm_registry_plain_http,
-                                                kube_ctx_name]) }
+                      args: [ces_namespace,
+                            helm_repository_namespace,
+                            dogu_registry_username,
+                            dogu_registry_password,
+                            dogu_registry_url,
+                            dogu_registry_urlschema,image_registry_username,
+                            image_registry_password,
+                            image_registry_url,
+                            helm_registry_username,
+                            helm_registry_password,
+                            helm_registry_host,
+                            helm_registry_schema,
+                            helm_registry_plain_http,
+                            kube_ctx_name] }
     end
   end
-end
-
-##### functions #####
-
-# Quote everything in single quotes to escape for shell and escape single quotes with '\''
-# (close quoting, add escaped quote and open quoting again,
-# see https://stackoverflow.com/questions/15783701/which-characters-need-to-be-escaped-when-using-bash)
-def quote_and_escape(text)
-  # unless text.is_a?(String)
-  #   text = text.to_s
-  # end
-  "'#{text.to_s.gsub(/'/, "'\\\\''")}'"
-end
-
-# This function quotes every single element of the array in single quotes and escapes single quotes inside the element.
-# Afterwards the array elements are joined to a string separated by a space and returned.
-#
-# The intended use of this function is to escape the arguments provided for a shell script in vm.provision. Since
-# providing the arguments in an array ignores the quoting, they have to be provided by string.
-def create_args_string(arr)
-  arr.map{ |elem| quote_and_escape(elem) }.join(" ")
 end

@@ -27,7 +27,7 @@ provider "helm" {
   registry {
     url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
     username = var.helm_registry_username
-    password = var.helm_registry_password
+    password = base64decode(var.helm_registry_password)
   }
 }
 

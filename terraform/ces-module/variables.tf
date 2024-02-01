@@ -94,7 +94,7 @@ variable "image_registry_username" {
 }
 
 variable "image_registry_password" {
-  description = "The password for the docker-image-registry"
+  description = "The base64-encoded password for the docker-image-registry"
   type = string
 }
 
@@ -104,7 +104,7 @@ variable "dogu_registry_username" {
 }
 
 variable "dogu_registry_password" {
-  description = "The password for the dogu-registry"
+  description = "The base64-encoded password for the dogu-registry"
   type = string
 }
 
@@ -147,7 +147,7 @@ variable "helm_registry_username" {
 }
 
 variable "helm_registry_password" {
-  description = "The password for the helm-registry"
+  description = "The base64-encoded password for the helm-registry"
   type = string
 }
 

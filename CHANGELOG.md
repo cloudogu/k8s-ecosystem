@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update installation manual #37
 - Install longhorn as a component and remove it from the base image #52
 - Upgrade k3s to 1.28.3 #56
+- Passwords (Docker-, Dogu- & Helmregistry) has to be encoded in Base64 (see [here](docs/development/dev_box_en.md) and [here](terraform/ces-module/README.md)) #64
 
 ### Added
 - Packer templates for CES production images

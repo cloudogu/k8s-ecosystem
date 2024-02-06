@@ -26,20 +26,20 @@ module "ces" {
    ces_admin_password    = "test123"
    additional_dogus      = ["official/jenkins", "official/scm"]
 
-   # Configure access for the registries
+   # Configure access for the registries. Passwords need to be base64-encoded.
    image_registry_url      = "registry.cloudogu.com"
    image_registry_username = "username"
-   image_registry_password = "password"
+   image_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
    image_registry_email    = "test@test.de"
 
    dogu_registry_username = "username"
-   dogu_registry_password = "password"
+   dogu_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
    dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
 
    helm_registry_host     = "registry.cloudogu.com"
    helm_registry_schema   = "oci"
    helm_registry_username = "username"
-   helm_registry_password = "password"
+   helm_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
 }
 ```
 

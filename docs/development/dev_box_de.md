@@ -31,6 +31,11 @@ Folgende Applikationen werden zur leichteren Handhabung empfohlen:
 Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Es existiert eine Template-Datei `.vagrant.rb.template`, 
 die als guter Startpunkt dienen kann. Die `.vagrant.rb`-Datei wird vom `Vagrantfile` eingelesen und
 kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
+
+**Um sicherzustellen, dass Sonderzeichen von der Vagrantdatei oder nachfolgenden Shell-Skripten wörtlich behandelt werden, 
+geben Sie bitte Ihre Passwörter in der Base64-Kodierung an. Bitte nutzen Sie dafür folgenden Befehl: 
+`printf '%s' 'password' | base64 -w0`**
+
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 
 | Wert                     | Beschreibung                                                  |

@@ -11,7 +11,8 @@ proxyRegistryHaSharedSecret=LFD83nmdfHD
 function createRegistryProxySecret() {
   local registryProxyRemoteUrl="${1}"
   local registryProxyUsername="${2}"
-  local registryProxyPassword="${3}"
+  local registryProxyPassword
+  registryProxyPassword=$(base64 --decode <<< "${3}")
   local targetNamespace="${4}"
 
   kubectl --namespace "${targetNamespace}" create secret generic docker-registry-secret --from-literal=proxyRemoteUrl="${registryProxyRemoteUrl}" --from-literal=haSharedSecret="${registryHaSharedSecret}" --from-literal=proxyHaSharedSecret="${proxyRegistryHaSharedSecret}" --from-literal=proxyUsername="${registryProxyUsername}" --from-literal=proxyPassword="${registryProxyPassword}"

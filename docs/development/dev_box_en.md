@@ -30,6 +30,10 @@ The following applications are recommended for easier handling:
 The configuration for the dev box is done via a `.vagrant.rb` file. There is a template file `.vagrant.rb.template`,
 which can serve as a good starting point. The `.vagrant.rb` file is read in from the `Vagrantfile` and can
 overwrite the configuration values from the `Vagrantfile`.
+
+**To ensure that special characters are treated literally by the Vagrantfile or subsequent shell scripts, please provide 
+your passwords with base64-encoding. Use the following command: `printf '%s' 'password' | base64 -w0`**
+
 The following configuration values can be specified (among others):
 
 | value                    | description                                                 |

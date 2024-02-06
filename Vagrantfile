@@ -184,7 +184,8 @@ Vagrant.configure("2") do |config|
   config.trigger.after :up do |trigger|
     trigger.info = "Adjusting local kubeconfig..."
     trigger.only_on = "main"
-    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh", args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
+    trigger.run = { path: "image/scripts/dev/host/local_kubeconfig.sh",
+                    args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
   if install_setup
@@ -195,21 +196,21 @@ Vagrant.configure("2") do |config|
         trigger.only_on = "main"
       end
       trigger.info = "Install ces-setup"
-      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh", args: [ces_namespace,
-                                                                                    helm_repository_namespace,
-                                                                                    dogu_registry_username,
-                                                                                    dogu_registry_password,
-                                                                                    dogu_registry_url,
-                                                                                    dogu_registry_urlschema,
-                                                                                    image_registry_username,
-                                                                                    image_registry_password,
-                                                                                    image_registry_url,
-                                                                                    helm_registry_username,
-                                                                                    helm_registry_password,
-                                                                                    helm_registry_host,
-                                                                                    helm_registry_schema,
-                                                                                    helm_registry_plain_http,
-                                                                                    kube_ctx_name] }
+      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh",
+                      args: [ces_namespace,
+                            helm_repository_namespace,
+                            dogu_registry_username,
+                            dogu_registry_password,
+                            dogu_registry_url,
+                            dogu_registry_urlschema,image_registry_username,
+                            image_registry_password,
+                            image_registry_url,
+                            helm_registry_username,
+                            helm_registry_password,
+                            helm_registry_host,
+                            helm_registry_schema,
+                            helm_registry_plain_http,
+                            kube_ctx_name] }
     end
   end
 end

@@ -221,15 +221,13 @@ helm_registry_secret:
 #      "completed": true,
 #    },
 #    "dogus": {
-#      "defaultDogu": "redmine",
+#      "defaultDogu": "cas",
 #      "install": [
 #        "official/ldap",
 #        "official/postfix",
 #        "k8s/nginx-static",
 #        "k8s/nginx-ingress",
-#        "official/cas",
-#        "official/postgresql",
-#        "official/redmine",
+#        "official/cas"
 #      ],
 #      "completed": true
 #    },
@@ -304,6 +302,15 @@ kubectl patch cm tcp-services -p '{"metadata":{"finalizers":null}}' --type=merge
 && kubectl patch cm udp-services -p '{"metadata":{"finalizers":null}}' --type=merge -n ecosystem || true \
 && kubectl delete statefulsets,deploy,secrets,cm,svc,sa,rolebindings,roles,clusterrolebindings,clusterroles,cronjob,pvc,pv --ignore-not-found -l app=ces -n ecosystem
 ```
+
+### Upgrades
+
+Das obige Beispiel installiert ein minimales Cloudogu EcoSystem.
+Für das Hinzufügen von weiteren Dogus und Komponenten wird der Blueprint-Mechanismus verwendet.
+Blueprints beschreiben das komplette Cloudogu EcoSystem (Dogus, Komponente und Konfigurationen) und werden von dem Blueprint-Operator verarbeitet.
+Dieser ist in dem minimalen Beispiel enthalten.
+
+Die [Dokumentation](todo) beschreibt die Konfiguration und Anwendung von Blueprints.
 
 ## 4. Hinweise für verschiedene Infrastrukturen und Cloud-Provider
 

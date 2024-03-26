@@ -309,7 +309,7 @@ The blueprint mechanism is used to add further Dogus and Components.
 Blueprints describe the complete Cloudogu EcoSystem (Dogus, Components and configurations) and are processed by the blueprint-operator.
 This is included in the minimal example.
 
-The [documentation](todo) describes the configuration and use of blueprints.
+The [documentation](https://github.com/cloudogu/k8s-blueprint-operator/blob/develop/docs/operations/blueprintV2_format_en.md) describes the configuration and use of blueprints.
 
 ## 4. notes for different infrastructures and cloud providers
 

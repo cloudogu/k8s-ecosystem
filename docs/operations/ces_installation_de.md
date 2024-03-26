@@ -310,7 +310,7 @@ Für das Hinzufügen von weiteren Dogus und Komponenten wird der Blueprint-Mecha
 Blueprints beschreiben das komplette Cloudogu EcoSystem (Dogus, Komponente und Konfigurationen) und werden von dem Blueprint-Operator verarbeitet.
 Dieser ist in dem minimalen Beispiel enthalten.
 
-Die [Dokumentation](todo) beschreibt die Konfiguration und Anwendung von Blueprints.
+Die [Dokumentation](https://github.com/cloudogu/k8s-blueprint-operator/blob/develop/docs/operations/blueprintV2_format_de.md) beschreibt die Konfiguration und Anwendung von Blueprints.
 
 ## 4. Hinweise für verschiedene Infrastrukturen und Cloud-Provider
 

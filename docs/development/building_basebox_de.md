@@ -8,6 +8,8 @@ Aufwand für die Erstellung einer neuen Entwicklungsinstanz über Vagrant zu red
 
 - `git` installiert
 - `packer` installiert (siehe [packer.io](https://www.packer.io/))
+- packer-virtualbox-plugin via `packer plugins install github.com/hashicorp/virtualbox`
+- packer-vagrant-plugin via `packer plugins install github.com/hashicorp/vagrant`
 - VirtualBox installiert
 - Verstehen der [Struktur der Projektdateien](structure_of_the_files_de.md)
 

@@ -23,6 +23,12 @@ kube_ctx_name=${15}
 # set environment for helm and kubectl
 export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 
+if command -v kubens &> /dev/null
+then
+    echo "set k8s namespace via kubens"
+    kubens "$CES_NAMESPACE"
+fi
+
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."

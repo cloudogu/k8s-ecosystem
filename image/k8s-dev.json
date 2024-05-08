@@ -53,7 +53,13 @@
             "{{user `vm_name`}}",
             "--vram",
             "10"
-          ]
+          ],
+	                                 [
+                                       "modifyvm",
+                                       "{{user `vm_name`}}",
+                                       "--nat-localhostreachable1",
+                                       "on"
+                                ]
         ]
       }
     ],

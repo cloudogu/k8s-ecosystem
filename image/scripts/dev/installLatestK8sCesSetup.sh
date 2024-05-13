@@ -19,6 +19,7 @@ helm_registry_host=${12}
 helm_registry_schema=${13}
 helm_registry_plain_http=${14}
 kube_ctx_name=${15}
+default_class_replica_count="${16:-2}"
 
 ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
 ADDITIONAL_VALUES_YAML=additionalValues.yaml
@@ -55,6 +56,7 @@ applyResources() {
   sed --in-place "s|HELM_REGISTRY_SECRET_PLAIN_HTTP|${helm_registry_plain_http}|g" ${ADDITIONAL_VALUES_YAML}
   sed --in-place "s|HELM_REGISTRY_SECRET_USERNAME|${helm_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
   sed --in-place "s|HELM_REGISTRY_SECRET_PASSWORD|${helm_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${ADDITIONAL_VALUES_YAML}
 
   # Install k8s-ces-setup via Helm
   helm upgrade -i k8s-ces-setup "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-ces-setup" \

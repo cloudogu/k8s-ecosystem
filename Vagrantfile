@@ -190,10 +190,12 @@ Vagrant.configure("2") do |config|
 
   if install_setup
     config.trigger.after :up do |trigger|
+      replicas = 2
       if worker_count > 0
         trigger.only_on = "worker-#{worker_count - 1}"
       else
         trigger.only_on = "main"
+        replicas = 1
       end
       trigger.info = "Install ces-setup"
       trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh",
@@ -210,7 +212,10 @@ Vagrant.configure("2") do |config|
                             helm_registry_host,
                             helm_registry_schema,
                             helm_registry_plain_http,
-                            kube_ctx_name] }
+                            kube_ctx_name,
+                            replicas
+                      ]
+      }
     end
   end
 end

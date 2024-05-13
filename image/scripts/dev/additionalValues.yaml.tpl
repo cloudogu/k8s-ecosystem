@@ -22,3 +22,5 @@ components:
       longhorn:
         defaultSettings:
           storageOverProvisioningPercentage: 1000
+        persistence:
+          defaultClassReplicaCount: DEFAULTCLASSREPLICACOUNT

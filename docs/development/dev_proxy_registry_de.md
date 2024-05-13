@@ -1,5 +1,6 @@
 # Registry Proxy für Helm Charts
 
+## Überblick
 
 ![Überblick Entwicklungsumgebung](figures/registry_overview.png)
 
@@ -13,3 +14,14 @@ Docker Images und Helm-Charts werden wie gewohnt in die reguläre Dev-Registry g
 Weil die beiden Registry sich ein Volume teilen können gepushte Artefakte während der Entwicklung von der Proxy-Registry bezogen werden.
 
 Siehe [Docker-Registry](https://docs.docker.com/registry/recipes/mirror/)
+
+## Löschen von ungenutzten Images
+
+Um Speicherplatz freizugeben, kann man ungenutzte Images auf den Nodes löschen.
+
+### Löschen von ungenutzten Images auf jedem einzelnen Node:
+- Verbinden auf den Node via `vagrant ssh NODENAME`, bspw. `vagrant ssh worker-0`
+- Löschen ungenutzter Images via `sudo k3s crictl rmi --prune`
+
+### Löschen aller Images der Docker-Registry
+- Killen des `docker-registry-...`-Pods löscht alle Images, bspw. via [Strg]+[k] in k9s

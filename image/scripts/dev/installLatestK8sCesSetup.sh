@@ -19,6 +19,10 @@ helm_registry_host=${12}
 helm_registry_schema=${13}
 helm_registry_plain_http=${14}
 kube_ctx_name=${15}
+default_class_replica_count="${16:-2}"
+
+ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
+ADDITIONAL_VALUES_YAML=additionalValues.yaml
 
 # set environment for helm and kubectl
 export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
@@ -32,30 +36,33 @@ applyResources() {
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
   base64 --decode <<< "${helm_registry_password}" | helm registry login registry.cloudogu.com --username "${helm_registry_username}" --password-stdin
 
-  # use generated .setup.json if it exists, otherwise use setup.json
+  # Use generated .setup.json if it exists, otherwise use setup.json
   SETUP_JSON=image/scripts/dev/setup.json
   if [ -f image/scripts/dev/.setup.json ]; then
     SETUP_JSON=image/scripts/dev/.setup.json
   fi
 
+  # Replace values in yaml template
+  cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOCKER_REGISTRY_SECRET_URL|${image_registry_url}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOCKER_REGISTRY_SECRET_USERNAME|${image_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOCKER_REGISTRY_SECRET_PASSWORD|${image_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOGU_REGISTRY_SECRET_URL|${dogu_registry_url}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOGU_REGISTRY_SECRET_URL_SCHEMA|${dogu_registry_urlschema}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOGU_REGISTRY_SECRET_USERNAME|${dogu_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DOGU_REGISTRY_SECRET_PASSWORD|${dogu_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|HELM_REGISTRY_SECRET_HOST|${helm_registry_host}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|HELM_REGISTRY_SECRET_SCHEMA|${helm_registry_schema}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|HELM_REGISTRY_SECRET_PLAIN_HTTP|${helm_registry_plain_http}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|HELM_REGISTRY_SECRET_USERNAME|${helm_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|HELM_REGISTRY_SECRET_PASSWORD|${helm_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${ADDITIONAL_VALUES_YAML}
+
+  # Install k8s-ces-setup via Helm
   helm upgrade -i k8s-ces-setup "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-ces-setup" \
+    --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}" \
-    --set-file=setup_json=${SETUP_JSON} \
-    --set=dogu_registry_secret.url="${dogu_registry_url}" \
-    --set=dogu_registry_secret.urlschema="${dogu_registry_urlschema}" \
-    --set=dogu_registry_secret.username="${dogu_registry_username}" \
-    --set=dogu_registry_secret.password="${dogu_registry_password}" \
-    --set=docker_registry_secret.url="${image_registry_url}" \
-    --set=docker_registry_secret.username="${image_registry_username}" \
-    --set=docker_registry_secret.password="${image_registry_password}" \
-    --set=helm_registry_secret.host="${helm_registry_host}" \
-    --set=helm_registry_secret.schema="${helm_registry_schema}" \
-    --set=helm_registry_secret.plainHttp="${helm_registry_plain_http}" \
-    --set=helm_registry_secret.username="${helm_registry_username}" \
-    --set=helm_registry_secret.password="${helm_registry_password}" \
-    --set=components.k8s-longhorn.version="latest" \
-    --set=components.k8s-longhorn.helmRepositoryNamespace="k8s" \
-    --set=components.k8s-longhorn.deployNamespace="longhorn-system"
+    --set-file=setup_json=${SETUP_JSON}
 }
 
 

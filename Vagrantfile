@@ -190,6 +190,7 @@ Vagrant.configure("2") do |config|
 
   if install_setup
     config.trigger.after :up do |trigger|
+      longhorn_replicas = [worker_count + 1, 3].min
       if worker_count > 0
         trigger.only_on = "worker-#{worker_count - 1}"
       else
@@ -210,7 +211,10 @@ Vagrant.configure("2") do |config|
                             helm_registry_host,
                             helm_registry_schema,
                             helm_registry_plain_http,
-                            kube_ctx_name] }
+                            kube_ctx_name,
+                            longhorn_replicas
+                      ]
+      }
     end
   end
 end

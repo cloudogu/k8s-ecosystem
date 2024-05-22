@@ -5,6 +5,7 @@ image/output-*
 .vagrant
 .vagrant.rb
 .vagrant.rb.asc
+.vagrant.rb.gpg
 *.log
 
 tmp
@@ -17,3 +18,5 @@ terraform.tfvars
 
 # generated setup.json
 .setup.json
+# generated values file for the setup
+additionalValues.yaml

@@ -24,3 +24,11 @@ components:
           storageOverProvisioningPercentage: 1000
         persistence:
           defaultClassReplicaCount: DEFAULTCLASSREPLICACOUNT
+        csi:
+          attacherReplicaCount: DEFAULTCLASSREPLICACOUNT
+          provisionerReplicaCount: DEFAULTCLASSREPLICACOUNT
+          resizerReplicaCount: DEFAULTCLASSREPLICACOUNT
+          snapshotterReplicaCount: DEFAULTCLASSREPLICACOUNT
+        longhornUI:
+          # Scale this up, if UI is needed
+          replicas: 0

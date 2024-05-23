@@ -14,6 +14,8 @@ k3sToken=${6}
 username=${7}
 nodeLabels="${8}"
 nodeTaints="${9}"
+imageGcLowThreshold=${10}
+imageGcHighThreshold=${11}
 
 k3sVersion=$(cat /var/lib/rancher/k3s/agent/images/k3sVersion)
 
@@ -29,6 +31,8 @@ INSTALL_K3S_EXEC="${nodeLabelOptions}
  ${nodeTaintOptions}
  --node-external-ip=${nodeExternalIp}
  --node-ip=${nodeIp}
- --flannel-iface=${flannelInterface}" \
+ --flannel-iface=${flannelInterface}
+ --kubelet-arg=image-gc-low-threshold=${imageGcLowThreshold}
+ --kubelet-arg=image-gc-high-threshold=${imageGcHighThreshold}" \
 K3S_TOKEN="${k3sToken}" \
 /home/"${username}"/install.sh

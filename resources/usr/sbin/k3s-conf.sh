@@ -206,7 +206,11 @@ function installK3s() {
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
+  # Example value in k3sConfig.json
+  # "node-labels": ["foo=bar", "kuh/muh.io=mah"]
   nodeLabels=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-labels\" | if (. == null) then \"\" else join(\" \") end" ${NODE_CONFIG_FILE})
+  # Example value in k3sConfig.json
+  # "node-taints": ["key1=value1:NoExecute"]
   nodeTaints=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-taints\" | if (. == null) then \"\" else join(\" \") end" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
   echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}, nodeLabels = [$nodeLabels], nodeTaints = [$nodeTaints]"

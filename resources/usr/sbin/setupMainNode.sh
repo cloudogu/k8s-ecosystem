@@ -8,6 +8,8 @@ nodeExternalIp=${2}
 flannelInterface=${3}
 k3sToken=${4}
 username=${5}
+imageGcLowThreshold=${6}
+imageGcHighThreshold=${7}
 
 k3sVersion=$(cat /var/lib/rancher/k3s/agent/images/k3sVersion)
 
@@ -31,7 +33,9 @@ INSTALL_K3S_EXEC="--disable local-storage
  --disable traefik
  --node-external-ip=${nodeExternalIp}
  --node-ip=${nodeIp}
- --flannel-iface=${flannelInterface}" \
+ --flannel-iface=${flannelInterface}
+ --kubelet-arg=image-gc-low-threshold=${imageGcLowThreshold}
+ --kubelet-arg=image-gc-high-threshold=${imageGcHighThreshold}" \
 /home/"${username}"/install.sh
 
 echo "Configuring KUBECONFIG..."

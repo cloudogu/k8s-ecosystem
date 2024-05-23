@@ -1,6 +1,8 @@
 {
   "ces-namespace": "ecosystem",
   "k3s-token": "SuPeR_secure123!TOKEN",
+  "image-gc-low-threshold": 20,
+  "image-gc-high-threshold": 80,
   "nodes": [
     {
       "name": "ces-main",

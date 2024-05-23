@@ -213,6 +213,8 @@ function installK3s() {
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
+  imageGcLowThreshold=$(jq -r '."image-gc-low-threshold" // 80' ${NODE_CONFIG_FILE})
+  imageGcHighThreshold=$(jq -r '."image-gc-high-threshold" // 85' ${NODE_CONFIG_FILE})
   echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
 
   if [[ -z ${nodeIp} ]] || [[ -z ${nodeExternalIp} ]] || [[ -z ${flannelIface} ]]; then
@@ -232,7 +234,7 @@ function installK3s() {
 
   if [[ ${isMainNode} == "true" ]]; then
     echo "This machine has been configured as a main node"
-    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER}
+    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER} "${imageGcLowThreshold}" "${imageGcHighThreshold}"
     /usr/sbin/createNamespace.sh "${cesNamespace}"
   else
     echo "This machine has been configured as a worker node"
@@ -240,7 +242,7 @@ function installK3s() {
     local mainNodePort
     mainNodeIp=$(jq -r '.nodes[]| select(.isMainNode==true)|."node-external-ip"' ${NODE_CONFIG_FILE})
     mainNodePort=6443
-    /usr/sbin/k3s-worker.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${mainNodeIp}" ${mainNodePort} "${k3sToken}" ${DEFAULT_USER}
+    /usr/sbin/k3s-worker.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${mainNodeIp}" ${mainNodePort} "${k3sToken}" ${DEFAULT_USER} "${imageGcLowThreshold}" "${imageGcHighThreshold}"
   fi
 }
 

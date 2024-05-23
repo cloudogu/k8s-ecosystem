@@ -107,11 +107,16 @@ Beispiel für einen Cluster aus einem Main-Node und drei Worker-Nodes:
          "name":"ces-worker-2",
          "node-ip":"192.168.2.102",
          "node-external-ip":"192.168.2.102",
-         "flannel-iface":"eth0"
+         "flannel-iface":"eth0",
+         "node-labels": ["foo=bar", "foo/bar.io=muh"],
+         "node-taints": ["key1=value1:NoExecute"]
       }
    ]
 }
 ```
+
+> Info: Die verwendeten Node-Labels und -Taints sind optional und können pro Node konfiguriert werden.
+> Weitere Hinweise zur Verwendung sind [hier](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) zu finden.
 
 Wenn eine abgeschottete Umgebung verwendet wird, bei der Docker- und Dogu-Registry gespiegelt sind,
 muss hier ein Mirror für die Docker-Registry konfiguriert werden.

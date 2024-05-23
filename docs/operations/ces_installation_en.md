@@ -106,11 +106,16 @@ Example for a cluster of one main node and three worker nodes:
          "name":"ces-worker-2",
          "node-ip":"192.168.2.102",
          "node-external-ip":"192.168.2.102",
-         "flannel-iface":"eth0"
+         "flannel-iface":"eth0",
+         "node-labels": ["foo=bar", "foo/bar.io=muh"],
+         "node-taints": ["key1=value1:NoExecute"]
       }
    ]
 }
 ```
+
+> Info: The node labels and taints used are optional and can be configured per node.
+> Further information on use can be found [here](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
 
 If an air-gapped environment is used where docker and dogu registry are mirrored,
 a mirror for the Docker registry must be configured here.

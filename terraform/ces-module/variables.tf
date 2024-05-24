@@ -21,7 +21,7 @@ variable "kubernetes_cluster_ca_certificate" {
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type = string
-  default = "0.20.2"
+  default = "1.0.0"
 }
 
 variable "setup_chart_namespace" {
@@ -45,6 +45,7 @@ variable "ces_admin_username" {
 variable "ces_admin_password" {
   description = "The CES admin password"
   type = string
+  sensitive = true
 }
 
 variable "ces_admin_email" {
@@ -96,6 +97,7 @@ variable "image_registry_username" {
 variable "image_registry_password" {
   description = "The base64-encoded password for the docker-image-registry"
   type = string
+  sensitive = true
 }
 
 variable "dogu_registry_username" {
@@ -106,6 +108,7 @@ variable "dogu_registry_username" {
 variable "dogu_registry_password" {
   description = "The base64-encoded password for the dogu-registry"
   type = string
+  sensitive = true
 }
 
 variable "dogu_registry_endpoint" {
@@ -149,6 +152,7 @@ variable "helm_registry_username" {
 variable "helm_registry_password" {
   description = "The base64-encoded password for the helm-registry"
   type = string
+  sensitive = true
 }
 
 variable "resource_patches_file" {

@@ -421,3 +421,99 @@ Since cloud provider environments may differ, it is possible that additional con
 - [Microsoft](cloud-provider_installation_azure_aks_en.md)
 - [Plusserver](cloud-provider_installation_plusserver_en.md)
 
+### Notes on the use of storage space
+
+To ensure a stable system and make optimum use of storage space, it is recommended to observe the following aspects:
+
+#### Use of data disks
+
+##### Longhorn
+
+In the default configuration, Longhorn will use the space on the disks of the Kubernetes nodes.
+The user data of the PVCs should be stored on separate disks.
+These must be mounted under `/var/lib/longhorn`.
+
+For security reasons, Longhorn does not use the entire available disk space.
+When using a separate disk, this behaviour can be configured to make optimum use of the space.
+
+Example configuration in a blueprint:
+```json
+{
+  "name": "k8s/k8s-longhorn",
+  "version": "1.5.1-4",
+  "targetState": "present",
+  "deployConfig": {
+    "overwriteConfig": {
+      "longhorn": {
+        "defaultSettings": {
+          "StorageMinimalAvailablePercentage": 10
+        }
+      }
+    }
+  }
+}
+```
+
+##### Storage provisioner from external cloud providers
+
+With external cloud providers, a disk is automatically created for each persistent volume (see e.g. [Google](https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes) or [Azure](https://learn.microsoft.com/en-en/azure/aks/azure-csi-disk-storage-provision)).
+
+#### Garbage collection of container images
+
+`k3sConfig.json` offers the option of configuring the garbage collection of images that are no longer required.
+This process is normally **always** triggered from a space utilization of 85 % and **never** below a utilization of 80 %.
+
+Example `k3sConfig.json`:
+```json
+{
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "image-gc-low-threshold": 20,
+  "image-gc-high-threshold": 50,
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-1",
+      "node-ip": "192.168.56.4",
+      "node-external-ip": "192.168.56.4",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-2",
+      "node-ip": "192.168.56.5",
+      "node-external-ip": "192.168.56.5",
+      "flannel-iface": "enp0s8"
+    }
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "k3ces.local:30099": {
+        "endpoint": [
+          "http://k3ces.local:30099"
+        ]
+      }
+    },
+    "configs": {
+      "k3ces.local:30099": {
+        "tls": {
+          "insecure_skip_verify": false
+        }
+      }
+    }
+  }
+}
+```
+
+With this configuration, the garbage collection will always check from 50 % and up to 20 % space utilization whether old container images can be deleted.

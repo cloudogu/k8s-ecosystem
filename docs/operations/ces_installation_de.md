@@ -405,7 +405,7 @@ sudo systemctl restart k3s
 sudo systemctl restart k3s-agent
 ```
 
-#### #### Selbstsignierte Zertifikate im Cluster-state ablegen
+#### Selbstsignierte Zertifikate im Cluster-state ablegen
 
 ```bash
 kubectl --namespace ecosystem create secret generic docker-registry-cert --from-file=docker-registry-cert.pem=<cert_name>.pem
@@ -424,3 +424,99 @@ für den Betrieb des CES notwendig sind. In den folgenden Links sind Hinweise f�
 - [Microsoft](cloud-provider_installation_azure_aks_de.md)
 - [Plusserver](cloud-provider_installation_plusserver_de.md)
 
+### Hinweise zur Speicherplatz-Nutzung
+
+Um ein stabiles System zu gewährleisten und Speicherplatz optimal zu nutzen, ist es zu empfehlen folgende Aspekte zu beachten:
+
+#### Verwendung von Data-Disks
+
+##### Longhorn
+
+In der Default-Konfiguration wird Longhorn den verwendeten Speicher auf den Disks der Kubernetes-Nodes nutzen.
+Die Nutzdaten der PVCs sollten auf separaten Disks gespeichert werden.
+Diese müssen unter `/var/lib/longhorn` ein gehangen werden.
+
+Longhorn belegt außerdem aus Sicherheitsgründen nicht den gesamten verfügbaren Speicherplatz.
+Bei der Verwendung einer separaten Disk kann dieses Verhalten konfiguriert werden, um den Platz optimal zu nutzen.
+
+Beispiel-Konfiguration in einem Blueprint:
+```json
+{
+  "name": "k8s/k8s-longhorn",
+  "version": "1.5.1-4",
+  "targetState": "present",
+  "deployConfig": {
+    "overwriteConfig": {
+      "longhorn": {
+        "defaultSettings": {
+          "StorageMinimalAvailablePercentage": 10
+        }
+      }
+    }
+  }
+}
+```
+
+##### Storage-Provisioner von externen Cloud-Anbietern
+
+Bei externen Cloud-Providern wird für jedes PersistentVolume automatisch eine Disk erstellt (siehe z.B. [Google](https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes) oder [Azure](https://learn.microsoft.com/de-de/azure/aks/azure-csi-disk-storage-provision)).
+
+#### Garbage-Collection von Container-Images
+
+Die `k3sConfig.json` bietet die Möglichkeit die Garbage-Collection von nicht mehr benötigten Images zu konfigurieren.
+Dieser Prozess wird normalerweise **immer** ab einer Speicherauslastung von 85 % und **nie** unter einer Auslastung von 80 % getriggert.
+
+Beispiel `k3sConfig.json`: 
+```json
+{
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "image-gc-low-threshold": 20,
+  "image-gc-high-threshold": 50,
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-1",
+      "node-ip": "192.168.56.4",
+      "node-external-ip": "192.168.56.4",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-2",
+      "node-ip": "192.168.56.5",
+      "node-external-ip": "192.168.56.5",
+      "flannel-iface": "enp0s8"
+    }
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "k3ces.local:30099": {
+        "endpoint": [
+          "http://k3ces.local:30099"
+        ]
+      }
+    },
+    "configs": {
+      "k3ces.local:30099": {
+        "tls": {
+          "insecure_skip_verify": false
+        }
+      }
+    }
+  }
+}
+```
+
+Mit dieser Konfiguration wird die Garbage-Collection immer ab 50 % und bis 20 % Speicherauslastung prüfen, ob alte Container-Images gelöscht werden können.

@@ -116,7 +116,7 @@ Beispiel für einen Cluster aus einem Main-Node und drei Worker-Nodes:
 ```
 
 > Info: Die verwendeten Node-Labels und -Taints sind optional und können pro Node konfiguriert werden.
-> Weitere Hinweise zur Verwendung sind [hier](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) zu finden.
+> Weitere Hinweise zur Verwendung sind [hier für Labels](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/) und [hier für Taints](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) zu finden.
 
 Wenn eine abgeschottete Umgebung verwendet wird, bei der Docker- und Dogu-Registry gespiegelt sind,
 muss hier ein Mirror für die Docker-Registry konfiguriert werden.

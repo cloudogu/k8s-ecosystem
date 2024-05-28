@@ -115,7 +115,7 @@ Example for a cluster of one main node and three worker nodes:
 ```
 
 > Info: The node labels and taints used are optional and can be configured per node.
-> Further information on use can be found [here](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
+> Further information on use can be found [here for labels](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/) and [here for taints](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
 
 If an air-gapped environment is used where docker and dogu registry are mirrored,
 a mirror for the Docker registry must be configured here.

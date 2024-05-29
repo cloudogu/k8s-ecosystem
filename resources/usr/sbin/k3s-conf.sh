@@ -198,13 +198,7 @@ function replaceK3sUrlInK3sEnvFile() {
 }
 
 function installK3s() {
-  local nodeIp
-  local nodeExternalIp
-  local flannelIface
-  local cesNamespace
-  local isMainNode
-  local k3sToken
-  local hostName
+  local nodeIp nodeExternalIp flannelIface cesNamespace isMainNode k3sToken hostName nodeLabels="" nodeTaints=""
   hostName=$(cat /etc/hostname)
   echo "Getting node-ip, node-external-ip and flannel-iface configurations for ${hostName} from ${NODE_CONFIG_FILE}..."
   nodeIp=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-ip\"" ${NODE_CONFIG_FILE})
@@ -212,8 +206,16 @@ function installK3s() {
   flannelIface=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"flannel-iface\"" ${NODE_CONFIG_FILE})
   cesNamespace=$(jq -r ".\"ces-namespace\"" ${NODE_CONFIG_FILE})
   isMainNode=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"isMainNode\"" ${NODE_CONFIG_FILE})
+  # Example value in k3sConfig.json
+  # "node-labels": ["foo=bar", "kuh/muh.io=mah"]
+  nodeLabels=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-labels\" | if (. == null) then \"\" else join(\" \") end" ${NODE_CONFIG_FILE})
+  # Example value in k3sConfig.json
+  # "node-taints": ["key1=value1:NoExecute"]
+  nodeTaints=$(jq -r ".nodes[] | select(.name == \"${hostName}\") | .\"node-taints\" | if (. == null) then \"\" else join(\" \") end" ${NODE_CONFIG_FILE})
   k3sToken=$(jq -r ".\"k3s-token\"" ${NODE_CONFIG_FILE})
-  echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}"
+  imageGcLowThreshold=$(jq -r '."image-gc-low-threshold" // 80' ${NODE_CONFIG_FILE})
+  imageGcHighThreshold=$(jq -r '."image-gc-high-threshold" // 85' ${NODE_CONFIG_FILE})
+  echo "nodeIp = ${nodeIp}, nodeExternalIp = ${nodeExternalIp}, flannelIface = ${flannelIface}, nodeLabels = [$nodeLabels], nodeTaints = [$nodeTaints]"
 
   if [[ -z ${nodeIp} ]] || [[ -z ${nodeExternalIp} ]] || [[ -z ${flannelIface} ]]; then
     echo "ERROR: node-ip, node-external-ip and/or flannel-iface configuration is empty"
@@ -232,7 +234,7 @@ function installK3s() {
 
   if [[ ${isMainNode} == "true" ]]; then
     echo "This machine has been configured as a main node"
-    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" ${DEFAULT_USER}
+    /usr/sbin/setupMainNode.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${k3sToken}" "${DEFAULT_USER}" "${nodeLabels}" "${nodeTaints}" "${imageGcLowThreshold}" "${imageGcHighThreshold}"
     /usr/sbin/createNamespace.sh "${cesNamespace}"
   else
     echo "This machine has been configured as a worker node"
@@ -240,7 +242,7 @@ function installK3s() {
     local mainNodePort
     mainNodeIp=$(jq -r '.nodes[]| select(.isMainNode==true)|."node-external-ip"' ${NODE_CONFIG_FILE})
     mainNodePort=6443
-    /usr/sbin/k3s-worker.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${mainNodeIp}" ${mainNodePort} "${k3sToken}" ${DEFAULT_USER}
+    /usr/sbin/k3s-worker.sh "${nodeIp}" "${nodeExternalIp}" "${flannelIface}" "${mainNodeIp}" ${mainNodePort} "${k3sToken}" "${DEFAULT_USER}" "${nodeLabels}" "${nodeTaints}" "${imageGcLowThreshold}" "${imageGcHighThreshold}"
   fi
 }
 

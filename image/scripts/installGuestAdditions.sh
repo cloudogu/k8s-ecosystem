@@ -25,7 +25,7 @@ installGuestAdditions() {
 installGuestAdditionsVirtualBox() {
   echo "**** Installing guest additions for VirtualBox hypervisor..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    gcc make perl
+    gcc make perl libxt6 libxmu6
 
   mkdir -p /mnt/virtualbox
   mount -o loop "${HOME_DIR}"/VBoxGuest*.iso /mnt/virtualbox

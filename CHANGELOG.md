@@ -15,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install longhorn as a component and remove it from the base image #52
 - Upgrade k3s to 1.28.3 #56
 - Passwords (Docker-, Dogu- & Helmregistry) has to be encoded in Base64 (see [here](docs/development/dev_box_en.md) and [here](terraform/ces-module/README.md)) #64
+- Disk space related optimizations for development (f.e. fewer longhorn replicas) #71
+- Add options to add node labels and taints on cluster setup #73
+- Set new garbage collection defaults for `image-gc-low-threshold` and `image-gc-high-threshold`
 - Terraform Azure Module - Variables and sensitive data can now be passed from an extra file.
+
 
 ### Added
 - Packer templates for CES production images
@@ -30,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restart chrony during k3s installation if it has replaced systemd-timesyncd
 - Add proxy registry to simplify the development process of k8s components; #49
 - Add support for mkcert-generated certificates
+- make garbage collection configurable via `image-gc-low-threshold` and `image-gc-high-threshold`,
 
 ### Fixed
 - Added missing KUBECONFIG export to setup

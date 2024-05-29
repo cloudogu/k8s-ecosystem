@@ -434,7 +434,7 @@ Um ein stabiles System zu gewährleisten und Speicherplatz optimal zu nutzen, is
 
 In der Default-Konfiguration wird Longhorn den verwendeten Speicher auf den Disks der Kubernetes-Nodes nutzen.
 Die Nutzdaten der PVCs sollten auf separaten Disks gespeichert werden.
-Diese müssen unter `/var/lib/longhorn` ein gehangen werden.
+Diese müssen unter `/var/lib/longhorn` eingehangen werden.
 
 Longhorn belegt außerdem aus Sicherheitsgründen nicht den gesamten verfügbaren Speicherplatz.
 Bei der Verwendung einer separaten Disk kann dieses Verhalten konfiguriert werden, um den Platz optimal zu nutzen.

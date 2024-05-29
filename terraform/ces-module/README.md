@@ -30,7 +30,6 @@ module "ces" {
    image_registry_url      = "registry.cloudogu.com"
    image_registry_username = "username"
    image_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
-   image_registry_email    = "test@test.de"
 
    dogu_registry_username = "username"
    dogu_registry_password = "cGFzc3dvcmQ=" # Base64-encoded

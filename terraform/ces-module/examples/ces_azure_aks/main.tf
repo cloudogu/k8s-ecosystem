@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.65.0"
+      version = "3.105.0"
     }
   }
 
@@ -14,14 +14,14 @@ provider "azurerm" {
 }
 
 locals {
-  azure_client_id     = "MY Client ID"
-  azure_client_secret = "CLIENT_SECRET"
-  aks_cluster_name    = "test-terraform-module"
+  azure_client_id     = var.azure_client_id
+  azure_client_secret = var.azure_client_secret
+  aks_cluster_name    = var.aks_cluster_name
 }
 
 resource "azurerm_resource_group" "default" {
   name     = "${local.aks_cluster_name}-rg"
-  location = "West Europe"
+  location = var.azure_resource_group_location
 
   tags = {
     environment = "CES"
@@ -35,10 +35,10 @@ resource "azurerm_kubernetes_cluster" "default" {
   dns_prefix          = "${local.aks_cluster_name}-k8s"
 
   default_node_pool {
-    name            = "default"
-    node_count      = 3
-    vm_size         = "Standard_DC4s_v2"
-    os_disk_size_gb = 50
+    name            = var.node_pool_name
+    node_count      = var.node_count
+    vm_size         = var.vm_size
+    os_disk_size_gb = var.os_disk_size_gb
   }
 
   service_principal {
@@ -63,26 +63,25 @@ module "ces" {
   kubernetes_cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.default.kube_config[0].cluster_ca_certificate)
 
   # Configure CES installation options
-  setup_chart_version   = "0.20.2"
-  setup_chart_namespace = "k8s"
-  ces_fqdn              = ""
-  ces_admin_password    = "test123"
-  additional_dogus      = ["official/jenkins", "official/scm", "official/nexus"]
-  resource_patches_file = "resource_patches.yaml"
+  setup_chart_version   = var.setup_chart_version
+  setup_chart_namespace = var.setup_chart_namespace
+  ces_fqdn              = var.ces_fqdn
+  ces_admin_password    = var.ces_admin_password
+  additional_dogus      = var.additional_dogus
+  resource_patches_file = var.resource_patches_file
 
   # Configure access for the registries. Passwords need to be base64-encoded.
-  image_registry_url      = "registry.cloudogu.com"
-  image_registry_username = "username"
-  image_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
-  image_registry_email    = "test@test.de"
+  image_registry_url      = var.image_registry_url
+  image_registry_username = var.image_registry_username
+  image_registry_password = var.image_registry_password
 
-  dogu_registry_username = "username"
-  dogu_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
-  dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
+  dogu_registry_username = var.dogu_registry_username
+  dogu_registry_password = var.dogu_registry_password
+  dogu_registry_endpoint = var.dogu_registry_endpoint
 
-  helm_registry_host       = "registry.cloudogu.com"
-  helm_registry_schema     = "oci"
-  helm_registry_plain_http = false
-  helm_registry_username   = "username"
-  helm_registry_password   = "cGFzc3dvcmQ=" # Base64-encoded
+  helm_registry_host       = var.helm_registry_host
+  helm_registry_schema     = var.helm_registry_schema
+  helm_registry_plain_http = var.helm_registry_plain_http
+  helm_registry_username   = var.helm_registry_username
+  helm_registry_password   = var.helm_registry_password
 }

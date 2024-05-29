@@ -460,8 +460,9 @@ With external cloud providers, a disk is automatically created for each persiste
 
 #### Garbage collection of container images
 
-`k3sConfig.json` offers the option of configuring the garbage collection of images that are no longer required.
-This process is normally **always** triggered from a space utilization of 85 % and **never** below a utilization of 80 %.
+The `k3sConfig.json` offers the possibility to configure the garbage collection of images that are no longer required.
+This process is normally **always** triggered from a space utilization of 85%.
+An attempt is made to delete as many old images as necessary until a utilization of 80% is reached.
 
 Example `k3sConfig.json`:
 ```json
@@ -516,4 +517,5 @@ Example `k3sConfig.json`:
 }
 ```
 
-With this configuration, the garbage collection will always check from 50 % and up to 20 % space utilization whether old container images can be deleted.
+With this configuration, the garbage collection is always started from 50%.
+Old images may be deleted up to a utilization of 20%.

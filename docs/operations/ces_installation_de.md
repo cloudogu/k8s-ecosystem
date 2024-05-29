@@ -464,7 +464,8 @@ Bei externen Cloud-Providern wird für jedes PersistentVolume automatisch eine D
 #### Garbage-Collection von Container-Images
 
 Die `k3sConfig.json` bietet die Möglichkeit die Garbage-Collection von nicht mehr benötigten Images zu konfigurieren.
-Dieser Prozess wird normalerweise **immer** ab einer Speicherauslastung von 85 % und **nie** unter einer Auslastung von 80 % getriggert.
+Dieser Prozess wird normalerweise **immer** ab einer Speicherauslastung von 85 % getriggert.
+Dabei wird versucht so viele alte Images zu löschen, bis eine Auslastung von 80 % erreicht ist.
 
 Beispiel `k3sConfig.json`: 
 ```json
@@ -519,4 +520,5 @@ Beispiel `k3sConfig.json`:
 }
 ```
 
-Mit dieser Konfiguration wird die Garbage-Collection immer ab 50 % und bis 20 % Speicherauslastung prüfen, ob alte Container-Images gelöscht werden können.
+Mit dieser Konfiguration wird die Garbage-Collection immer ab 50 % gestartet.
+Möglicherweise werden alte Images bis zu einer Auslastung von 20 % gelöscht.

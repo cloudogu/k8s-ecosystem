@@ -107,11 +107,16 @@ Beispiel für einen Cluster aus einem Main-Node und drei Worker-Nodes:
          "name":"ces-worker-2",
          "node-ip":"192.168.2.102",
          "node-external-ip":"192.168.2.102",
-         "flannel-iface":"eth0"
+         "flannel-iface":"eth0",
+         "node-labels": ["foo=bar", "foo/bar.io=muh"],
+         "node-taints": ["key1=value1:NoExecute"]
       }
    ]
 }
 ```
+
+> Info: Die verwendeten Node-Labels und -Taints sind optional und können pro Node konfiguriert werden.
+> Weitere Hinweise zur Verwendung sind [hier für Labels](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/) und [hier für Taints](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) zu finden.
 
 Wenn eine abgeschottete Umgebung verwendet wird, bei der Docker- und Dogu-Registry gespiegelt sind,
 muss hier ein Mirror für die Docker-Registry konfiguriert werden.
@@ -400,7 +405,7 @@ sudo systemctl restart k3s
 sudo systemctl restart k3s-agent
 ```
 
-#### #### Selbstsignierte Zertifikate im Cluster-state ablegen
+#### Selbstsignierte Zertifikate im Cluster-state ablegen
 
 ```bash
 kubectl --namespace ecosystem create secret generic docker-registry-cert --from-file=docker-registry-cert.pem=<cert_name>.pem
@@ -419,3 +424,101 @@ für den Betrieb des CES notwendig sind. In den folgenden Links sind Hinweise f�
 - [Microsoft](cloud-provider_installation_azure_aks_de.md)
 - [Plusserver](cloud-provider_installation_plusserver_de.md)
 
+### Hinweise zur Speicherplatz-Nutzung
+
+Um ein stabiles System zu gewährleisten und Speicherplatz optimal zu nutzen, ist es zu empfehlen folgende Aspekte zu beachten:
+
+#### Verwendung von Data-Disks
+
+##### Longhorn
+
+In der Default-Konfiguration wird Longhorn den verwendeten Speicher auf den Disks der Kubernetes-Nodes nutzen.
+Die Nutzdaten der PVCs sollten auf separaten Disks gespeichert werden.
+Diese müssen unter `/var/lib/longhorn` eingehangen werden.
+
+Longhorn belegt außerdem aus Sicherheitsgründen nicht den gesamten verfügbaren Speicherplatz.
+Bei der Verwendung einer separaten Disk kann dieses Verhalten konfiguriert werden, um den Platz optimal zu nutzen.
+
+Beispiel-Konfiguration in einem Blueprint:
+```json
+{
+  "name": "k8s/k8s-longhorn",
+  "version": "1.5.1-4",
+  "targetState": "present",
+  "deployConfig": {
+    "overwriteConfig": {
+      "longhorn": {
+        "defaultSettings": {
+          "StorageMinimalAvailablePercentage": 10
+        }
+      }
+    }
+  }
+}
+```
+
+##### Storage-Provisioner von externen Cloud-Anbietern
+
+Bei externen Cloud-Providern wird für jedes PersistentVolume automatisch eine Disk erstellt (siehe z.B. [Google](https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes) oder [Azure](https://learn.microsoft.com/de-de/azure/aks/azure-csi-disk-storage-provision)).
+
+#### Garbage-Collection von Container-Images
+
+Die `k3sConfig.json` bietet die Möglichkeit die Garbage-Collection von nicht mehr benötigten Images zu konfigurieren.
+Dieser Prozess wird normalerweise **immer** ab einer Speicherauslastung von 85 % getriggert.
+Dabei wird versucht so viele alte Images zu löschen, bis eine Auslastung von 80 % erreicht ist.
+
+Beispiel `k3sConfig.json`: 
+```json
+{
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "image-gc-low-threshold": 20,
+  "image-gc-high-threshold": 50,
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-1",
+      "node-ip": "192.168.56.4",
+      "node-external-ip": "192.168.56.4",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-2",
+      "node-ip": "192.168.56.5",
+      "node-external-ip": "192.168.56.5",
+      "flannel-iface": "enp0s8"
+    }
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "k3ces.local:30099": {
+        "endpoint": [
+          "http://k3ces.local:30099"
+        ]
+      }
+    },
+    "configs": {
+      "k3ces.local:30099": {
+        "tls": {
+          "insecure_skip_verify": false
+        }
+      }
+    }
+  }
+}
+```
+
+Mit dieser Konfiguration wird die Garbage-Collection immer ab 50 % gestartet.
+Möglicherweise werden alte Images bis zu einer Auslastung von 20 % gelöscht.

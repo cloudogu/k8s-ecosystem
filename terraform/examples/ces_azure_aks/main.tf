@@ -19,10 +19,10 @@ provider "azurerm" {
 
 provider "helm" {
   kubernetes {
-    host                   = var.kubernetes_host
-    client_certificate     = var.kubernetes_client_certificate
-    client_key             = var.kubernetes_client_key
-    cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
+    host                   = module.azure.kubernetes_host
+    client_certificate     = base64decode(module.azure.kubernetes_client_certificate)
+    client_key             = base64decode(module.azure.kubernetes_client_key)
+    cluster_ca_certificate = base64decode(module.azure.kubernetes_cluster_ca_certificate)
   }
 
   registry {
@@ -33,20 +33,15 @@ provider "helm" {
 }
 
 module "azure" {
-  source              = "../../azure_aks"
-  azure_client_id     = var.azure_client_id
-  azure_client_secret = var.azure_client_secret
+  source                        = "../../azure_aks"
+  azure_client_id               = var.azure_client_id
+  azure_client_secret           = var.azure_client_secret
+  azure_resource_group_location = var.azure_resource_group_location
 }
 
 module "ces" {
   depends_on = [module.azure]
-  source = "../../"
-
-  # Configure the access to the Kubernetes-Cluster
-  kubernetes_host               = module.azure.kubernetes_host
-  kubernetes_client_certificate = base64decode(module.azure.kubernetes_client_certificate)
-  kubernetes_client_key         = base64decode(module.azure.kubernetes_client_key)
-  kubernetes_cluster_ca_certificate = base64decode(module.azure.kubernetes_cluster_ca_certificate)
+  source     = "../../ces-module"
 
   # Configure CES installation options
   setup_chart_version   = var.setup_chart_version

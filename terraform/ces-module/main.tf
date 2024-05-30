@@ -15,9 +15,6 @@ locals {
   tld        = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
 }
 
-
-
-
 resource "helm_release" "k8s-ces-setup" {
   name       = "k8s-ces-setup"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"

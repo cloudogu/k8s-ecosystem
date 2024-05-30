@@ -5,7 +5,7 @@
   - `az login --scope https://graph.microsoft.com//.default`
   - `az ad sp create-for-rbac --skip-assignment`
   - Template `appId` and `password` with `secretVars.tfvars.template`
-- Template EcoSystem credentials with `secretVars.tfvars.template`
+- Template credentials with `secretVars.tfvars.template`
 
 # General configuration (not mandatory)
 

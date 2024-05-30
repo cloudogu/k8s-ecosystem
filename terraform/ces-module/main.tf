@@ -16,20 +16,7 @@ locals {
 }
 
 
-provider "helm" {
-  kubernetes {
-    host                   = var.kubernetes_host
-    client_certificate     = var.kubernetes_client_certificate
-    client_key             = var.kubernetes_client_key
-    cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
-  }
 
-  registry {
-    url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
-    username = var.helm_registry_username
-    password = base64decode(var.helm_registry_password)
-  }
-}
 
 resource "helm_release" "k8s-ces-setup" {
   name       = "k8s-ces-setup"

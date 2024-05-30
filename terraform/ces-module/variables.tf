@@ -1,26 +1,3 @@
-variable "kubernetes_host" {
-  description = "The hostname (in form of URI) of the Kubernetes API."
-  type = string
-}
-
-variable "kubernetes_client_certificate" {
-  description = "PEM-encoded client certificate for TLS authentication"
-  type = string
-  sensitive = true
-}
-
-variable "kubernetes_client_key" {
-  description = "PEM-encoded client certificate key for TLS authentication"
-  type = string
-  sensitive = true
-}
-
-variable "kubernetes_cluster_ca_certificate" {
-  description = "PEM-encoded root certificates bundle for TLS authentication"
-  type = string
-  sensitive = true
-}
-
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type = string

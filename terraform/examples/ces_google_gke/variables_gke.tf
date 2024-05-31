@@ -1,7 +1,25 @@
 variable "kubernetes_version" {
   default = "1.29"
 }
-//TODO: node_pool name, disk_size
+
+variable "node_pool_name" {
+  description = "The name of the node pool. The final node pool will be create with the cluster name as prefix."
+  type = string
+}
+
+variable "gcp_project_name" {
+  type = string
+}
+
+variable "gcp_zone" {
+  type = string
+  default = "europe-west3-c"
+}
+
+variable "gcp_credentials" {
+  type = string
+  sensitive = true
+}
 
 variable "node_count" {
   description = "The amount of nodes to create"
@@ -11,6 +29,16 @@ variable "node_count" {
 
 variable "machine_type" {
   default = "n1-standard-4" // "e2-medium" "n1-standard-4"
+}
+
+variable "disk_type" {
+  type = string
+  default = "pd-balanced" // (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced')
+}
+
+variable "disk_size" {
+  type = string
+  default = 50
 }
 
 variable "cluster_name" {

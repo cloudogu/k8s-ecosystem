@@ -45,8 +45,8 @@ module "google_gke" {
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
 
-  machine_type = var.machine_type
-  node_count   = var.node_count
+  machine_type   = var.machine_type
+  node_count     = var.node_count
 }
 
 module "ces" {

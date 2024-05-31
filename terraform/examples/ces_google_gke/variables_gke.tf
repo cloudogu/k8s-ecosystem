@@ -19,6 +19,7 @@ variable "gcp_zone" {
 variable "gcp_credentials" {
   type = string
   sensitive = true
+  default = "secrets/gcp_sa.json"
 }
 
 variable "node_count" {

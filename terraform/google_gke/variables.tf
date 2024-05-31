@@ -9,6 +9,7 @@ variable "kubernetes_version" {
 variable "node_pool_name" {
   description = "The name of the node pool. The final node pool will be create with the cluster name as prefix."
   type = string
+  default = "node-pool"
 }
 
 variable "node_count" {
@@ -36,5 +37,11 @@ variable "cluster_name" {
 variable "idp_enabled" {
   type    = bool
   default = false
+}
+
+variable "gcp_credentials" {
+  type = string
+  sensitive = true
+  default = "secrets/gcp_sa.json"
 }
 

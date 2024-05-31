@@ -10,7 +10,6 @@ terraform {
 resource "google_container_cluster" "default" {
   name               = var.cluster_name
   min_master_version = var.kubernetes_version
-  node_version       = var.kubernetes_version
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -37,7 +36,7 @@ resource "google_container_cluster" "default" {
 
 resource "google_container_node_pool" "default_node_pool" {
   name       = local.node_pool_name
-  cluster    = google_container_cluster.default
+  cluster    = google_container_cluster.default.id
   node_count = var.node_count
 
   node_config {

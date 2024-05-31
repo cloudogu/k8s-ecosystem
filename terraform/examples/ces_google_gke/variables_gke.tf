@@ -5,6 +5,7 @@ variable "kubernetes_version" {
 variable "node_pool_name" {
   description = "The name of the node pool. The final node pool will be create with the cluster name as prefix."
   type = string
+  default = "node-pool"
 }
 
 variable "gcp_project_name" {

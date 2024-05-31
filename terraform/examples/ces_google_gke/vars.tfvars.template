@@ -1,4 +1,4 @@
 // For further configuration it is useful to use a separate variable file instead of the file for the secrets.
 gcp_project_name = "my-project"
-zone             = "europe-west3-c"
+gcp_zone         = "europe-west3-c"
 cluster_name     = "test-cluster"

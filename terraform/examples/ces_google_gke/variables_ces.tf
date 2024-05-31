@@ -73,6 +73,12 @@ variable "helm_registry_password" {
   sensitive = true
 }
 
+variable "ces_admin_username" {
+  description = "The CES admin username"
+  type = string
+  default = "admin"
+}
+
 variable "ces_admin_password" {
   description = "The password for the ces admin user"
   type = string

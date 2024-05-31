@@ -45,6 +45,7 @@ module "google_gke" {
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
 
+  node_pool_name = var.node_pool_name
   machine_type   = var.machine_type
   node_count     = var.node_count
 }
@@ -57,6 +58,7 @@ module "ces" {
   setup_chart_version   = var.setup_chart_version
   setup_chart_namespace = var.setup_chart_namespace
   ces_fqdn              = var.ces_fqdn
+  ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
   additional_dogus      = var.additional_dogus
   resource_patches_file = var.resource_patches_file

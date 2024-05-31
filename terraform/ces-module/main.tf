@@ -15,6 +15,14 @@ locals {
   tld        = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
 }
 
+// TODO
+// The setup will always be created by Terraform because it deletes itself after ces installation.
+// Therefore a `terraform apply` will always deploy a setup if it is already done and fails.
+// To avoid this we can eiter:
+// 1. Edit the setup - It should not delete itself with the helm release
+// or:
+// 2. Create a terraform data programm. This programm has to read the cluster with local? kubectl binary and checks if the ces is already installed.
+//    After that the programm returns a boolean var in json format. This var can be used as a terraform var wit a ternary operator calculating the count of the helm release.
 resource "helm_release" "k8s-ces-setup" {
   name       = "k8s-ces-setup"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"

@@ -17,6 +17,11 @@ variable "gcp_zone" {
   default = "europe-west3-c"
 }
 
+variable "gcp_region" {
+  type = string
+  default = "europe-west3"
+}
+
 variable "gcp_credentials" {
   type = string
   sensitive = true
@@ -51,4 +56,10 @@ variable "cluster_name" {
 variable "idp_enabled" {
   type    = bool
   default = false
+}
+
+variable "weekend_scale_down" {
+  type = bool
+  default = true
+  description = "Flag which determines if the cluster should be scaled down on weekend"
 }

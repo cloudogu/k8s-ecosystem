@@ -45,3 +45,20 @@ variable "gcp_credentials" {
   default = "secrets/gcp_sa.json"
 }
 
+variable "weekend_scale_down" {
+  type = bool
+  default = false
+  description = "Flag which determines if the cluster should be scaled down on weekend"
+}
+
+variable "gcp_project_name" {
+  type = string
+}
+
+variable "gcp_zone" {
+  type = string
+}
+
+variable "gcp_region" {
+  type = string
+}

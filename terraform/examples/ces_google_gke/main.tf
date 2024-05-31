@@ -45,9 +45,15 @@ module "google_gke" {
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
 
+  gcp_project_name = var.gcp_project_name
+  gcp_zone         = var.gcp_zone
+  gcp_region       = var.gcp_region
+
   node_pool_name = var.node_pool_name
   machine_type   = var.machine_type
   node_count     = var.node_count
+
+  weekend_scale_down = var.weekend_scale_down
 }
 
 module "ces" {

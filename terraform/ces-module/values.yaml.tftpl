@@ -30,6 +30,7 @@ components:
   ${component.name}:
     version: ${component.version}
     helmRepositoryNamespace: ${component.namespace}
+    deployNamespace: ${component.deployNamespace}
 %{ endfor ~}
 #  k8s-snapshot-controller:
 #    version: latest

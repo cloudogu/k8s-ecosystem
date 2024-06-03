@@ -93,12 +93,13 @@ variable "additional_dogus" {
 
 variable "additional_components" {
   description = "A list of additional Components to install"
-  type = list(object({
-    name      = string
-    version   = string
-    namespace = string
+  type        = list(object({
+    name            = string
+    version         = string
+    namespace       = string
+    deployNamespace = string
   }))
-  default = [{name = "k8s-longhorn", version = "latest", namespace = "k8s"}]
+  default = [{ name = "k8s-longhorn", version = "latest", namespace = "k8s", deployNamespace = "longhorn-system" }]
 }
 
 variable "ces_fqdn" {

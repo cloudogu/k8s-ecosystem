@@ -21,3 +21,4 @@ terraform.tfvars
 # generated values file for the setup
 additionalValues.yaml
 /terraform/examples/ces_google_gke/gcp_sa.json
+/terraform/examples/ces_google_gke/kubeconfig

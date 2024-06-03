@@ -21,8 +21,8 @@ provider "google" {
 
 provider "helm" {
   kubernetes {
-    host                   = "https://${module.google_gke.endpoint}"
-    token                  = module.google_gke.access_token
+    host  = "https://${module.google_gke.endpoint}"
+    token = module.google_gke.access_token
     cluster_ca_certificate = base64decode(
       module.google_gke.ca_certificate
     )
@@ -39,8 +39,19 @@ provider "helm" {
   }
 }
 
+module "kubeconfig_generator" {
+  source                 = "../../kubeconfig_generator"
+  cluster_name           = var.cluster_name
+  access_token           = module.google_gke.access_token
+  cluster_ca_certificate = module.google_gke.ca_certificate
+  cluster_endpoint       = "https://${module.google_gke.endpoint}"
+
+  kubeconfig_path = "kubeconfig"
+}
+
 module "google_gke" {
   source             = "../../google_gke"
+  gcp_credentials    = var.gcp_credentials
   cluster_name       = var.cluster_name
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
@@ -58,7 +69,7 @@ module "google_gke" {
 
 module "ces" {
   depends_on = [module.google_gke]
-  source     = "../../ces-module"
+  source = "../../ces-module"
 
   # Configure CES installation options
   setup_chart_version   = var.setup_chart_version

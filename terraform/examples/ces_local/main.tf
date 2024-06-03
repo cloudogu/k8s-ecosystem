@@ -9,6 +9,10 @@ terraform {
   required_version = ">= 1.7.0"
 }
 
+provider kubernetes {
+  config_path = var.local_kube_config_path
+}
+
 provider "helm" {
   kubernetes {
     config_path = var.local_kube_config_path

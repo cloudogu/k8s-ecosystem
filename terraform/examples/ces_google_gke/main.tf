@@ -19,13 +19,23 @@ provider "google" {
   zone        = var.gcp_zone
 }
 
+locals {
+  gke_module_host           = "https://${module.google_gke.endpoint}"
+  gke_module_token          = module.google_gke.access_token
+  gke_module_ca_certificate = base64decode(module.google_gke.ca_certificate)
+}
+
+provider "kubernetes" {
+  host                   = local.gke_module_host
+  token                  = local.gke_module_token
+  cluster_ca_certificate = local.gke_module_ca_certificate
+}
+
 provider "helm" {
   kubernetes {
-    host  = "https://${module.google_gke.endpoint}"
-    token = module.google_gke.access_token
-    cluster_ca_certificate = base64decode(
-      module.google_gke.ca_certificate
-    )
+    host                   = local.gke_module_host
+    token                  = local.gke_module_token
+    cluster_ca_certificate = local.gke_module_ca_certificate
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "gke-gcloud-auth-plugin"
@@ -69,7 +79,7 @@ module "google_gke" {
 
 module "ces" {
   depends_on = [module.google_gke]
-  source = "../../ces-module"
+  source     = "../../ces-module"
 
   # Configure CES installation options
   setup_chart_version   = var.setup_chart_version

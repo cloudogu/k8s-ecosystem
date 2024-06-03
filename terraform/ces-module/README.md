@@ -11,7 +11,7 @@ code by adding a `module` configuration and setting its `source` parameter to UR
 ```hcl
 module "ces" {
    # update this to the URL and version you want to use
-   source = "github.com/cloudogu/k8s-ecosystem//terraform/ces-module"
+   source = "github.com/cloudogu/k8s-ecosystem/terraform/ces-module"
 
    # Configure the access to the Kubernetes-Cluster 
    kubernetes_host                   = my_cluster.kube_config.host
@@ -20,7 +20,7 @@ module "ces" {
    kubernetes_cluster_ca_certificate = base64decode(my_cluster.kube_config.cluster_ca_certificate)
 
    # Configure CES installation options
-   setup_chart_version   = "0.20.2"
+   setup_chart_version   = "1.0.0"
    setup_chart_namespace = "k8s"
    ces_fqdn              = "ces.local"
    ces_admin_password    = "test123"
@@ -52,4 +52,9 @@ Note the following parameters:
    Further information can be found in the [k8s-ces-setup documentation] (https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/configuration_guide_en.md#resource_patches)
 
 
+## Notes for the setup helm release
+
+Since the setup has to be run only once it will delete itself after the `terraform apply`.
+To avoid a setup reapply in subsequently `terraform apply` you can configure a kubernetes resource to identify that the setup already run.
+Use the variable `is_setup_applied_matching_resource`. The dogu custom resource definition is used as the default for this.
 

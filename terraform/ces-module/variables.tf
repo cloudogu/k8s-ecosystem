@@ -151,3 +151,16 @@ variable "resource_patches_file" {
   type        = string
   default     = null
 }
+
+variable "is_setup_applied_matching_resource" {
+  description = "This variable defines a resource with its kind, api and field selector and is used to determine if the setup is already installed or not."
+  type        = object({
+    kind           = string
+    api            = string
+    field_selector = string
+  })
+  default = {
+    kind           = "CustomResourceDefinition", api = "apiextensions.k8s.io/v1",
+    field_selector = "metadata.name==dogus.k8s.cloudogu.com"
+  }
+}

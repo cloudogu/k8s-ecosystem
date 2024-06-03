@@ -17,12 +17,26 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  az_module_host                   = module.azure.kubernetes_host
+  az_module_client_certificate     = base64decode(module.azure.kubernetes_client_certificate)
+  az_module_client_key             = base64decode(module.azure.kubernetes_client_key)
+  az_module_cluster_ca_certificate = base64decode(module.azure.kubernetes_cluster_ca_certificate)
+}
+
+provider "kubernetes" {
+  host                   = local.az_module_host
+  client_certificate     = local.az_module_client_certificate
+  client_key             = local.az_module_client_key
+  cluster_ca_certificate = local.az_module_cluster_ca_certificate
+}
+
 provider "helm" {
   kubernetes {
-    host                   = module.azure.kubernetes_host
-    client_certificate     = base64decode(module.azure.kubernetes_client_certificate)
-    client_key             = base64decode(module.azure.kubernetes_client_key)
-    cluster_ca_certificate = base64decode(module.azure.kubernetes_cluster_ca_certificate)
+    host                   = local.az_module_host
+    client_certificate     = local.az_module_client_certificate
+    client_key             = local.az_module_client_key
+    cluster_ca_certificate = local.az_module_cluster_ca_certificate
   }
 
   registry {

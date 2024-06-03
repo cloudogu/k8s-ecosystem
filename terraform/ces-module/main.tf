@@ -48,6 +48,7 @@ resource "helm_release" "k8s-ces-setup" {
         "helm_registry_insecure_tls" = var.helm_registry_insecure_tls
         "helm_registry_username"     = var.helm_registry_username
         "helm_registry_password"     = var.helm_registry_password
+        "additional_components"      = var.additional_components
         "setup_json"                 = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {

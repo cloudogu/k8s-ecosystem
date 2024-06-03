@@ -64,6 +64,16 @@ variable "additional_dogus" {
   default = []
 }
 
+variable "additional_components" {
+  description = "A list of additional Components to install"
+  type = list(object({
+    name      = string
+    version   = string
+    namespace = string
+  }))
+  default = []
+}
+
 variable "image_registry_url" {
   description = "The url for the docker-image-registry"
   type = string

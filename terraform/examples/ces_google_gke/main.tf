@@ -61,20 +61,13 @@ module "kubeconfig_generator" {
 
 module "google_gke" {
   source             = "../../google_gke"
-  gcp_credentials    = var.gcp_credentials
   cluster_name       = var.cluster_name
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
 
-  gcp_project_name = var.gcp_project_name
-  gcp_zone         = var.gcp_zone
-  gcp_region       = var.gcp_region
-
   node_pool_name = var.node_pool_name
   machine_type   = var.machine_type
   node_count     = var.node_count
-
-  weekend_scale_down = var.weekend_scale_down
 }
 
 module "ces" {
@@ -106,4 +99,26 @@ module "ces" {
   helm_registry_insecure_tls = var.helm_registry_insecure_tls
   helm_registry_username     = var.helm_registry_username
   helm_registry_password     = var.helm_registry_password
+}
+
+locals {
+  scalingUri            = "https://container.googleapis.com/v1beta1/projects/${var.gcp_project_name}/zones/${var.gcp_zone}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}/setSize"
+  service_account_email = jsondecode(file(var.gcp_credentials)).client_email
+}
+
+module "scale_jobs" {
+  depends_on            = [module.google_gke]
+  source                = "../../google_gke_http_cron"
+  for_each   = {
+    for index, job in var.scale_jobs:
+    job.id => job
+  }
+  name                  = "${var.cluster_name}-scale-to-${each.value.node_count}-job-${index(var.scale_jobs, each.value)}"
+  uri                   = local.scalingUri
+  method                = "POST"
+  content_type          = "application/json"
+  body                  = "{\"nodeCount\":${each.value.node_count}}"
+  cron_expression       = each.value.cron_expression
+  gcp_region            = var.gcp_region
+  service_account_email = local.service_account_email
 }

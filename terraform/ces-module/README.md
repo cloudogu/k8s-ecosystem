@@ -44,7 +44,7 @@ module "ces" {
 
 You can find a full list parameters with descriptions in [variables.tf](variables.tf).
 
-Check out the [Azure AKS example](./examples/ces_azure_aks) for fully-working sample code for provisioning an AKS-Cluster on Azure and installing the CES.
+Check out the [Azure AKS example](../examples/ces_azure_aks) or [Google GKE example](../examples/ces_google_gke) for fully-working sample code for provisioning a Cluster on Azure or Google and installing the CES.
 
 Note the following parameters:
 
@@ -57,4 +57,9 @@ Note the following parameters:
 Since the setup has to be run only once it will delete itself after the `terraform apply`.
 To avoid a setup reapply in subsequently `terraform apply` you can configure a kubernetes resource to identify that the setup already run.
 Use the variable `is_setup_applied_matching_resource`. The dogu custom resource definition is used as the default for this.
+
+The mechanism uses the kubernetes provider identifying the resource.
+On an initial `terraform apply` there is no cluster available so the count of the helm release can't be determined.
+Therefor you have first run terraform with the cluster module as target: `terraform apply -target=module.<moduleName>`.
+After that you can execute `terraform apply` regular.
 

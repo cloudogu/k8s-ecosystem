@@ -22,6 +22,7 @@ data "kubernetes_resources" "isSetupApplied" {
 }
 
 resource "helm_release" "k8s-ces-setup" {
+  depends_on = [data.kubernetes_resources.isSetupApplied]
   count      = length(data.kubernetes_resources.isSetupApplied.objects) > 0 ? 0 : 1
   name       = "k8s-ces-setup"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"

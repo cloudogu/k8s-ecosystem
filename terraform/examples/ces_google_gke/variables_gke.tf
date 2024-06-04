@@ -3,9 +3,9 @@ variable "kubernetes_version" {
 }
 
 variable "node_pool_name" {
-  description = "The name of the node pool. The final node pool will be create with the cluster name as prefix."
-  type = string
-  default = "node-pool"
+  description = "The name of the node pool."
+  type        = string
+  default     = "default"
 }
 
 variable "gcp_project_name" {
@@ -13,25 +13,19 @@ variable "gcp_project_name" {
 }
 
 variable "gcp_zone" {
-  type = string
+  type    = string
   default = "europe-west3-c"
 }
 
 variable "gcp_region" {
-  type = string
+  type    = string
   default = "europe-west3"
 }
 
 variable "gcp_credentials" {
-  type = string
+  type      = string
   sensitive = true
-  default = "secrets/gcp_sa.json"
-}
-
-variable "node_count" {
-  description = "The amount of nodes to create"
-  type = number
-  default = 3
+  default   = "secrets/gcp_sa.json"
 }
 
 variable "machine_type" {
@@ -39,18 +33,18 @@ variable "machine_type" {
 }
 
 variable "disk_type" {
-  type = string
+  type    = string
   default = "pd-balanced" // (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced')
 }
 
 variable "disk_size" {
-  type = string
+  type    = string
   default = 50
 }
 
 variable "cluster_name" {
   description = "The cluster name"
-  type = string
+  type        = string
 }
 
 variable "idp_enabled" {
@@ -59,7 +53,34 @@ variable "idp_enabled" {
 }
 
 variable "weekend_scale_down" {
-  type = bool
-  default = true
+  type        = bool
+  default     = true
   description = "Flag which determines if the cluster should be scaled down on weekend"
+}
+
+variable "node_count" {
+  description = "The amount of nodes to create"
+  type        = number
+  default     = 3
+}
+
+variable "scale_jobs" {
+  description = "List of objects defining scaling jobs for the cluster. Use different ids here because they are used for the name generation."
+  type        = list(object({
+    id              = number
+    node_count      = number
+    cron_expression = string
+  }))
+  default = [
+    {
+      node_count      = 0
+      cron_expression = "0 18 * * FRI"
+      id              = 0
+    },
+    {
+      node_count      = 3
+      cron_expression = "0 4 * * MON"
+      id              = 1
+    }
+  ]
 }

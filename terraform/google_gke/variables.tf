@@ -1,19 +1,11 @@
-locals {
-  node_pool_name = "${var.cluster_name}-${var.node_pool_name}"
-}
-
 variable "kubernetes_version" {
   default = "1.29"
 }
 
 variable "node_pool_name" {
-  description = "The name of the node pool. The final node pool will be create with the cluster name as prefix."
+  description = "The name of the node pool."
   type = string
-  default = "node-pool"
-}
-
-variable "node_count" {
-  default = "1"
+  default = "default"
 }
 
 variable "machine_type" {
@@ -39,26 +31,7 @@ variable "idp_enabled" {
   default = false
 }
 
-variable "gcp_credentials" {
-  type = string
-  sensitive = true
-  default = "secrets/gcp_sa.json"
-}
-
-variable "weekend_scale_down" {
-  type = bool
-  default = false
-  description = "Flag which determines if the cluster should be scaled down on weekend"
-}
-
-variable "gcp_project_name" {
-  type = string
-}
-
-variable "gcp_zone" {
-  type = string
-}
-
-variable "gcp_region" {
-  type = string
+variable "node_count" {
+  type = number
+  description = "The amount of nodes."
 }

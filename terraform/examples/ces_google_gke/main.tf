@@ -70,6 +70,11 @@ module "google_gke" {
   node_count     = var.node_count
 }
 
+module "increase_max_map_count" {
+  depends_on = [module.google_gke]
+  source = "../../max-map-count"
+}
+
 module "ces" {
   depends_on = [module.google_gke]
   source     = "../../ces-module"

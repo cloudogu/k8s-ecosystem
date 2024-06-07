@@ -72,7 +72,7 @@ module "google_gke" {
 
 module "increase_max_map_count" {
   depends_on = [module.google_gke]
-  source = "../../max-map-count"
+  source     = "../../max-map-count"
 }
 
 module "ces" {
@@ -112,10 +112,10 @@ locals {
 }
 
 module "scale_jobs" {
-  depends_on            = [module.google_gke]
-  source                = "../../google_gke_http_cron"
+  depends_on = [module.google_gke]
+  source     = "../../google_gke_http_cron"
   for_each   = {
-    for index, job in var.scale_jobs:
+    for index, job in var.scale_jobs :
     job.id => job
   }
   name                  = "${var.cluster_name}-scale-to-${each.value.node_count}-job-${index(var.scale_jobs, each.value)}"
@@ -126,4 +126,15 @@ module "scale_jobs" {
   cron_expression       = each.value.cron_expression
   gcp_region            = var.gcp_region
   service_account_email = local.service_account_email
+}
+
+module "backup_bucket" {
+  count          = var.create_backup_bucket ? 1 : 0
+  source         = "../../google_cloud_storage_bucket"
+  project        = var.gcp_project_name
+  name           = var.backup_bucket_name
+  location       = var.gcp_region
+  use_encryption = var.use_bucket_encryption
+  key_ring_name  = var.key_ring_name
+  key_name       = var.key_name
 }

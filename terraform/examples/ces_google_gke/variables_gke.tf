@@ -61,7 +61,7 @@ variable "weekend_scale_down" {
 variable "node_count" {
   description = "The amount of nodes to create"
   type        = number
-  default     = 3
+  default     = 5
 }
 
 variable "scale_jobs" {
@@ -74,13 +74,39 @@ variable "scale_jobs" {
   default = [
     {
       node_count      = 0
-      cron_expression = "0 18 * * FRI"
+      cron_expression = "0 18 * * *"
       id              = 0
     },
     {
-      node_count      = 3
-      cron_expression = "0 4 * * MON"
+      node_count      = 5
+      cron_expression = "0 4 * * 1-5"
       id              = 1
     }
   ]
+}
+
+variable "create_backup_bucket" {
+  type = bool
+  default = false
+}
+
+variable "backup_bucket_name" {
+  description = "The name of the bucket"
+  type        = string
+  default     = "cloudogu-backup-bucket"
+}
+
+variable "use_bucket_encryption" {
+  type = bool
+  default = true
+}
+
+variable "key_ring_name" {
+  type    = string
+  default = "ces-key-ring"
+}
+
+variable "key_name" {
+  type    = string
+  default = "ces-key"
 }

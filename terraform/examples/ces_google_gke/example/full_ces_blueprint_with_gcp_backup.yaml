@@ -1,0 +1,440 @@
+apiVersion: k8s.cloudogu.com/v1
+kind: Blueprint
+metadata:
+  labels:
+    app.kubernetes.io/name: blueprint
+    app.kubernetes.io/instance: blueprint-sample
+    app.kubernetes.io/part-of: k8s-blueprint-operator
+    app.kubernetes.io/created-by: k8s-blueprint-operator
+  name: blueprint-1
+spec:
+  blueprint: |
+    {
+    "blueprintApi":"v2",
+    "dogus":[
+      {
+        "name":"hallowelt/bluespice-mathoid",
+        "version":"4.4-2",
+        "targetState":"present"
+      },
+      {
+        "name":"hallowelt/bluespice-pdfrenderer",
+        "version":"4.3.0-2",
+        "targetState":"present"
+      },
+      {
+        "name":"hallowelt/drawio",
+        "version":"20.3.7-3",
+        "targetState":"present"
+      },
+      {
+        "name":"itz-bund/baseline",
+        "version":"1.5.1-1",
+        "targetState":"present"
+      },
+      {
+        "name":"itz-bund/easyredmine",
+        "version":"13.7.0-2",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "1Gi"
+          }
+        }
+      },
+      {
+        "name":"itz-bund/teamscale",
+        "version":"9.2.19-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Gi"
+          }
+        }
+      },
+      {
+        "name":"official/cas",
+        "version":"6.6.15.1-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"official/cockpit",
+        "version":"2.0.4-1",
+        "targetState":"present"
+      },
+      {
+        "name":"official/elasticsearch",
+        "version":"6.8.23-7",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "1Gi"
+          }
+        }
+      },
+      {
+        "name":"official/gotenberg",
+        "version":"8.2.0-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"premium/grafana",
+        "version":"10.3.3-2",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "100Mi"
+          }
+        }
+      },
+      {
+        "name":"official/jenkins",
+        "version":"2.440.2-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "20Gi"
+          }
+        }
+      },
+      {
+        "name":"official/ldap",
+        "version":"2.6.2-7",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"official/ldap-mapper",
+        "version":"1.3.0-1",
+        "targetState":"present"
+      },
+      {
+        "name":"official/mysql",
+        "version":"8.0.33-3",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "1Gi"
+          }
+        }
+      },
+      {
+        "name":"official/nexus",
+        "version":"3.68.1-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "20Gi"
+          }
+        }
+      },
+      {
+        "name":"k8s/nginx-ingress",
+        "version":"1.6.4-4",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/nginx-static",
+        "version":"1.23.1-6",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "50Mi"
+          }
+        }
+      },
+      {
+        "name":"official/plantuml",
+        "version":"2023.10-2",
+        "targetState":"present"
+      },
+      {
+        "name":"official/postfix",
+        "version":"3.8.4-1",
+        "targetState":"present"
+      },
+      {
+        "name":"official/postgresql",
+        "version":"12.18-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Gi"
+          }
+        }
+      },
+      {
+        "name":"official/redis",
+        "version":"6.2.12-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"official/redmine",
+        "version":"5.0.8-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "5Gi"
+          }
+        }
+      },
+      {
+        "name":"official/scm",
+        "version":"3.2.1-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "5Gi"
+          }
+        }
+      },
+      {
+        "name":"official/smeagol",
+        "version":"1.7.2-1",
+        "targetState":"present"
+      },
+      {
+        "name":"official/sonar",
+        "version":"9.9.4-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "1Gi"
+          }
+        }
+      },
+      {
+        "name":"official/swaggerui",
+        "version":"4.9.0-2",
+        "targetState":"present"
+      },
+      {
+        "name":"official/usermgt",
+        "version":"1.14.3-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "50Mi"
+          }
+        }
+      },
+      {
+        "name":"premium/admin",
+        "version":"2.12.0-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"premium/portainer",
+        "version":"2.17.1-5",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "20Gi"
+          }
+        }
+      }
+    ],
+    "config": {
+      "global": {
+        "present": {
+          "exampleKey": "exampleValue"
+        }
+      },
+      "dogus": {
+        "ldap-mapper": {
+          "config": {
+            "present": {
+              "backend/type": "embedded",
+              "backend/host": "ldap",
+              "backend/port": "389"
+            }
+          },
+          "sensitiveConfig": {
+            "present": {
+              "exampleKey": "exampleValue"
+            }
+          }
+        }
+      }
+    },
+    "components": [
+      {
+        "name":"k8s/k8s-dogu-operator",
+        "version":"1.1.0",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-dogu-operator-crd",
+        "version":"1.1.0",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-service-discovery",
+        "targetState":"present",
+        "version":"0.15.0"
+      },
+      {
+        "name":"k8s/k8s-component-operator",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      {
+        "name":"k8s/k8s-component-operator-crd",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      {
+        "name":"k8s/k8s-blueprint-operator",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      {
+        "name":"k8s/k8s-blueprint-operator-crd",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      { 
+        "name":"k8s/k8s-backup-operator",
+        "targetState":"present",
+        "version":"0.10.1"
+      },
+      {
+        "name":"k8s/k8s-backup-operator-crd",
+        "targetState":"present",
+        "version":"0.10.1"
+      },
+      {
+        "name":"k8s/k8s-etcd",
+        "targetState":"present",
+        "version":"3.5.9-2"
+      },
+      {
+        "name":"k8s/k8s-ces-control",
+        "version":"0.8.1",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-minio",
+        "version":"2023.9.23-5",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-loki",
+        "version":"2.9.1-4",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-promtail",
+        "version":"2.9.1-2",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-velero",
+        "targetState":"present",
+        "version":"5.0.2-5",
+        "deployConfig":{
+          "overwriteConfig":{
+            "volumesnapshotclass": {
+              "driver": "pd.csi.storage.gke.io",
+              "parameters": {
+                "type": ""
+              }
+            },
+            "velero": {
+              "credentials": {
+                "useSecret": true,
+                "existingSecret": "velero-backup-target"
+              },
+              "initContainers": [
+                {
+                  "name": "velero-plugin-for-gcp",
+                  "image": "velero/velero-plugin-for-gcp:v1.7.1",
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/target",
+                      "name": "plugins"
+                    }
+                  ]
+                },
+                {
+                  "name": "velero-plugin-for-csi",
+                  "image": "velero/velero-plugin-for-csi:v0.5.1",
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/target",
+                      "name": "plugins"
+                    }
+                  ]
+                }
+              ],
+              "configuration": {
+                "backupStorageLocation": [
+                  {
+                    "name": "default",
+                    "provider": "velero.io/gcp",
+                    "bucket": "<insert bucket name>",
+                    "config": {
+                      "serviceAccount": "<insert sa email>",
+                      "kmsKeyName": "<insert key path>"
+                    }
+                  }
+                ],
+                "volumeSnapshotLocation": [
+                  {
+                    "name": "default",
+                    "provider": "velero.io/gcp",
+                    "config": {
+                      "snapshotLocation": "<insert location>"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "name":"k8s/k8s-prometheus",
+        "targetState":"present",
+        "version":"57.1.1-2"
+      },
+      {
+        "name":"k8s/k8s-cert-manager",
+        "version":"1.13.1-2",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-cert-manager-crd",
+        "version":"1.13.1-2",
+        "targetState":"present"
+      }
+    ]}
+  blueprintMask: |
+    {"blueprintMaskApi":"v1"}
+  ignoreDoguHealth: true
+  ignoreComponentHealth: true
+  allowDoguNamespaceSwitch: false

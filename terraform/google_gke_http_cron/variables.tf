@@ -21,7 +21,7 @@ variable "cron_expression" {
 variable "timer_zone" {
   description = "The time zone from the tz database."
   type = string
-  default = "Etc/UTC"
+  default = "Europe/Berlin"
 }
 
 variable "attempt_deadline" {

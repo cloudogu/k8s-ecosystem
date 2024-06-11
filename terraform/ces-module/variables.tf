@@ -65,7 +65,7 @@ variable "additional_dogus" {
 }
 
 variable "additional_components" {
-  description = "A list of additional Components to install"
+  description = "A list of additional components to install"
   type        = list(object({
     name            = string
     version         = string
@@ -153,7 +153,7 @@ variable "resource_patches_file" {
 }
 
 variable "is_setup_applied_matching_resource" {
-  description = "This variable defines a resource with its kind, api and field selector and is used to determine if the setup is already installed or not."
+  description = "This variable defines a resource with its kind, api and field selector and is used to determine if the setup has already been executed or not."
   type        = object({
     kind           = string
     api            = string

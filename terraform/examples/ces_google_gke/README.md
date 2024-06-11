@@ -29,7 +29,8 @@ Get that service account and save it to `secrets/gcp_sa.json`:
 
 `gcloud iam service-accounts keys create secrets/gcp_sa.json --iam-account=$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com`
 
-# General configuration (not mandatory)
+# General configuration
+Use the `vars.tfvars.template` file to create `vars.tfvars` and set your GCP project and cluster name in it.
 
 If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
 See `variables.tf` for possibilities.
@@ -49,7 +50,7 @@ Apply with
 
 This takes up to 15 minutes.
 
-Create remaining resources
+Create the remaining resources, including the CES setup
 `terraform apply -var-file=secretVars.tfvars -var-file=vars.tfvars`
 
 # Get kubeconfig
@@ -58,14 +59,14 @@ Create remaining resources
 
 # Delete cluster
 
-- `terraform destroy -var-file=secretVars.tfvars -var-file=vars.tfvars`
+- `terraform destroy -var-file=secretVars.tfvars`
   or `terraform destroy -var-file=secretVars.tfvars -var-file=vars.tfvars`
 
 # Backup configuration
 
 ## Bucket configuration
 
-### If you plan to use backup & restore with a google bucket firstly you need to create a separate service account.
+### If you plan to use backup & restore with a google bucket, you need to create a separate service account first.
 
 Create service account.
 

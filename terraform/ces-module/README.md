@@ -55,11 +55,11 @@ Note the following parameters:
 ## Notes for the setup helm release
 
 Since the setup has to be run only once it will delete itself after the `terraform apply`.
-To avoid a setup reapply in subsequently `terraform apply` you can configure a kubernetes resource to identify that the setup already run.
+To avoid a setup reapply in subsequent `terraform apply` executions you can configure a kubernetes resource to identify that the setup has already run.
 Use the variable `is_setup_applied_matching_resource`. The dogu custom resource definition is used as the default for this.
 
 The mechanism uses the kubernetes provider identifying the resource.
 On an initial `terraform apply` there is no cluster available so the count of the helm release can't be determined.
-Therefor you have first run terraform with the cluster module as target: `terraform apply -target=module.<moduleName>`.
-After that you can execute `terraform apply` regular.
+Therefore you have to run terraform with the cluster module as target first: `terraform apply -target=module.<moduleName>`.
+After that you can execute `terraform apply` regularly.
 

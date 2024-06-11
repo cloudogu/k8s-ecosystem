@@ -2,7 +2,7 @@
 
 This module can generate a kubeconfig file for accessing a kubernetes cluster.
 
-## setup with GCloud
+## Setup with GCloud
 
 For Gcloud you can use this:
 ```terraform
@@ -19,9 +19,9 @@ module "kubeconfig_generator" {
 
 Be aware that this way a short-lived access token is used. The token will be updated at every further `terraform apply`.
 
-## setup with Azure
+## Setup with Azure
 
-Notice that azure has its own way to get the kubeconfig via `azurerm_kubernetes_cluster.aks.kube_config_raw`.
+Notice that Azure has its own way to get the kubeconfig via `azurerm_kubernetes_cluster.aks.kube_config_raw`.
 You can write it to a file with:
 ```terraform
 resource "local_sensitive_file" "kubeconfig" {
@@ -30,7 +30,7 @@ resource "local_sensitive_file" "kubeconfig" {
 }
 ```
 
-## get kubeconfig
+## Get kubeconfig
 
 You can retrieve the kubeconfig as a string with the `kubeconfig_content` output variable. 
 If you want it as a file, specify the `kubeconfig_path` variable. If you don't set this variable no kubeconfig will be written.

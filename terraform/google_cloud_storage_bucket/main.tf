@@ -33,18 +33,6 @@ resource "google_kms_crypto_key" "bucket_key" {
   purpose = var.key_purpose
 
   lifecycle {
-    prevent_destroy = false # TODO Change this to true
+    prevent_destroy = true
   }
 }
-
-#data "google_storage_project_service_account" "gcs_account" {
-#
-#}
-
-// Crypto IAM binding to use recent key ring and key
-#resource "google_kms_crypto_key_iam_binding" "key_binding" {
-#  crypto_key_id = google_kms_crypto_key.bucket_key[0].id
-#  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-#
-#  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
-#}

@@ -55,6 +55,10 @@ Create the remaining resources, including the CES setup
 
 # Get kubeconfig
 
+The module `kubeconfig_generator` will generate a `kubeconfig` in the example dir.
+
+With gcloud you can get the config too:
+
 - `gcloud container clusters get-credentials <cluster_name> --zone europe-west3-c --project $PROJECT_ID`
 
 # Delete cluster

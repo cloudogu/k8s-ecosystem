@@ -11,7 +11,7 @@ code by adding a `module` configuration and setting its `source` parameter to UR
 ```hcl
 module "ces" {
    # update this to the URL and version you want to use
-   source = "github.com/cloudogu/k8s-ecosystem//terraform/ces-module"
+   source = "github.com/cloudogu/k8s-ecosystem/terraform/ces-module"
 
    # Configure the access to the Kubernetes-Cluster 
    kubernetes_host                   = my_cluster.kube_config.host
@@ -20,7 +20,7 @@ module "ces" {
    kubernetes_cluster_ca_certificate = base64decode(my_cluster.kube_config.cluster_ca_certificate)
 
    # Configure CES installation options
-   setup_chart_version   = "0.20.2"
+   setup_chart_version   = "1.0.0"
    setup_chart_namespace = "k8s"
    ces_fqdn              = "ces.local"
    ces_admin_password    = "test123"
@@ -44,7 +44,7 @@ module "ces" {
 
 You can find a full list parameters with descriptions in [variables.tf](variables.tf).
 
-Check out the [Azure AKS example](./examples/ces_azure_aks) for fully-working sample code for provisioning an AKS-Cluster on Azure and installing the CES.
+Check out the [Azure AKS example](../examples/ces_azure_aks) or [Google GKE example](../examples/ces_google_gke) for fully-working sample code for provisioning a Cluster on Azure or Google and installing the CES.
 
 Note the following parameters:
 
@@ -52,4 +52,14 @@ Note the following parameters:
    Further information can be found in the [k8s-ces-setup documentation] (https://github.com/cloudogu/k8s-ces-setup/blob/develop/docs/operations/configuration_guide_en.md#resource_patches)
 
 
+## Notes for the setup helm release
+
+Since the setup has to be run only once it will delete itself after the `terraform apply`.
+To avoid a setup reapply in subsequent `terraform apply` executions you can configure a kubernetes resource to identify that the setup has already run.
+Use the variable `is_setup_applied_matching_resource`. The dogu custom resource definition is used as the default for this.
+
+The mechanism uses the kubernetes provider identifying the resource.
+On an initial `terraform apply` there is no cluster available so the count of the helm release can't be determined.
+Therefore you have to run terraform with the cluster module as target first: `terraform apply -target=module.<moduleName>`.
+After that you can execute `terraform apply` regularly.
 

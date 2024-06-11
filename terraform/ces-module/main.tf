@@ -15,23 +15,15 @@ locals {
   tld        = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
 }
 
-
-provider "helm" {
-  kubernetes {
-    host                   = var.kubernetes_host
-    client_certificate     = var.kubernetes_client_certificate
-    client_key             = var.kubernetes_client_key
-    cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
-  }
-
-  registry {
-    url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
-    username = var.helm_registry_username
-    password = base64decode(var.helm_registry_password)
-  }
+data "kubernetes_resources" "isSetupApplied" {
+  api_version    = var.is_setup_applied_matching_resource.api
+  kind           = var.is_setup_applied_matching_resource.kind
+  field_selector = var.is_setup_applied_matching_resource.field_selector
 }
 
 resource "helm_release" "k8s-ces-setup" {
+  depends_on = [data.kubernetes_resources.isSetupApplied]
+  count      = length(data.kubernetes_resources.isSetupApplied.objects) > 0 ? 0 : 1
   name       = "k8s-ces-setup"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
   chart      = "k8s-ces-setup"
@@ -56,6 +48,7 @@ resource "helm_release" "k8s-ces-setup" {
         "helm_registry_insecure_tls" = var.helm_registry_insecure_tls
         "helm_registry_username"     = var.helm_registry_username
         "helm_registry_password"     = var.helm_registry_password
+        "additional_components"      = var.additional_components
         "setup_json"                 = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {

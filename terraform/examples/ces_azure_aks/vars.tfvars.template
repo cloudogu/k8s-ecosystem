@@ -1,0 +1,2 @@
+// For further configuration it is useful to use a separate variable file instead of the file for the secrets.
+azure_resource_group_location = "North Europe"

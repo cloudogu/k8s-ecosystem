@@ -13,6 +13,10 @@ resource "google_storage_bucket" "bucket" {
     default_kms_key_name = var.use_encryption ? google_kms_crypto_key.bucket_key[0].id : ""
   }
 
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
+
   uniform_bucket_level_access = true
 }
 
@@ -21,6 +25,10 @@ resource "google_kms_key_ring" "bucket_keyring" {
   name     = var.key_ring_name
   location = var.location
   project  = var.project
+
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "google_kms_crypto_key" "bucket_key" {
@@ -33,6 +41,6 @@ resource "google_kms_crypto_key" "bucket_key" {
   purpose = var.key_purpose
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = var.prevent_destroy
   }
 }

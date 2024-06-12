@@ -61,7 +61,8 @@ variable "use_encryption" {
   default = true
 }
 
-#variable "service_account_email" {
-#  type = string
-#  description = "The e-mail from the used service account which calls the cloud storage api."
-#}
+variable "prevent_destroy" {
+  type = bool
+  description = "Indicates if a terraform destroy can destroy the bucket and keys if exists. If this value is true you should delete them manually before running a terraform destroy."
+  default = false
+}

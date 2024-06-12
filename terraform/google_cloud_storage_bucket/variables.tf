@@ -60,9 +60,3 @@ variable "use_encryption" {
   type    = bool
   default = true
 }
-
-variable "prevent_destroy" {
-  type = bool
-  description = "Indicates if a terraform destroy can destroy the bucket and keys if exists. If this value is true you should delete them manually before running a terraform destroy."
-  default = false
-}

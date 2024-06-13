@@ -107,6 +107,7 @@ ROLE_PERMISSIONS=(
 `gcloud iam roles create velero.server --project $PROJECT_ID --title "Velero Server" --permissions "$(IFS=","; echo "${ROLE_PERMISSIONS[*]}")"`
 
 `gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:$SERVICE_ACCOUNT_EMAIL --role projects/$PROJECT_ID/roles/velero.server`
+`gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:$SERVICE_ACCOUNT_EMAIL --role projects/$PROJECT_ID/roles/velero.server.2`
 
 `gsutil iam ch serviceAccount:$SERVICE_ACCOUNT_EMAIL:objectAdmin gs://${BUCKET_NAME}`
 
@@ -114,16 +115,16 @@ ROLE_PERMISSIONS=(
 
 Get the name of the service account.
 
-`STORAGE_SA=$(curl https://storage.googleapis.com/storage/v1/projects/${PROJECT_ID}/serviceAccount --header "Authorization: Bearer $(gcloud auth print-access-token)" | jq '.email_address')`
+`STORAGE_SA=$(curl https://storage.googleapis.com/storage/v1/projects/${PROJECT_ID}/serviceAccount --header "Authorization: Bearer $(gcloud auth print-access-token)" | jq -r '.email_address')`
 
 Add role to access key. Keep in mind the location, keyring and key name. They have to be created later with terraform.
 Defaults: `location=europe-west3, keyring=ces-keyring and key=ces-key`
 
-`gcloud kms keys add-iam-policy-binding ces-key --location europe-west3 --keyring ces-keyring --member serviceAccount:$STORAGE_SA --role roles/cloudkms.cryptoKeyEncrypterDecrypter`
+`gcloud kms keys add-iam-policy-binding ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring --member serviceAccount:$STORAGE_SA --role roles/cloudkms.cryptoKeyEncrypterDecrypter`
 
 Get the name of the key.
 
-`gcloud kms keys describe ces-key --location europe-west3 --keyring ces-keyring`
+`gcloud kms keys describe ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring`
 
 ## Create bucket
 

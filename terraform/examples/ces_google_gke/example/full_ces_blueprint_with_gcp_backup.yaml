@@ -284,12 +284,12 @@ spec:
     "components": [
       {
         "name":"k8s/k8s-dogu-operator",
-        "version":"1.1.0",
+        "version":"1.2.0",
         "targetState":"present"
       },
       {
         "name":"k8s/k8s-dogu-operator-crd",
-        "version":"1.1.0",
+        "version":"1.2.0",
         "targetState":"present"
       },
       {
@@ -300,12 +300,12 @@ spec:
       {
         "name":"k8s/k8s-component-operator",
         "targetState":"present",
-        "version":"1.0.0"
+        "version":"1.0.1"
       },
       {
         "name":"k8s/k8s-component-operator-crd",
         "targetState":"present",
-        "version":"1.0.0"
+        "version":"1.0.1"
       },
       {
         "name":"k8s/k8s-blueprint-operator",

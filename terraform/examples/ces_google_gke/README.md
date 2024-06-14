@@ -35,6 +35,8 @@ Use the `vars.tfvars.template` file to create `vars.tfvars` and set your GCP pro
 If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
 See `variables.tf` for possibilities.
 
+Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
+
 # Create cluster
 
 Init with `terraform init`
@@ -68,6 +70,17 @@ With gcloud you can get the config too:
 
 # Backup configuration
 
+## Disclaimer
+
+Many configuration values are project wide. Make sure to change the corresponding names if necessary.
+
+## Create bucket
+
+Set terraform variable `create_backup_bucket` and `backup_bucket_name`. If you wish to encrypt your bucket set `use_bucket_encryption`, 
+`key_ring_name` and `key_name`, too.
+
+Reapply terraform.
+
 ## Bucket configuration
 
 ### If you plan to use backup & restore with a google bucket, you need to create a separate service account first.
@@ -76,7 +89,7 @@ Create service account.
 
 ```bash
 GSA_NAME=velero
-gcloud iam service-accounts create $GSA_NAME --display-name "Velero service account"
+gcloud iam service-accounts create $GSA_NAME --display-name "Velero service account" --project $PROJECT_ID
 ```
 
 Get service account email.
@@ -107,7 +120,6 @@ ROLE_PERMISSIONS=(
 `gcloud iam roles create velero.server --project $PROJECT_ID --title "Velero Server" --permissions "$(IFS=","; echo "${ROLE_PERMISSIONS[*]}")"`
 
 `gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:$SERVICE_ACCOUNT_EMAIL --role projects/$PROJECT_ID/roles/velero.server`
-`gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:$SERVICE_ACCOUNT_EMAIL --role projects/$PROJECT_ID/roles/velero.server.2`
 
 `gsutil iam ch serviceAccount:$SERVICE_ACCOUNT_EMAIL:objectAdmin gs://${BUCKET_NAME}`
 
@@ -125,13 +137,6 @@ Defaults: `location=europe-west3, keyring=ces-keyring and key=ces-key`
 Get the name of the key.
 
 `gcloud kms keys describe ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring`
-
-## Create bucket
-
-Set terraform variable `create_backup_bucket`, `backup_bucket_name`, `use_bucket_encryption`, `key_ring_name`,
-and `key_name`.
-
-Reapply terraform.
 
 ## Configure ecosystem for backup & restore
 

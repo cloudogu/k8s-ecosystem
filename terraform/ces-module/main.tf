@@ -57,7 +57,7 @@ resource "helm_release" "k8s-ces-setup" {
             "certificateKey" : var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
           }
         ))
-        "resource_patches" = var.resource_patches_file != null ? file("${path.root}/${var.resource_patches_file}") : ""
+        "resource_patches" = var.resource_patches
       })
   ]
 }

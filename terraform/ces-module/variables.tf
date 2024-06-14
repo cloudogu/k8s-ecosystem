@@ -146,10 +146,10 @@ variable "helm_registry_password" {
   sensitive   = true
 }
 
-variable "resource_patches_file" {
-  description = "The location of a file containing resource-patches for the CES installation. The file-path is relative to the root-module-location"
+variable "resource_patches" {
+  description = "The content of the resource-patches for the CES installation."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "is_setup_applied_matching_resource" {

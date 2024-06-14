@@ -89,12 +89,12 @@ Create service account.
 
 ```bash
 GSA_NAME=velero
-gcloud iam service-accounts create $GSA_NAME --display-name "Velero service account" --project $PROJECT_ID
+gcloud iam service-accounts create --project $PROJECT_ID $GSA_NAME --display-name "Velero service account"
 ```
 
 Get service account email.
 
-`SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list --filter="displayName:Velero service account" --format 'value(email)')`
+`SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list --project $PROJECT_ID --filter="displayName:Velero service account" --format 'value(email)')`
 
 Add required google bucket and snapshot permissions to service account
 

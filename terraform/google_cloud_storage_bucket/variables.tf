@@ -60,8 +60,3 @@ variable "use_encryption" {
   type    = bool
   default = true
 }
-
-#variable "service_account_email" {
-#  type = string
-#  description = "The e-mail from the used service account which calls the cloud storage api."
-#}

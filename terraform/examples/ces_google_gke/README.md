@@ -19,11 +19,12 @@ Ensure you are in the correct project.
 
 You need to create a service account for the google provider.
 
-`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="DISPLAY_NAME"`
+`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="DISPLAY_NAME" --project=$PROJECT_ID`
 
-And assign the necessary Roles
+And assign the necessary Roles (only one role can be added with this command (see [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/multiple-role-for-gcloud-iam-service-accounts-add-iam-policy/m-p/686863)))
 
-`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/container.serviceAgent" --role="roles/editor"`
+`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/editor"`
+`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/container.serviceAgent"`
 
 Get that service account and save it to `secrets/gcp_sa.json`:
 
@@ -133,6 +134,7 @@ Add role to access key. Keep in mind the location, keyring and key name. They ha
 Defaults: `location=europe-west3, keyring=ces-keyring and key=ces-key`
 
 `gcloud kms keys add-iam-policy-binding ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring --member serviceAccount:$STORAGE_SA --role roles/cloudkms.cryptoKeyEncrypterDecrypter`
+TODO: This role is needed on another SA, when StorageClass needs to be encrypted: service-[PROJECT_NUMBER]@compute-system.iam.gserviceaccount.com see [here](https://stackoverflow.com/questions/59715312/grant-permission-to-use-the-key-in-gke)
 
 Get the name of the key.
 

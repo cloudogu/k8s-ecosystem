@@ -21,8 +21,9 @@ git clone https://github.com/cloudogu/k8s-ecosystem.git
 **2. Build image**
 
 ```bash
-cd <k8s-ecosystem-path>/image/
-packer build k8s-dev.json
+cd <k8s-ecosystem-path>/image/dev/
+packer init .
+packer build k8s-dev.pkr.hcl
 ```
 
 **3. Wait**

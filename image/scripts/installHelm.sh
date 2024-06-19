@@ -3,8 +3,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-helmVersion=v3.12.3
-helmTarSHA256SUM=1b2313cd198d45eab00cc37c38f6b1ca0a948ba279c29e322bdf426d406129b5
+helmVersion=v3.15.2
+helmTarSHA256SUM=2694b91c3e501cff57caf650e639604a274645f61af2ea4d601677b746b44fe2
 installDir=/usr/local/bin
 
 echo "Installing helm to ${installDir}..."

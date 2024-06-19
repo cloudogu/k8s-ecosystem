@@ -12,6 +12,8 @@ Das Verzeichnis `image` enthält die folgenden Dateien:
  ┃ ┗ 📂 dev                   - Entwicklungsskripte, die beim Erstellen der Entwicklungs-Baseboxen und -Instanzen ausgeführt werden.
  ┃ ┗ 📂 kubernetes            - Skripte zur Einrichtung von k8s.
  ┃ ┗ 📜 *.sh                  - allgemeine Skripte, die für alle Images und Baseboxen gelten.
- ┣ 📜 k8s-dev.json         - Packer-Vorlage, die zur Erstellung der Entwicklungs-Basebox verwendet wird.
- ┗ 📜 k8s-prod.json        - Packer-Vorlage für die Erstellung der Produktions-Images für verschiedene Hypervisor.
+ ┣ 📂 dev
+ ┃ ┗ 📜 k8s-dev.pkr.hcl         - Packer-Vorlage, die zur Erstellung der Entwicklungs-Basebox verwendet wird.
+ ┣ 📂 prod
+   ┗ 📜 k8s-prod.pkr.hcl        - Packer-Vorlage für die Erstellung der Produktions-Images für verschiedene Hypervisor.
 ```

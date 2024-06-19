@@ -1,0 +1,122 @@
+packer {
+  required_plugins {
+    vagrant = {
+      source  = "github.com/hashicorp/vagrant"
+      version = "~> 1"
+    }
+    virtualbox = {
+      source  = "github.com/hashicorp/virtualbox"
+      version = "~> 1"
+    }
+  }
+}
+
+variable "ces_namespace" {
+  type    = string
+  default = "ecosystem"
+}
+
+variable "cpus" {
+  type    = number
+  default = 4
+}
+
+variable "disk_size" {
+  type    = number
+  default = 100000
+}
+
+variable "fqdn" {
+  type    = string
+  default = "k3ces.local"
+}
+
+variable "iso_checksum" {
+  type    = string
+  default = "sha256:8762f7e74e4d64d72fceb5f70682e6b069932deedb4949c6975d0f0fe0a91be3"
+}
+
+variable "iso_url" {
+  type    = string
+  default = "https://releases.ubuntu.com/noble/ubuntu-24.04-live-server-amd64.iso"
+}
+
+variable "main_k3s_port" {
+  type    = number
+  default = 6443
+}
+
+variable "memory" {
+  type    = number
+  default = 8192
+}
+
+variable "password" {
+  type    = string
+  default = "vagrant"
+}
+
+variable "username" {
+  type    = string
+  default = "vagrant"
+}
+
+variable "vm_name" {
+  type    = string
+  default = "ces"
+}
+
+source "virtualbox-iso" "ecosystem-basebox" {
+  boot_command = [
+    "c<wait>",
+    "set gfxpayload=keep<enter><wait>",
+    "linux /casper/vmlinuz <wait>",
+    "autoinstall fsck.mode=skip noprompt <wait>",
+    "ds=\"nocloud-net;s=http://{{.HTTPIP}}:{{.HTTPPort}}/\"<enter><wait>",
+    "initrd /casper/initrd<enter><wait>",
+    "boot<enter>"
+  ]
+  boot_wait              = "5s"
+  disk_size              = var.disk_size
+  guest_os_type          = "Ubuntu_64"
+  hard_drive_interface   = "sata"
+  headless               = false
+  http_directory         = "http"
+  iso_checksum           = var.iso_checksum
+  iso_url                = var.iso_url
+  shutdown_command       = "echo ${var.username} | sudo -S -E shutdown -P now"
+  ssh_handshake_attempts = "10000"
+  ssh_password           = var.password
+  ssh_timeout            = "20m"
+  ssh_username           = var.username
+  vboxmanage             = [
+    ["modifyvm", "${var.vm_name}", "--memory", "${var.memory}"],
+    ["modifyvm", "${var.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${var.vm_name}", "--vram", "10"]
+  ]
+  vm_name                = "${var.vm_name}"
+}
+
+build {
+  sources = ["source.virtualbox-iso.ecosystem-basebox"]
+
+  provisioner "file" {
+    destination = "/home/${var.username}/resources"
+    source      = "../../resources"
+  }
+
+  provisioner "shell" {
+    environment_vars = ["HOME_DIR=/home/${var.username}", "USERNAME=${var.username}"]
+    execute_command  = "echo ${var.password} | {{ .Vars }} sudo -S -E /bin/bash -eux '{{ .Path }}'"
+    scripts          = [
+      "../scripts/startInstallation.sh", "../scripts/installDependencies.sh", "../scripts/installGuestAdditions.sh",
+      "../scripts/dev/vagrant.sh", "../scripts/configureGrub.sh", "../scripts/configureNetworking.sh",
+      "../scripts/configureSSHDaemon.sh", "../scripts/setupFail2Ban.sh", "../scripts/installK9s.sh", "../scripts/installHelm.sh",
+      "../scripts/kubernetes/prepareK3sInstallation.sh", "../scripts/kubernetes/installCustomServiceFiles.sh",
+      "../scripts/optimizeImageSize.sh"
+    ]
+  }
+
+  post-processor "vagrant" {
+    output = "build/{{ .BuildName }}.box"
+  }
+}

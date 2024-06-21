@@ -72,7 +72,7 @@ source "virtualbox-iso" "ecosystem-basebox" {
     "set gfxpayload=keep<enter><wait>",
     "linux /casper/vmlinuz <wait>",
     "autoinstall fsck.mode=skip noprompt <wait>",
-    "ds=\"nocloud-net;s=http://{{.HTTPIP}}:{{.HTTPPort}}/\"<enter><wait>",
+    "ds=\"nocloud;s=http://{{.HTTPIP}}:{{.HTTPPort}}/\"<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]

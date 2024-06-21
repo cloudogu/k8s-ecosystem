@@ -19,7 +19,7 @@ Ensure you are in the correct project.
 
 You need to create a service account for the google provider.
 
-`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="DISPLAY_NAME"`
+`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME"`
 
 And assign the necessary Roles
 

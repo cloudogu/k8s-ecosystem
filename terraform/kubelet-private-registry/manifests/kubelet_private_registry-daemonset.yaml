@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: registry-config
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: registry-config
+  template:
+    metadata:
+      labels:
+        name: registry-config
+    spec:
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      containers:
+        - name: update-kublet-config
+          image: alpine:3.20.0
+          command: [ "/bin/sh", "-c" ]
+          args: [ "while true; do cp -v /config/config.json /host/var/lib/kubelet/config.json; sleep 3600; done" ]
+          volumeMounts:
+            - mountPath: /host
+              name: host-root
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - hostPath:
+            path: /
+            type: ""
+          name: host-root
+        - name: config-volume
+          secret:
+            secretName: kubelet-config
+      tolerations:
+        - effect: "NoExecute"
+          operator: "Exists"
+        - effect: "NoSchedule"
+          operator: "Exists"

@@ -79,9 +79,13 @@ module "kubelet_private_registry" {
   depends_on = [module.google_gke]
   source     = "../../kubelet-private-registry"
 
-  image_registry_url      = var.image_registry_url
-  image_registry_username = var.image_registry_username
-  image_registry_password = var.image_registry_password
+  private_registries = [
+    {
+      "url"      = var.image_registry_url
+      "username" = var.image_registry_username
+      "password" = var.image_registry_password
+    }
+  ]
 }
 
 module "ces" {

@@ -1,15 +1,9 @@
-variable "image_registry_url" {
-  description = "The url for the docker-image-registry"
-  type        = string
-}
-
-variable "image_registry_username" {
-  description = "The username for the docker-image-registry"
-  type        = string
-}
-
-variable "image_registry_password" {
-  description = "The base64-encoded password for the docker-image-registry"
-  type        = string
+variable "private_registries" {
+  description = "A list of private container-registries. Each entry must habe an 'url', an 'username' and a 'password' (base64-encoded)"
+  type = list(object({
+    url = string
+    username = string
+    password = string
+  }))
   sensitive   = true
 }

@@ -7,12 +7,23 @@ terraform {
   }
 }
 
-resource "kubernetes_manifest" "kubelet-private-registry-secret" {
-  computed_fields = ["stringData"]
-  manifest = yamldecode(templatefile("${path.module}/manifests/kubelet_private_registry-secret.yaml.tpl", {
-    "image_registry_url"  = var.image_registry_url
-    "image_registry_auth" = base64encode("${var.image_registry_username}:${base64decode(var.image_registry_password)}")
-  }))
+
+locals {
+  registries_map = { for reg in var.private_registries : reg.url => base64encode("${reg.username}:${base64decode(reg.password)}")}
+}
+
+resource "kubernetes_secret" "kubelet-private-registry-secret" {
+  metadata {
+    name = "kubelet-config"
+    namespace = "kube-system"
+  }
+  type = "Opaque"
+
+  data = {
+    ".config.json" = jsonencode({
+      "auths" = local.registries_map
+    })
+  }
 }
 
 resource "kubernetes_manifest" "kubelet-private-registry-daemonset" {

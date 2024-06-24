@@ -1,0 +1,195 @@
+apiVersion: k8s.cloudogu.com/v1
+kind: Blueprint
+metadata:
+  labels:
+    app.kubernetes.io/name: blueprint
+    app.kubernetes.io/instance: blueprint-sample
+    app.kubernetes.io/part-of: k8s-blueprint-operator
+    app.kubernetes.io/created-by: k8s-blueprint-operator
+  name: blueprint-1
+spec:
+  blueprint: |
+    {
+    "blueprintApi":"v2",
+    "dogus":[
+      {
+        "name":"official/cas",
+        "version":"7.0.4.1-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"official/ldap",
+        "version":"2.6.2-7",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "10Mi"
+          }
+        }
+      },
+      {
+        "name":"k8s/nginx-ingress",
+        "version":"1.6.4-4",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/nginx-static",
+        "version":"1.23.1-6",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "50Mi"
+          }
+        }
+      },
+      {
+        "name":"official/postfix",
+        "version":"3.8.4-1",
+        "targetState":"present"
+      },
+      {
+        "name":"official/scm",
+        "version":"3.2.1-1",
+        "targetState":"present",
+        "platformConfig": {
+          "resource": {
+            "minVolumeSize": "5Gi"
+          }
+        }
+      }
+    ],
+    "config": {
+      "global": {
+        "present": {
+          "exampleKey": "exampleValue"
+        }
+      }
+    },
+    "components": [
+      {
+        "name":"k8s/k8s-dogu-operator",
+        "version":"1.2.0",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-dogu-operator-crd",
+        "version":"1.2.0",
+        "targetState":"present"
+      },
+      {
+        "name":"k8s/k8s-service-discovery",
+        "targetState":"present",
+        "version":"0.15.0"
+      },
+      {
+        "name":"k8s/k8s-component-operator",
+        "targetState":"present",
+        "version":"1.0.1"
+      },
+      {
+        "name":"k8s/k8s-component-operator-crd",
+        "targetState":"present",
+        "version":"1.0.1"
+      },
+      {
+        "name":"k8s/k8s-blueprint-operator",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      {
+        "name":"k8s/k8s-blueprint-operator-crd",
+        "targetState":"present",
+        "version":"1.0.0"
+      },
+      { 
+        "name":"k8s/k8s-backup-operator",
+        "targetState":"present",
+        "version":"0.10.1"
+      },
+      {
+        "name":"k8s/k8s-backup-operator-crd",
+        "targetState":"present",
+        "version":"0.10.1"
+      },
+      {
+        "name":"k8s/k8s-etcd",
+        "targetState":"present",
+        "version":"3.5.9-2"
+      },
+      {
+        "name":"k8s/k8s-velero",
+        "targetState":"present",
+        "version":"5.0.2-5",
+        "deployConfig":{
+          "overwriteConfig":{
+            "volumesnapshotclass": {
+              "driver": "pd.csi.storage.gke.io",
+              "parameters" : {
+                "type" : "pd-balanced",
+                "disk-encryption-kms-key" : "projects/ces-coder-workspaces/locations/europe-west3/keyRings/ces-key-ring-47171-2/cryptoKeys/ces-key"
+              }
+            },
+            "velero": {
+              "credentials": {
+                "useSecret": true,
+                "existingSecret": "velero-backup-target"
+              },
+              "initContainers": [
+                {
+                  "name": "velero-plugin-for-gcp",
+                  "image": "velero/velero-plugin-for-gcp:v1.7.1",
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/target",
+                      "name": "plugins"
+                    }
+                  ]
+                },
+                {
+                  "name": "velero-plugin-for-csi",
+                  "image": "velero/velero-plugin-for-csi:v0.5.1",
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/target",
+                      "name": "plugins"
+                    }
+                  ]
+                }
+              ],
+              "configuration": {
+                "backupStorageLocation": [
+                  {
+                    "name": "default",
+                    "provider": "velero.io/gcp",
+                    "bucket": "cloudogu-backup-bucket-47171-2-c7383db7192e53e7",
+                    "config": {
+                      "serviceAccount": "service-673091753446@gs-project-accounts.iam.gserviceaccount.com",
+                      "kmsKeyName": "projects/ces-coder-workspaces/locations/europe-west3/keyRings/ces-key-ring-47171-2/cryptoKeys/ces-key"
+                    }
+                  }
+                ],
+                "volumeSnapshotLocation": [
+                  {
+                    "name": "default",
+                    "provider": "velero.io/gcp",
+                    "config": {
+                      "snapshotLocation": "europe-west3"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]}
+  blueprintMask: |
+    {"blueprintMaskApi":"v1"}
+  ignoreDoguHealth: true
+  ignoreComponentHealth: true
+  allowDoguNamespaceSwitch: false

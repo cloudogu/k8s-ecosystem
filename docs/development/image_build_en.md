@@ -16,7 +16,7 @@
 - `packer init .`
 - `packer build -var "timestamp=$(date +%Y%m%d)" k8s-prod.pkr.hcl`
    - To build only for a specific hypervisor, the `--only=` parameter can be used
-   - Example: `packer build -var "timestamp=$(date +%Y%m%d)" --only=ecosystem-virtualbox k8s-prod.pkr.hcl`
+   - Example: `packer build -var "timestamp=$(date +%Y%m%d)" --only=virtualbox-iso.ecosystem-virtualbox k8s-prod.pkr.hcl`
 
 ## 3. Wait
 

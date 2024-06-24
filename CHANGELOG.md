@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add options to add node labels and taints on cluster setup #73
 - Set new garbage collection defaults for `image-gc-low-threshold` and `image-gc-high-threshold`
 - Terraform Azure Module - Variables and sensitive data can now be passed from an extra file.
+- Upgrade Ubuntu to 24.04 #81
 
 
 ### Added

@@ -9,12 +9,16 @@ terraform {
 
 
 locals {
-  registries_map = { for reg in var.private_registries : reg.url => base64encode("${reg.username}:${base64decode(reg.password)}")}
+  registries_map = {
+    for reg in var.private_registries : reg.url => {
+      auth = base64encode("${reg.username}:${base64decode(reg.password)}")
+    }
+  }
 }
 
 resource "kubernetes_secret" "kubelet-private-registry-secret" {
   metadata {
-    name = "kubelet-config"
+    name      = "kubelet-config"
     namespace = "kube-system"
   }
   type = "Opaque"

@@ -53,6 +53,19 @@ module "azure" {
   azure_resource_group_location = var.azure_resource_group_location
 }
 
+module "kubelet_private_registry" {
+  depends_on = [module.azure]
+  source     = "../../kubelet-private-registry"
+
+  private_registries = [
+    {
+      "url"      = var.image_registry_url
+      "username" = var.image_registry_username
+      "password" = var.image_registry_password
+    }
+  ]
+}
+
 module "ces" {
   depends_on = [module.azure]
   source     = "../../ces-module"

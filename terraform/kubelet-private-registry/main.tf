@@ -20,7 +20,7 @@ resource "kubernetes_secret" "kubelet-private-registry-secret" {
   type = "Opaque"
 
   data = {
-    ".config.json" = jsonencode({
+    "config.json" = jsonencode({
       "auths" = local.registries_map
     })
   }

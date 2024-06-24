@@ -5,6 +5,7 @@ image/output-*
 .vagrant
 .vagrant.rb
 .vagrant.rb.asc
+.vagrant.secret.rb
 .vagrant.rb.gpg
 *.log
 

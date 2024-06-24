@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/helm"
       version = ">=2.12.1"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.30"
+    }
   }
 }
 
@@ -15,15 +19,7 @@ locals {
   tld        = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
 }
 
-data "kubernetes_resources" "isSetupApplied" {
-  api_version    = var.is_setup_applied_matching_resource.api
-  kind           = var.is_setup_applied_matching_resource.kind
-  field_selector = var.is_setup_applied_matching_resource.field_selector
-}
-
 resource "helm_release" "k8s-ces-setup" {
-  depends_on = [data.kubernetes_resources.isSetupApplied]
-  count      = length(data.kubernetes_resources.isSetupApplied.objects) > 0 ? 0 : 1
   name       = "k8s-ces-setup"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
   chart      = "k8s-ces-setup"
@@ -65,7 +61,7 @@ resource "helm_release" "k8s-ces-setup" {
             "certificateKey" : var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
           }
         ))
-        "resource_patches" = var.resource_patches_file != null ? file("${path.root}/${var.resource_patches_file}") : ""
+        "resource_patches" = var.resource_patches
       })
   ]
 }

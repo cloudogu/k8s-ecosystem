@@ -53,6 +53,19 @@ module "azure" {
   azure_resource_group_location = var.azure_resource_group_location
 }
 
+module "kubelet_private_registry" {
+  depends_on = [module.azure]
+  source     = "../../kubelet-private-registry"
+
+  private_registries = [
+    {
+      "url"      = var.image_registry_url
+      "username" = var.image_registry_username
+      "password" = var.image_registry_password
+    }
+  ]
+}
+
 module "ces" {
   depends_on = [module.azure]
   source     = "../../ces-module"
@@ -63,7 +76,7 @@ module "ces" {
   ces_fqdn              = var.ces_fqdn
   ces_admin_password    = var.ces_admin_password
   additional_dogus      = var.additional_dogus
-  resource_patches_file = var.resource_patches_file
+  resource_patches = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
   image_registry_url      = var.image_registry_url

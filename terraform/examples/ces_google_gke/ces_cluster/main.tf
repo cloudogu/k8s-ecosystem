@@ -77,6 +77,19 @@ module "increase_max_map_count" {
   source     = "../../../max-map-count"
 }
 
+module "kubelet_private_registry" {
+  depends_on = [module.google_gke]
+  source     = "../../kubelet-private-registry"
+
+  private_registries = [
+    {
+      "url"      = var.image_registry_url
+      "username" = var.image_registry_username
+      "password" = var.image_registry_password
+    }
+  ]
+}
+
 module "ces" {
   depends_on = [module.google_gke]
   source     = "../../../ces-module"
@@ -88,7 +101,7 @@ module "ces" {
   ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
   additional_dogus      = var.additional_dogus
-  resource_patches_file = var.resource_patches_file
+  resource_patches = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
   image_registry_url      = var.image_registry_url

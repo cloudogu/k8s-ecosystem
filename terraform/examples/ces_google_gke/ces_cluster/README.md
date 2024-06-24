@@ -9,8 +9,8 @@ List available gcloud projects.
 Set variables.
 
 ```bash
-export PROJECT_ID=ces-coder-workspaces
-export SERVICE_ACCOUNT_NAME=ces-sa-47171-1
+PROJECT_ID=<insert_your_project_name>
+SERVICE_ACCOUNT_NAME=<insert_your_sa_name>
 ```
 
 Ensure you are in the correct project.
@@ -19,7 +19,7 @@ Ensure you are in the correct project.
 
 You need to create a service account for the google provider.
 
-`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="DISPLAY_NAME" --project=$PROJECT_ID`
+`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME" --project=$PROJECT_ID`
 
 And assign the necessary Roles (only one role can be added with this command (see [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/multiple-role-for-gcloud-iam-service-accounts-add-iam-policy/m-p/686863)))
 

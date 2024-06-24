@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.30"
+    }
+  }
+}
+
 resource "random_id" "bucket_prefix" {
   byte_length = 8
 }
@@ -29,10 +38,5 @@ resource "google_kms_crypto_key" "bucket_key" {
   name            = var.key_name
   key_ring        = google_kms_key_ring.bucket_keyring[0].id
   rotation_period = var.key_rotation_period
-
-  purpose = var.key_purpose
-
-  lifecycle {
-    prevent_destroy = true
-  }
+  purpose         = var.key_purpose
 }

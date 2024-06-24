@@ -1,0 +1,3 @@
+bucket  = "ces-coder-workspaces-terraform-states"
+prefix  = "terraform/ces-coder-workspaces/backups-47171-1"
+credentials = "../secrets/gcp_sa.json"

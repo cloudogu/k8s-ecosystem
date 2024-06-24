@@ -25,7 +25,7 @@ variable "gcp_region" {
 variable "gcp_credentials" {
   type      = string
   sensitive = true
-  default   = "secrets/gcp_sa.json"
+  default   = "../secrets/gcp_sa.json"
 }
 
 variable "machine_type" {
@@ -83,30 +83,4 @@ variable "scale_jobs" {
       id              = 1
     }
   ]
-}
-
-variable "create_backup_bucket" {
-  type = bool
-  default = false
-}
-
-variable "backup_bucket_name" {
-  description = "The name of the bucket"
-  type        = string
-  default     = "cloudogu-backup-bucket"
-}
-
-variable "use_bucket_encryption" {
-  type = bool
-  default = true
-}
-
-variable "key_ring_name" {
-  type    = string
-  default = "ces-key-ring"
-}
-
-variable "key_name" {
-  type    = string
-  default = "ces-key"
 }

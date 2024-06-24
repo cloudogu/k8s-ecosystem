@@ -9,8 +9,8 @@ List available gcloud projects.
 Set variables.
 
 ```bash
-PROJECT_ID=<insert_your_project_name>
-SERVICE_ACCOUNT_NAME=<insert_your_sa_name>
+export PROJECT_ID=ces-coder-workspaces
+export SERVICE_ACCOUNT_NAME=ces-sa-47171-1
 ```
 
 Ensure you are in the correct project.
@@ -39,6 +39,7 @@ See `variables.tf` for possibilities.
 Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
 
 # Create cluster
+(Optional) If you want to save the state inside a google bucket look [here](../create_bucket/README.md)
 
 Init with `terraform init`
 
@@ -75,12 +76,6 @@ With gcloud you can get the config too:
 
 Many configuration values are project wide. Make sure to change the corresponding names if necessary.
 
-## Create bucket
-
-Set terraform variable `create_backup_bucket` and `backup_bucket_name`. If you wish to encrypt your bucket set `use_bucket_encryption`, 
-`key_ring_name` and `key_name`, too.
-
-Reapply terraform.
 
 ## Bucket configuration
 
@@ -124,22 +119,6 @@ ROLE_PERMISSIONS=(
 
 `gsutil iam ch serviceAccount:$SERVICE_ACCOUNT_EMAIL:objectAdmin gs://${BUCKET_NAME}`
 
-## If you want to use encryption the Cloud Storage Service Account needs permissions to access a keyring with a key.
-
-Get the name of the service account.
-
-`STORAGE_SA=$(curl https://storage.googleapis.com/storage/v1/projects/${PROJECT_ID}/serviceAccount --header "Authorization: Bearer $(gcloud auth print-access-token)" | jq -r '.email_address')`
-
-Add role to access key. Keep in mind the location, keyring and key name. They have to be created later with terraform.
-Defaults: `location=europe-west3, keyring=ces-keyring and key=ces-key`
-
-`gcloud kms keys add-iam-policy-binding ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring --member serviceAccount:$STORAGE_SA --role roles/cloudkms.cryptoKeyEncrypterDecrypter`
-TODO: This role is needed on another SA, when StorageClass needs to be encrypted: service-[PROJECT_NUMBER]@compute-system.iam.gserviceaccount.com see [here](https://stackoverflow.com/questions/59715312/grant-permission-to-use-the-key-in-gke)
-
-Get the name of the key.
-
-`gcloud kms keys describe ces-key --project ${PROJECT_ID} --location europe-west3 --keyring ces-key-ring`
-
 ## Configure ecosystem for backup & restore
 
 Create the velero backup secret.
@@ -148,6 +127,6 @@ Create the velero backup secret.
 
 Configure the ecosystem with backup & restore components.
 It is recommended to apply a blueprint with all necessary components and configuration.
-Check [example](example/full_ces_blueprint_with_gcp_backup.yaml).
+Check [example](example_cluster_resources/full_ces_blueprint_with_gcp_backup.yaml).
 Configure section `backupStorageLocation` and `volumeSnapshotLocation` in `k8s-velero`.
 If you do not use bucket encryption do not set the secret key in the velero configuration

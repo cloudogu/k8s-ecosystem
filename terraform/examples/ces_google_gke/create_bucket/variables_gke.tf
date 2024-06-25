@@ -26,7 +26,7 @@ variable "create_bucket" {
 variable "bucket_name" {
   description = "The name of the bucket"
   type        = string
-  default     = "cloudogu-backup-bucket"
+  default     = "bucket-name"
 }
 
 variable "use_bucket_encryption" {
@@ -36,10 +36,10 @@ variable "use_bucket_encryption" {
 
 variable "key_ring_name" {
   type    = string
-  default = "ces-key-ring"
+  default = "key-ring"
 }
 
 variable "key_name" {
   type    = string
-  default = "ces-key"
+  default = "key"
 }

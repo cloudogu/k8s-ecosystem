@@ -39,7 +39,7 @@ See `variables.tf` for possibilities.
 Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
 
 # Create cluster
-Optional) If you want to save the state inside a google bucket look [here](../create_bucket/README.md). This is needed when multiple people want to be able to modify the same terraform resources.
+Optional) If you want to save the state inside a google bucket look [here](../google_bucket/README.md). This is needed when multiple people want to be able to modify the same terraform resources.
 
 Init with `terraform init`
 

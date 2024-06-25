@@ -65,8 +65,16 @@ variable "username" {
   default = "ces-admin"
 }
 
+variable "virtualbox-version-lower-7" {
+  type = bool
+  description = "This flag indicates if the local vitualbox installation is older than version 7 to build the modifyvm option list because some options are not available with virtualbox < 7"
+  default = false
+}
+
 locals {
   vm_name = "CloudoguEcoSystem-${var.timestamp}"
+  common_vboxmanage = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"]]
+  vboxmanage = var.virtualbox-version-lower-7 ? local.common_vboxmanage : concat(local.common_vboxmanage, [["modifyvm", local.vm_name, "--nat-localhostreachable1", "on"]])
 }
 
 source "virtualbox-iso" "ecosystem-virtualbox" {
@@ -93,7 +101,7 @@ source "virtualbox-iso" "ecosystem-virtualbox" {
   ssh_password           = var.password
   ssh_timeout            = "20m"
   ssh_username           = var.username
-  vboxmanage             = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"], ["modifyvm", local.vm_name, "--nat-localhostreachable1", "on"]]
+  vboxmanage             = local.vboxmanage
   vm_name                = local.vm_name
 }
 

@@ -18,6 +18,10 @@
    - To build only for a specific hypervisor, the `--only=` parameter can be used
    - Example: `packer build -var "timestamp=$(date +%Y%m%d)" --only=virtualbox-iso.ecosystem-virtualbox k8s-prod.pkr.hcl`
 
+> For VirtualBox installations < 7, an additional variable must be set because certain options used are not available for the version.
+>
+>`packer build -var "timestamp=$(date +%Y%m%d)" -var "virtualbox-version-lower-7=true" --only=virtualbox-iso.ecosystem-virtualbox k8s-prod.pkr.hcl`
+
 ## 3. Wait
 
 - The image building process takes about 15 minutes, depending on your hardware and internet connection.

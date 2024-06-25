@@ -66,6 +66,11 @@ variable "vm_name" {
   default = "ces"
 }
 
+locals {
+  common_vboxmanage = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"]]
+  vboxmanage = var.virtualbox-version-lower-7 ? local.common_vboxmanage : concat(local.common_vboxmanage, [["modifyvm", local.vm_name, "--nat-localhostreachable1", "on"]])
+}
+
 source "virtualbox-iso" "ecosystem-basebox" {
   boot_command = [
     "c<wait>",
@@ -89,11 +94,8 @@ source "virtualbox-iso" "ecosystem-basebox" {
   ssh_password           = var.password
   ssh_timeout            = "20m"
   ssh_username           = var.username
-  vboxmanage             = [
-    ["modifyvm", "${var.vm_name}", "--memory", "${var.memory}"],
-    ["modifyvm", "${var.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${var.vm_name}", "--vram", "10"]
-  ]
-  vm_name                = "${var.vm_name}"
+  vboxmanage             = local.vboxmanage
+  vm_name = "${var.vm_name}"
 }
 
 build {
@@ -110,7 +112,8 @@ build {
     scripts          = [
       "../scripts/startInstallation.sh", "../scripts/installDependencies.sh", "../scripts/installGuestAdditions.sh",
       "../scripts/dev/vagrant.sh", "../scripts/configureGrub.sh", "../scripts/configureNetworking.sh",
-      "../scripts/configureSSHDaemon.sh", "../scripts/setupFail2Ban.sh", "../scripts/installK9s.sh", "../scripts/installHelm.sh",
+      "../scripts/configureSSHDaemon.sh", "../scripts/setupFail2Ban.sh", "../scripts/installK9s.sh",
+      "../scripts/installHelm.sh",
       "../scripts/kubernetes/prepareK3sInstallation.sh", "../scripts/kubernetes/installCustomServiceFiles.sh",
       "../scripts/optimizeImageSize.sh"
     ]

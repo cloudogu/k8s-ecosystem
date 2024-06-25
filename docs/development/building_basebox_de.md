@@ -27,6 +27,11 @@ packer init .
 packer build k8s-dev.pkr.hcl
 ```
 
+> Für VirtualBox-Installationen < 7 muss zusätzlich eine Variable gesetzt werden, weil bestimmte verwendete Optionen nicht für die Version verfügbar sind.
+>
+>`packer build -var "virtualbox-version-lower-7=true" k8s-dev.pkr.hcl`
+
+
 **3. Warten**
 
 Der Image-Erstellungsprozess dauert etwa 15 Minuten, abhängig von Ihrer Hardware und Internetverbindung. Packer sollte

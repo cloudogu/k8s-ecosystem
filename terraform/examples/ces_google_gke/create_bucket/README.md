@@ -3,12 +3,11 @@
 Set terraform variable `create_bucket` and `bucket_name`. If you wish to encrypt your bucket set `use_bucket_encryption`,
 `key_ring_name` and `key_name`, too.
 
-If you want to use encryption do [this](#bucket-encryption) first.
+If you want to use encryption do [this](#bucket-encryption).
 
 (Optional) If you want to save the state inside a google bucket look [here](#terraform-state-bucket-setup)
 
 Init with `terraform init`
-
 
 Check plan
 `terraform plan -var-file=secretVars.tfvars -var-file=vars.tfvars`
@@ -51,8 +50,8 @@ If the bucket already exists, the bucket only needs to be defined as the storage
 
 ### Create the bucket
 
-Update the variables to define the name for your terraform state bucket.
-create_backup_bucket has to be true.
+Update the variable `bucket_name` to define the name for your terraform state bucket.
+`create_bucket` has to be true.
 After that you can initialize and apply terraform
 
 ```bash
@@ -62,6 +61,20 @@ terraform apply -var-file=vars.tfvars -var-file=secretVars.tfvars
 ```
 
 ### Define the bucket as the storage location
+
+Add this block to your main.tf
+
+```terraform
+terraform {
+  backend "gcs" {
+    bucket  = "YOUR_BUCKET_NAME"
+    prefix  = "STATE_PATH"
+    credentials = "YOUR_CREDENTIALS_JSON"
+  }
+}
+```
+
+#### External configuration
 
 Add this block to your main.tf
 

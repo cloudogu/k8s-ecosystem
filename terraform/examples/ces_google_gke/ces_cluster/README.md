@@ -21,7 +21,7 @@ You need to create a service account for the google provider.
 
 `gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME" --project=$PROJECT_ID`
 
-And assign the necessary Roles (only one role can be added with this command (see [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/multiple-role-for-gcloud-iam-service-accounts-add-iam-policy/m-p/686863)))
+And assign the necessary Roles (only one role can be added each time with this command (see [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/multiple-role-for-gcloud-iam-service-accounts-add-iam-policy/m-p/686863)))
 
 `gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/editor"`
 `gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/container.serviceAgent"`
@@ -39,7 +39,7 @@ See `variables.tf` for possibilities.
 Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
 
 # Create cluster
-(Optional) If you want to save the state inside a google bucket look [here](../create_bucket/README.md)
+Optional) If you want to save the state inside a google bucket look [here](../create_bucket/README.md). This is needed when multiple people want to be able to modify the same terraform resources.
 
 Init with `terraform init`
 

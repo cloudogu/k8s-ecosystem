@@ -93,7 +93,7 @@ source "virtualbox-iso" "ecosystem-virtualbox" {
   ssh_password           = var.password
   ssh_timeout            = "20m"
   ssh_username           = var.username
-  vboxmanage             = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"]]
+  vboxmanage             = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"], ["modifyvm", local.vm_name, "--nat-localhostreachable1", "on"]]
   vm_name                = local.vm_name
 }
 

@@ -1,5 +1,5 @@
 # Cloudogu template files
-!vars.tfvars.template
+!**.tfvars.template
 
 # Local .terraform directories
 **/.terraform/*

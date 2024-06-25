@@ -66,9 +66,15 @@ variable "vm_name" {
   default = "ces"
 }
 
+variable "virtualbox-version-lower-7" {
+  type = bool
+  description = "This flag indicates if the local vitualbox installation is older than version 7 to build the modifyvm option list because some options are not available with virtualbox < 7"
+  default = false
+}
+
 locals {
-  common_vboxmanage = [["modifyvm", "${local.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${local.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${local.vm_name}", "--vram", "10"]]
-  vboxmanage = var.virtualbox-version-lower-7 ? local.common_vboxmanage : concat(local.common_vboxmanage, [["modifyvm", local.vm_name, "--nat-localhostreachable1", "on"]])
+  common_vboxmanage = [["modifyvm", "${var.vm_name}", "--memory", "${var.memory}"], ["modifyvm", "${var.vm_name}", "--cpus", "${var.cpus}"], ["modifyvm", "${var.vm_name}", "--vram", "10"]]
+  vboxmanage = var.virtualbox-version-lower-7 ? local.common_vboxmanage : concat(local.common_vboxmanage, [["modifyvm", var.vm_name, "--nat-localhostreachable1", "on"]])
 }
 
 source "virtualbox-iso" "ecosystem-basebox" {

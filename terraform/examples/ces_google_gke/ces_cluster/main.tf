@@ -79,7 +79,7 @@ module "increase_max_map_count" {
 
 module "kubelet_private_registry" {
   depends_on = [module.google_gke]
-  source     = "../../kubelet-private-registry"
+  source     = "../../../kubelet-private-registry"
 
   private_registries = [
     {

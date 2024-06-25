@@ -38,10 +38,14 @@ See `variables.tf` for possibilities.
 
 Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
 
-# Create cluster
-(Optional) If you want to save the state inside a google bucket look [here](../google_bucket/README.md). This is needed when multiple people want to be able to modify the same terraform resources.
+Use the `var.gcs.tfbackend.template` file to create `var.gcs.tfbackend` and set information where to store your terraform state. For further information look [here](../google_bucket/README.md). 
+This is needed when multiple people want to be able to modify the same terraform resources. If you wish to store your state locally, remove the line `backend "gcs" {}` from `main.tf`.
 
-Init with `terraform init`
+If you already have a local terraform state file, you can just reinit your project and you should be asked to copy your current state into the bucket.
+
+# Create cluster
+
+Init with `terraform init -backend-config=var.gcs.template` (backend-config is not needed when using local state)
 
 > At this time the terraform plan and apply process has two stages because of the helm setup deployment.
 > The cluster itself has to be created firstly to determine if the setup deployment is necessary.

@@ -1,13 +1,24 @@
-## Create bucket
+# General configuration
+Use the `vars.tfvars.template` file to create `vars.tfvars` and set your GCP project and cluster name in it.
 
 Set terraform variable `create_bucket` and `bucket_name`. If you wish to encrypt your bucket set `use_bucket_encryption`,
 `key_ring_name` and `key_name`, too.
 
+If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
+See `variables.tf` for possibilities.
+
+Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
+
+Use the `var.gcs.tfbackend.template` file to create `var.gcs.tfbackend` and set information where to store your terraform state. For further information look [here](../google_bucket/README.md).
+This is needed when multiple people want to be able to modify the same terraform resources. If you wish to store your state locally, remove the line `backend "gcs" {}` from `main.tf`.
+
+If you already have a local terraform state file, you can just reinit your project and you should be asked to copy your current state into the bucket.
+
+# Create bucket
+
 If you want to use encryption do [this](#bucket-encryption).
 
-(Optional) If you want to save the state inside a google bucket look [here](#terraform-state-bucket-setup)
-
-Init with `terraform init`
+Init with `terraform init -backend-config=var.gcs.template` (backend-config is not needed when using local state)
 
 Check plan
 `terraform plan -var-file=secretVars.tfvars -var-file=vars.tfvars`
@@ -91,3 +102,5 @@ bucket  = "YOUR_BUCKET_NAME"
 prefix  = "STATE_PATH"
 credentials = "YOUR_CREDENTIALS_JSON"
 ```
+
+Use `terraform init -backend-config=var.gcs.tfbackend` or `terraform init -reconfigure -backend-config=var.gcs.tfbackend`

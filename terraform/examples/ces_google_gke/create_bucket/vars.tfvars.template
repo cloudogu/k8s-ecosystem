@@ -1,7 +1,7 @@
-gcp_project_name  = "ces-coder-workspaces"
-gcp_zone          = "europe-west3-c"
+gcp_project_name  = "YOUR_GOOGLE_CLOUD_PROJECT_NAME"
+gcp_zone          = "YOUR_GOOGLE_CLOUD_LOCATION"
 
 create_backup_bucket = true
 use_bucket_encryption = true
-backup_bucket_name = "cloudogu-backup-bucket-47171-3"
-key_ring_name = "ces-key-ring-47171-3"
+bucket_name = "YOUR_BACKUP_BUCKET_NAME"
+key_ring_name = "YOUR_KEY_RING_NAME"

@@ -22,9 +22,15 @@ git clone https://github.com/cloudogu/k8s-ecosystem.git
 **2. Image erstellen**
 
 ```bash
-cd <k8s-ecosystem-pfad>/image/
-packer build k8s-dev.json
+cd <k8s-ecosystem-pfad>/image/dev/
+packer init .
+packer build k8s-dev.pkr.hcl
 ```
+
+> Für VirtualBox-Installationen < 7 muss zusätzlich eine Variable gesetzt werden, weil bestimmte verwendete Optionen nicht für die Version verfügbar sind.
+>
+>`packer build -var "virtualbox-version-lower-7=true" k8s-dev.pkr.hcl`
+
 
 **3. Warten**
 

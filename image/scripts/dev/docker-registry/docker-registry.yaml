@@ -107,7 +107,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: docker-registry-proxy
-          image: "registry:2.8.2"
+          image: "registry:2.8.3"
           imagePullPolicy: IfNotPresent
           command:
             - /bin/registry

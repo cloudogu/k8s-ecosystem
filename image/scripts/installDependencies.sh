@@ -30,9 +30,9 @@ installNonAptDependencies() {
 
 installYQ() {
   local yq="/usr/local/bin/yq"
-  local yq_version="v4.28.1"
+  local yq_version="v4.44.2"
   local yq_url="https://github.com/mikefarah/yq/releases/download/${yq_version}/yq_linux_amd64"
-  local yq_sha256sum="818cb646d68c016b840d8db2f614553e488121d6a41aa0619fd16f17ed3a83d8"
+  local yq_sha256sum="246b781828353a59fb04ffaada241f78a8f3f25c623047b40306def1f6806e71"
 
   wget -qO "${yq}" "${yq_url}"
   echo "${yq_sha256sum} ${yq}" | sha256sum -c

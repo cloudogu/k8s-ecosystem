@@ -1,6 +1,8 @@
 .idea
-image/build
-image/output-*
+image/prod/build
+image/dev/build
+image/prod/output-*
+image/dev/output-*
 
 .vagrant
 .vagrant.rb

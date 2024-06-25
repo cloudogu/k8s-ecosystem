@@ -12,6 +12,8 @@ The directory `image` contains the following files:
  ┃ ┗ 📂 dev                 - Development scripts executed when building the development baseboxes and instances.
  ┃ ┗ 📂 kubernetes          - Scripts regarding the setup of k8s.
  ┃ ┗ 📜 *.sh                - general scripts applying to all images and baseboxes.
- ┣ 📜 k8s-dev.json        - Packer template used to build the development basebox.
- ┗ 📜 k8s-prod.json       - Packer template used to build the production images for multiple hypervisors.
+ ┣ 📂 dev
+ ┃ ┗ 📜 k8s-dev.pkr.hcl         - Packer template used to build the development basebox.
+ ┣ 📂 prod
+   ┗ 📜 k8s-prod.pkr.hcl        - Packer template used to build the production images for multiple hypervisors.
 ```

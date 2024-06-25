@@ -12,10 +12,15 @@
 
 ## 2. Start des Bauprozesses mit Packer
 
-- `cd <k8s-ecosystem-pfad>/image/`
-- `packer build -var "timestamp=$(date +%Y%m%d)" k8s-prod.json`
+- `cd <k8s-ecosystem-pfad>/image/prod/`
+- `packer init .`
+- `packer build -var "timestamp=$(date +%Y%m%d)" k8s-prod.pkr.hcl`
     - Um nur für einen bestimmten Hypervisor zu bauen, kann der `--only=`-Parameter genutzt werden
-    - Beispiel: `packer build -var "timestamp=$(date +%Y%m%d)" --only=ecosystem-virtualbox k8s-prod.json`
+    - Beispiel: `packer build -var "timestamp=$(date +%Y%m%d)" --only=virtualbox-iso.ecosystem-virtualbox k8s-prod.pkr.hcl`
+
+> Für VirtualBox-Installationen < 7 muss zusätzlich eine Variable gesetzt werden, weil bestimmte verwendete Optionen nicht für die Version verfügbar sind.
+>
+>`packer build -var "timestamp=$(date +%Y%m%d)" -var "virtualbox-version-lower-7=true" --only=virtualbox-iso.ecosystem-virtualbox k8s-prod.pkr.hcl`
 
 ## 3. Warten
 

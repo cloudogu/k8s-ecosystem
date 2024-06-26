@@ -1,0 +1,15 @@
+- phase: dogu
+  resource:
+    apiVersion: k8s.cloudogu.com/v1
+    kind: dogu
+    name: nexus
+  patches:
+    # Add an ingress annotation for the nexus-dogu
+    - op: add
+      path: /spec/additionalIngressAnnotations
+      value:
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    - op: add
+      path: /spec/resources
+      value:
+        dataVolumeSize: 5Gi

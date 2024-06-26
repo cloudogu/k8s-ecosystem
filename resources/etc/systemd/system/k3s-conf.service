@@ -1,0 +1,11 @@
+[Unit]
+Description=K3s management service
+After=network-online.target k3s.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=on-failure
+LimitNOFILE=400000
+ExecStart=/usr/sbin/k3s-conf.sh

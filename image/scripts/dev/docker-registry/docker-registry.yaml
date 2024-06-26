@@ -1,0 +1,198 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-registry-config
+  labels:
+    app: docker-registry
+data:
+  config.yml: |-
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    http:
+      addr: :30099
+      debug:
+        addr: :5001
+        prometheus:
+          enabled: false
+          path: /metrics
+      headers:
+        X-Content-Type-Options:
+        - nosniff
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    version: 0.1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-registry-proxy-config
+  labels:
+    app: docker-registry-proxy
+data:
+  config.yml: |-
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    http:
+      addr: :30098
+      debug:
+        addr: :5000
+        prometheus:
+          enabled: false
+          path: /metrics
+      headers:
+        X-Content-Type-Options:
+          - nosniff
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    version: 0.1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  type: NodePort
+  ports:
+    - port: 30099
+      protocol: TCP
+      targetPort: docker-api
+      nodePort: 30099
+      name: docker-api
+    - port: 30098
+      protocol: TCP
+      targetPort: api-proxy
+      nodePort: 30098
+      name: api-proxy
+  selector:
+    app: docker-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  selector:
+    matchLabels:
+      app: docker-registry
+  replicas: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+      annotations:
+        checksum/config: e13d2768dbcea94e68d0feea454737c949b2a1c5b79cfdfd377aee2bed81e242
+        checksum/secret: 97a1dba3f8cd7ff43b650b5475c35102c3ba070c1c678ce36b2d62b0d2e04de4
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: docker-registry-proxy
+          image: "registry:2.8.3"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/registry
+            - serve
+            - /etc/docker/registry/config.yml
+          ports:
+            - name: api-proxy
+              containerPort: 30098
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api-proxy
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api-proxy
+          resources:
+            {}
+          env:
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyHaSharedSecret
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: "/var/lib/registry"
+            - name: REGISTRY_PROXY_REMOTEURL
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyRemoteUrl
+            - name: REGISTRY_PROXY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyUsername
+            - name: REGISTRY_PROXY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: proxyPassword
+          volumeMounts:
+            - name: "docker-registry-proxy-config"
+              mountPath: "/etc/docker/registry"
+            - name: data
+              mountPath: /var/lib/registry/
+        - name: docker-registry
+          image: "registry:2.8.2"
+          imagePullPolicy: IfNotPresent
+          command:
+          - /bin/registry
+          - serve
+          - /etc/docker/registry/config.yml
+          ports:
+            - name: docker-api
+              containerPort: 30099
+          livenessProbe:
+            httpGet:
+              path: /
+              port: docker-api
+          readinessProbe:
+            httpGet:
+              path: /
+              port: docker-api
+          resources:
+            {}
+          env:
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: docker-registry-secret
+                  key: haSharedSecret
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: "/var/lib/registry"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry/
+            - name: "docker-registry-config"
+              mountPath: "/etc/docker/registry"
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: docker-registry-config
+          configMap:
+            name: docker-registry-config
+        - name: docker-registry-proxy-config
+          configMap:
+            name: docker-registry-proxy-config

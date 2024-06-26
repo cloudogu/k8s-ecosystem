@@ -1,0 +1,49 @@
+{
+  "ces-namespace": "ecosystem",
+  "k3s-token": "SuPeR_secure123!TOKEN",
+  "image-gc-low-threshold": 20,
+  "image-gc-high-threshold": 50,
+  "nodes": [
+    {
+      "name": "ces-main",
+      "isMainNode": true,
+      "node-ip": "192.168.56.2",
+      "node-external-ip": "192.168.56.2",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-0",
+      "node-ip": "192.168.56.3",
+      "node-external-ip": "192.168.56.3",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-1",
+      "node-ip": "192.168.56.4",
+      "node-external-ip": "192.168.56.4",
+      "flannel-iface": "enp0s8"
+    },
+    {
+      "name": "ces-worker-2",
+      "node-ip": "192.168.56.5",
+      "node-external-ip": "192.168.56.5",
+      "flannel-iface": "enp0s8"
+    }
+  ],
+  "docker-registry-configuration": {
+    "mirrors": {
+      "k3ces.local:30099": {
+        "endpoint": [
+          "http://k3ces.local:30099"
+        ]
+      }
+    },
+    "configs": {
+      "k3ces.local:30099": {
+        "tls": {
+          "insecure_skip_verify": false
+        }
+      }
+    }
+  }
+}

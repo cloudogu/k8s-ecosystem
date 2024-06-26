@@ -1,0 +1,26 @@
+.idea
+image/prod/build
+image/dev/build
+image/prod/output-*
+image/dev/output-*
+
+.vagrant
+.vagrant.rb
+.vagrant.rb.asc
+.vagrant.rb.gpg
+*.log
+
+tmp
+
+# keys begin mounted into local instance to give ssh access to dev machine
+authorized_keys
+
+.env.sh
+terraform.tfvars
+
+# generated setup.json
+.setup.json
+# generated values file for the setup
+additionalValues.yaml
+/terraform/examples/ces_google_gke/gcp_sa.json
+/terraform/examples/ces_google_gke/kubeconfig

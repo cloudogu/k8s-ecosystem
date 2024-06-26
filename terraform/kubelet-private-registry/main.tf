@@ -68,7 +68,7 @@ resource "kubernetes_daemonset" "registry_config" {
         }
 
         container {
-          name    = "update-kublet-config"
+          name    = "update-kubelet-config"
           image   = "alpine:3.20.0"
           command = ["/bin/sh", "-c"]
           args    = ["while true; do cp -v /config/config.json /host/var/lib/kubelet/config.json; sleep 3600; done"]

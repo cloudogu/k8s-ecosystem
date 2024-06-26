@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Changed
+- Replace terraform kubernetes generic manifests resources with explicit corresponding resources (e.g. daemonsets) because they need the kubeconfig already in plan phase and prevent a single `terraform apply` #87
+- Changed dogu variable in terraform ces-module. All dogus have to be defined. With this change one can change the versions of the necessary dogus like `ldap`.
+
 ## [v3.0.0] - 2024-06-26
 
 First release. Based on the already released baseboxes it is called 3.0.0.

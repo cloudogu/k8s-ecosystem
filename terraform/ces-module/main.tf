@@ -49,11 +49,11 @@ resource "helm_release" "k8s-ces-setup" {
           "${path.module}/setup.json.tftpl",
           {
             # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/
-            "admin_username"   = var.ces_admin_username,
-            "admin_password"   = var.ces_admin_password,
-            "admin_email"      = var.ces_admin_email,
-            "default_dogu"     = var.default_dogu,
-            "additional_dogus" = var.additional_dogus,
+            "admin_username" = var.ces_admin_username,
+            "admin_password" = var.ces_admin_password,
+            "admin_email"    = var.ces_admin_email,
+            "default_dogu"   = var.default_dogu,
+            "dogus"          = var.dogus,
             "fqdn" : var.ces_fqdn,
             "domain" : local.tld
             "certificateType" : var.ces_certificate_path == null ? "selfsigned" : "external"

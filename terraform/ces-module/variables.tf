@@ -58,10 +58,16 @@ variable "default_dogu" {
   default     = "cas"
 }
 
-variable "additional_dogus" {
-  description = "A list of additional Dogus to install"
+variable "dogus" {
+  description = "A list of Dogus to install"
   type        = list(string)
-  default     = []
+  default     = [
+    "official/ldap",
+    "official/postfix",
+    "k8s/nginx-static",
+    "k8s/nginx-ingress",
+    "official/cas"
+  ]
 }
 
 variable "additional_components" {

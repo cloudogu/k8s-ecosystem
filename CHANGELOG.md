@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v3.0.0] - 2024-06-26
+
+First release. Based on the already released baseboxes it is called 3.0.0.
+The features below have been added over a long period of time and may be out of date.
+
 ### Changed
 - Add dogu_registry_urlschema - important: you need to change your `.vagrant.rb`
 - Use k8s-ces-setup helm chart #40
@@ -20,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set new garbage collection defaults for `image-gc-low-threshold` and `image-gc-high-threshold`
 - Terraform Azure Module - Variables and sensitive data can now be passed from an extra file.
 - Upgrade Ubuntu to 24.04 #81
-
 
 ### Added
 - Packer templates for CES production images

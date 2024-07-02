@@ -63,6 +63,10 @@ With gcloud you can get the config too:
 
 # Delete cluster
 
+**IMPORTANT:** Please delete all PVCs of the cluster before deleting the cluster itself. Google will keep the persistent
+disks in the cloud to prevent data loss and will charge us for that. The recommended way is to delete the whole namespace
+(`kubectl delete namespace ecosystem`), wait a minute or two and then use the `terraform destroy`-command below.
+
 - `terraform destroy -var-file=secretVars.tfvars`
   or `terraform destroy -var-file=secretVars.tfvars -var-file=vars.tfvars`
 

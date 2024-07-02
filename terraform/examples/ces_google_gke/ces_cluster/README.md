@@ -19,11 +19,12 @@ Ensure you are in the correct project.
 
 You need to create a service account for the google provider.
 
-`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME"`
+`gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME" --project=$PROJECT_ID`
 
-And assign the necessary Roles
+And assign the necessary Roles (only one role can be added each time with this command (see [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/multiple-role-for-gcloud-iam-service-accounts-add-iam-policy/m-p/686863)))
 
-`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/container.serviceAgent" --role="roles/editor"`
+`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/editor"`
+`gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/container.serviceAgent"`
 
 Get that service account and save it to `secrets/gcp_sa.json`:
 
@@ -35,9 +36,16 @@ Use the `vars.tfvars.template` file to create `vars.tfvars` and set your GCP pro
 If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
 See `variables.tf` for possibilities.
 
+Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
+
+Use the `var.gcs.tfbackend.template` file to create `var.gcs.tfbackend` and set information where to store your terraform state. For further information look [here](../google_bucket/README.md). 
+This is needed when multiple people want to be able to modify the same terraform resources. If you wish to store your state locally, remove the line `backend "gcs" {}` from `main.tf`.
+
+If you already have a local terraform state file, you can just reinit your project and you should be asked to copy your current state into the bucket.
+
 # Create cluster
 
-Init with `terraform init`
+Init with `terraform init -backend-config=var.gcs.template` (backend-config is not needed when using local state)
 
 > At this time the terraform plan and apply process has two stages because of the helm setup deployment.
 > The cluster itself has to be created firstly to determine if the setup deployment is necessary.
@@ -72,6 +80,11 @@ disks in the cloud to prevent data loss and will charge us for that. The recomme
 
 # Backup configuration
 
+## Disclaimer
+
+Many configuration values are project wide. Make sure to change the corresponding names if necessary.
+
+
 ## Bucket configuration
 
 ### If you plan to use backup & restore with a google bucket, you need to create a separate service account first.
@@ -80,12 +93,12 @@ Create service account.
 
 ```bash
 GSA_NAME=velero
-gcloud iam service-accounts create $GSA_NAME --display-name "Velero service account"
+gcloud iam service-accounts create --project $PROJECT_ID $GSA_NAME --display-name "Velero service account"
 ```
 
 Get service account email.
 
-`SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list --filter="displayName:Velero service account" --format 'value(email)')`
+`SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list --project $PROJECT_ID --filter="displayName:Velero service account" --format 'value(email)')`
 
 Add required google bucket and snapshot permissions to service account
 
@@ -114,28 +127,6 @@ ROLE_PERMISSIONS=(
 
 `gsutil iam ch serviceAccount:$SERVICE_ACCOUNT_EMAIL:objectAdmin gs://${BUCKET_NAME}`
 
-## If you want to use encryption the Cloud Storage Service Account needs permissions to access a keyring with a key.
-
-Get the name of the service account.
-
-`STORAGE_SA=$(curl https://storage.googleapis.com/storage/v1/projects/${PROJECT_ID}/serviceAccount --header "Authorization: Bearer $(gcloud auth print-access-token)" | jq '.email_address')`
-
-Add role to access key. Keep in mind the location, keyring and key name. They have to be created later with terraform.
-Defaults: `location=europe-west3, keyring=ces-keyring and key=ces-key`
-
-`gcloud kms keys add-iam-policy-binding ces-key --location europe-west3 --keyring ces-keyring --member serviceAccount:$STORAGE_SA --role roles/cloudkms.cryptoKeyEncrypterDecrypter`
-
-Get the name of the key.
-
-`gcloud kms keys describe ces-key --location europe-west3 --keyring ces-keyring`
-
-## Create bucket
-
-Set terraform variable `create_backup_bucket`, `backup_bucket_name`, `use_bucket_encryption`, `key_ring_name`,
-and `key_name`.
-
-Reapply terraform.
-
 ## Configure ecosystem for backup & restore
 
 Create the velero backup secret.
@@ -144,6 +135,6 @@ Create the velero backup secret.
 
 Configure the ecosystem with backup & restore components.
 It is recommended to apply a blueprint with all necessary components and configuration.
-Check [example](example/full_ces_blueprint_with_gcp_backup.yaml).
+Check [example](example_cluster_resources/full_ces_blueprint_with_gcp_backup.yaml).
 Configure section `backupStorageLocation` and `volumeSnapshotLocation` in `k8s-velero`.
 If you do not use bucket encryption do not set the secret key in the velero configuration

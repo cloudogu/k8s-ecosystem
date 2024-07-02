@@ -9,7 +9,7 @@ variable "node_pool_name" {
 }
 
 variable "machine_type" {
-  default = "n1-standard-4" // "e2-medium" "n1-standard-4"
+  default = "n1-standard-4" // "e2-medium" "n1-standard-4" "custom-4-6144" (4 cores - 6gb ram)
 }
 
 variable "disk_type" {

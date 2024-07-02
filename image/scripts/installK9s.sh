@@ -3,12 +3,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-k9sVersion=v0.26.7
-k9sTarSHA256SUM=f774bb75045e361e17a4f267491c5ec66f41db7bffd996859ffb1465420af249
+k9sVersion=v0.32.5
+k9sTarSHA256SUM=33c31bf5feba292b59b8dabe5547cb52ab565521ee5619b52eb4bd4bf226cea3
 installDir=/usr/local/bin/
+k9sFileName="k9s_Linux_amd64.tar.gz"
 
 echo "Installing k9s to ${installDir}..."
-wget -q https://github.com/derailed/k9s/releases/download/${k9sVersion}/k9s_Linux_x86_64.tar.gz
-echo "${k9sTarSHA256SUM} k9s_Linux_x86_64.tar.gz" | sha256sum --check
+wget -q "https://github.com/derailed/k9s/releases/download/${k9sVersion}/${k9sFileName}"
+echo "${k9sTarSHA256SUM} ${k9sFileName}" | sha256sum --check
 mkdir -p "${installDir}"
-tar xf k9s_Linux_x86_64.tar.gz -C "${installDir}"
+tar xf "${k9sFileName}" -C "${installDir}"
+rm "${k9sFileName}"

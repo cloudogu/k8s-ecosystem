@@ -36,7 +36,7 @@ disableDNSResolution() {
 # Restarts the ssh daemon which reloads all configurations.
 restartSshDaemon() {
   echo "**** Restarting ssh daemon..."
-  sudo systemctl restart sshd.service
+  sudo systemctl restart ssh
 }
 
 echo "**** Executing configureSSHDaemon.sh..."

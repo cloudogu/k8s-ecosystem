@@ -100,8 +100,8 @@ module "ces" {
   ces_fqdn              = var.ces_fqdn
   ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
-  additional_dogus      = var.additional_dogus
-  resource_patches = file(var.resource_patches_file)
+  dogus                 = var.dogus
+  resource_patches      = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
   image_registry_url      = var.image_registry_url

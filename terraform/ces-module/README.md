@@ -10,35 +10,43 @@ code by adding a `module` configuration and setting its `source` parameter to UR
 
 ```hcl
 module "ces" {
-   # update this to the URL and version you want to use
-   source = "github.com/cloudogu/k8s-ecosystem/terraform/ces-module"
+  # update this to the URL and version you want to use
+  source = "github.com/cloudogu/k8s-ecosystem/terraform/ces-module"
 
-   # Configure the access to the Kubernetes-Cluster 
-   kubernetes_host                   = my_cluster.kube_config.host
-   kubernetes_client_certificate     = base64decode(my_cluster.kube_config.client_certificate)
-   kubernetes_client_key             = base64decode(my_cluster.kube_config.client_key)
-   kubernetes_cluster_ca_certificate = base64decode(my_cluster.kube_config.cluster_ca_certificate)
+  # Configure the access to the Kubernetes-Cluster 
+  kubernetes_host                   = my_cluster.kube_config.host
+  kubernetes_client_certificate     = base64decode(my_cluster.kube_config.client_certificate)
+  kubernetes_client_key             = base64decode(my_cluster.kube_config.client_key)
+  kubernetes_cluster_ca_certificate = base64decode(my_cluster.kube_config.cluster_ca_certificate)
 
-   # Configure CES installation options
-   setup_chart_version   = "1.0.0"
-   setup_chart_namespace = "k8s"
-   ces_fqdn              = "ces.local"
-   ces_admin_password    = "test123"
-   additional_dogus      = ["official/jenkins", "official/scm"]
+  # Configure CES installation options
+  setup_chart_version   = "1.0.1"
+  setup_chart_namespace = "k8s"
+  ces_fqdn              = "ces.local"
+  ces_admin_password    = "test123"
+  dogus                 = [
+    "official/ldap",
+    "official/postfix",
+    "k8s/nginx-static",
+    "k8s/nginx-ingress",
+    "official/cas",
+    "official/jenkins",
+    "official/scm"
+  ]
 
-   # Configure access for the registries. Passwords need to be base64-encoded.
-   image_registry_url      = "registry.cloudogu.com"
-   image_registry_username = "username"
-   image_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
+  # Configure access for the registries. Passwords need to be base64-encoded.
+  image_registry_url      = "registry.cloudogu.com"
+  image_registry_username = "username"
+  image_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
 
-   dogu_registry_username = "username"
-   dogu_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
-   dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
+  dogu_registry_username = "username"
+  dogu_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
+  dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
 
-   helm_registry_host     = "registry.cloudogu.com"
-   helm_registry_schema   = "oci"
-   helm_registry_username = "username"
-   helm_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
+  helm_registry_host     = "registry.cloudogu.com"
+  helm_registry_schema   = "oci"
+  helm_registry_username = "username"
+  helm_registry_password = "cGFzc3dvcmQ=" # Base64-encoded
 }
 ```
 

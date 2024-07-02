@@ -61,7 +61,7 @@ variable "weekend_scale_down" {
 variable "node_count" {
   description = "The amount of nodes to create"
   type        = number
-  default     = 5
+  default     = 3
 }
 
 variable "scale_jobs" {
@@ -78,7 +78,7 @@ variable "scale_jobs" {
       id              = 0
     },
     {
-      node_count      = 5
+      node_count      = 3
       cron_expression = "0 4 * * 1-5"
       id              = 1
     }

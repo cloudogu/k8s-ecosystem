@@ -396,10 +396,10 @@ spec:
                   {
                     "name": "default",
                     "provider": "velero.io/gcp",
-                    "bucket": "cloudogu-backup-bucket-47171-2-c7383db7192e53e7",
+                    "bucket": "<YOUR_BUCKET_NAME>",
                     "config": {
-                      "serviceAccount": "service-673091753446@gs-project-accounts.iam.gserviceaccount.com",
-                      "kmsKeyName": "projects/ces-coder-workspaces/locations/europe-west3/keyRings/ces-key-ring-47171-2/cryptoKeys/ces-key"
+                      "serviceAccount": "<YOUR_SERVICE_ACCOUNT_EMAIL>",
+                      "kmsKeyName": "<YOUR_KEY_PATH>"
                     }
                   }
                 ],
@@ -408,7 +408,7 @@ spec:
                     "name": "default",
                     "provider": "velero.io/gcp",
                     "config": {
-                      "snapshotLocation": "europe-west3"
+                      "snapshotLocation": "<insert location>"
                     }
                   }
                 ]

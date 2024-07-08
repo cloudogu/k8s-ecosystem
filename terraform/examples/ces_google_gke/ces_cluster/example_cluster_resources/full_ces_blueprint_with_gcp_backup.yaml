@@ -408,7 +408,7 @@ spec:
                     "name": "default",
                     "provider": "velero.io/gcp",
                     "config": {
-                      "snapshotLocation": "europe-west3"
+                      "snapshotLocation": "<insert location>"
                     }
                   }
                 ]

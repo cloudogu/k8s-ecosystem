@@ -398,7 +398,7 @@ spec:
                     "provider": "velero.io/gcp",
                     "bucket": "<YOUR_BUCKET_NAME>",
                     "config": {
-                      "serviceAccount": "<YOUR_SERVICE_ACCOUNT_EMAIL",
+                      "serviceAccount": "<YOUR_SERVICE_ACCOUNT_EMAIL>",
                       "kmsKeyName": "<YOUR_KEY_PATH>"
                     }
                   }

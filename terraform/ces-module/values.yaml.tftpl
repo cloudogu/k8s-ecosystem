@@ -1,7 +1,7 @@
 # Chart of the component operator
 # Format: <namespace>/<name>:<version>
 # component_operator_crd_chart: "k8s/k8s-component-operator-crd:latest"
-component_operator_chart: "k8s-testing/k8s-component-operator:1.0.1"
+component_operator_chart: "k8s-testing/k8s-component-operator:1.0.1-dev"
 # component_operator_chart: "europe-west3-docker.pkg.dev/ces-coder-workspaces/ces-test-docker-helm-repo/charts/k8s-component-operator:1.0.1"
 
 # Components to be installed by the k8s-ces-setup.
@@ -25,8 +25,8 @@ components:
     version: latest
     helmRepositoryNamespace: k8s
   k8s-dogu-operator:
-    version: latest
-    helmRepositoryNamespace: k8s
+    version: 1.2.0-test
+    helmRepositoryNamespace: k8s-testing
 # remove dogu-crd as another ces already provides this
 #  k8s-dogu-operator-crd:
 #    version: latest

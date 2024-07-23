@@ -28,6 +28,7 @@ provider "helm" {
 module "ces" {
   source = "../../ces-module"
 
+  ces_namespace = "ecosystem2"
   # Configure CES installation options
   setup_chart_version   = var.setup_chart_version
   setup_chart_namespace = var.setup_chart_namespace

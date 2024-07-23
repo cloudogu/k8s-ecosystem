@@ -94,8 +94,6 @@ variable "dogus" {
     "k8s/nginx-static:1.23.1-6",
     "k8s/nginx-ingress:1.6.4-4",
     "official/cas:7.0.4.1-1",
-    "official/jenkins",
-    "official/nexus",
     "official/scm"
   ]
 }
@@ -108,7 +106,7 @@ variable "additional_components" {
     namespace       = string
     deployNamespace = string
   }))
-  default = [{ name = "k8s-longhorn", version = "latest", namespace = "k8s", deployNamespace = "longhorn-system" }]
+  default = []
 }
 
 variable "ces_fqdn" {
@@ -126,7 +124,7 @@ variable "setup_chart_namespace" {
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "1.0.0"
+  default     = "1.0.1-test"
 }
 
 variable "resource_patches_file" {

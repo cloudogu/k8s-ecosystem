@@ -20,11 +20,11 @@ locals {
 }
 
 resource "helm_release" "k8s-ces-setup" {
-  name       = "k8s-ces-setup"
-  repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
+  name       = "k8s-ces-setup2"
+  #repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
+  repository = "${var.helm_registry_schema}://europe-west3-docker.pkg.dev/ces-coder-workspaces/ces-test-docker-helm-repo/charts"
   chart      = "k8s-ces-setup"
   version    = var.setup_chart_version
-
   namespace        = var.ces_namespace
   create_namespace = true
 

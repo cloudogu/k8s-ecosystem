@@ -1,0 +1,7 @@
+gcp_project_name  = "YOUR_GOOGLE_CLOUD_PROJECT_NAME"
+gcp_zone          = "YOUR_GOOGLE_CLOUD_LOCATION"
+
+create_backup_bucket = true
+use_bucket_encryption = true
+bucket_name = "YOUR_BACKUP_BUCKET_NAME"
+key_ring_name = "YOUR_KEY_RING_NAME"

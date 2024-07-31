@@ -7,6 +7,7 @@ image/dev/output-*
 .vagrant
 .vagrant.rb
 .vagrant.rb.asc
+.vagrant.secret.rb
 .vagrant.rb.gpg
 *.log
 
@@ -22,5 +23,6 @@ terraform.tfvars
 .setup.json
 # generated values file for the setup
 additionalValues.yaml
-/terraform/examples/ces_google_gke/gcp_sa.json
-/terraform/examples/ces_google_gke/kubeconfig
+/terraform/examples/ces_google_gke/ces_cluster/kubeconfig
+
+**/gcp_sa.json

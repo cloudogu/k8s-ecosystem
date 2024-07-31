@@ -10,6 +10,8 @@ terraform {
     }
   }
 
+  backend "gcs" {}
+
   required_version = ">= 1.7.0"
 }
 
@@ -50,7 +52,7 @@ provider "helm" {
 }
 
 module "kubeconfig_generator" {
-  source                 = "../../kubeconfig_generator"
+  source                 = "../../../kubeconfig_generator"
   cluster_name           = var.cluster_name
   access_token           = module.google_gke.access_token
   cluster_ca_certificate = module.google_gke.ca_certificate
@@ -60,7 +62,7 @@ module "kubeconfig_generator" {
 }
 
 module "google_gke" {
-  source             = "../../google_gke"
+  source             = "../../../google_gke"
   cluster_name       = var.cluster_name
   kubernetes_version = var.kubernetes_version
   idp_enabled        = var.idp_enabled
@@ -72,12 +74,12 @@ module "google_gke" {
 
 module "increase_max_map_count" {
   depends_on = [module.google_gke]
-  source     = "../../max-map-count"
+  source     = "../../../max-map-count"
 }
 
 module "kubelet_private_registry" {
   depends_on = [module.google_gke]
-  source     = "../../kubelet-private-registry"
+  source     = "../../../kubelet-private-registry"
 
   private_registries = [
     {
@@ -90,7 +92,7 @@ module "kubelet_private_registry" {
 
 module "ces" {
   depends_on = [module.google_gke]
-  source     = "../../ces-module"
+  source     = "../../../ces-module"
 
   # Configure CES installation options
   setup_chart_version   = var.setup_chart_version
@@ -126,7 +128,7 @@ locals {
 
 module "scale_jobs" {
   depends_on = [module.google_gke]
-  source     = "../../google_gke_http_cron"
+  source     = "../../../google_gke_http_cron"
   for_each   = {
     for index, job in var.scale_jobs :
     job.id => job
@@ -139,15 +141,4 @@ module "scale_jobs" {
   cron_expression       = each.value.cron_expression
   gcp_region            = var.gcp_region
   service_account_email = local.service_account_email
-}
-
-module "backup_bucket" {
-  count          = var.create_backup_bucket ? 1 : 0
-  source         = "../../google_cloud_storage_bucket"
-  project        = var.gcp_project_name
-  name           = var.backup_bucket_name
-  location       = var.gcp_region
-  use_encryption = var.use_bucket_encryption
-  key_ring_name  = var.key_ring_name
-  key_name       = var.key_name
 }

@@ -20,6 +20,20 @@ resource "google_container_cluster" "default" {
   release_channel {
     channel = "REGULAR"
   }
+  maintenance_policy {
+    // GKE has no support for time zones as clusters are global
+    // time zone is always GMT
+    // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#daily_maintenance_window
+    daily_maintenance_window {
+      start_time = "23:00"
+      end_time   = "03:00"
+    }
+    maintenance_exclusion {
+      exclusion_name = "work hours"
+      start_time     = "06:00"
+      end_time       = "20:00"
+    }
+  }
 
   master_auth {
     client_certificate_config {
@@ -40,7 +54,8 @@ resource "google_container_node_pool" "default_node_pool" {
   node_count = var.node_count
 
   node_config {
-    preemptible  = true
+    preemptible  = var.preemptible
+    spot         = var.spot_vms
     machine_type = var.machine_type
     disk_type    = var.disk_type
     disk_size_gb = var.disk_size

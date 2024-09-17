@@ -1,11 +1,23 @@
 variable "kubernetes_version" {
-  default = "1.29"
+  default = "1.30"
 }
 
 variable "node_pool_name" {
   description = "The name of the node pool."
   type = string
   default = "default"
+}
+
+variable "preemptible" {
+  description = "Decide if the cluster should use preemtible VMs which are cheaper but will be replaced within 24h."
+  type = bool
+  default = false
+}
+
+variable "spot_vms" {
+  description = "Decide if the cluster should provision spot VMs. This drastically reduces costs but gives no availability guarantees."
+  type = bool
+  default = false
 }
 
 variable "machine_type" {
@@ -18,8 +30,9 @@ variable "disk_type" {
 }
 
 variable "disk_size" {
+  description = "Disk size in GB"
   type = string
-  default = 50
+  default = 40
 }
 
 variable "cluster_name" {

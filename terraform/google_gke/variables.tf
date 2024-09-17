@@ -8,6 +8,18 @@ variable "node_pool_name" {
   default = "default"
 }
 
+variable "preemptible" {
+  description = "Decide if the cluster should use preemtible VMs which are cheaper but will be replaced within 24h."
+  type = bool
+  default = false
+}
+
+variable "spot_vms" {
+  description = "Decide if the cluster should provision spot VMs. This drastically reduces costs but gives no availability guarantees."
+  type = bool
+  default = false
+}
+
 variable "machine_type" {
   default = "n1-standard-4" // "e2-medium" "n1-standard-4" "custom-4-6144" (4 cores - 6gb ram)
 }
@@ -18,6 +30,7 @@ variable "disk_type" {
 }
 
 variable "disk_size" {
+  description = "Disk size in GB"
   type = string
   default = 40
 }

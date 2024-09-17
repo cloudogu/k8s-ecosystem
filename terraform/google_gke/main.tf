@@ -23,15 +23,12 @@ resource "google_container_cluster" "default" {
   maintenance_policy {
     // GKE has no support for time zones as clusters are global
     // time zone is always GMT
-    // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#daily_maintenance_window
-    daily_maintenance_window {
-      start_time = "23:00"
-      end_time   = "03:00"
-    }
-    maintenance_exclusion {
-      exclusion_name = "work hours"
-      start_time     = "06:00"
-      end_time       = "20:00"
+    // the end_time is no real date but only used to calculate the duration of the window if recurrence is set.
+    // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#recurring_window
+    recurring_window {
+      start_time = "2024-09-16T23:00:00Z"
+      end_time = "2024-09-17T03:00:00Z"
+      recurrence = "FREQ=DAILY"
     }
   }
 

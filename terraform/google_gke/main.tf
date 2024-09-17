@@ -20,6 +20,17 @@ resource "google_container_cluster" "default" {
   release_channel {
     channel = "REGULAR"
   }
+  maintenance_policy {
+    daily_maintenance_window {
+      start_time = "22:00"
+      end_time = "03:00"
+    }
+    maintenance_exclusion {
+      exclusion_name = "work hours"
+      start_time     = "06:00"
+      end_time       = "20:00"
+    }
+  }
 
   master_auth {
     client_certificate_config {

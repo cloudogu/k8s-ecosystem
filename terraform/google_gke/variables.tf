@@ -1,5 +1,5 @@
 variable "kubernetes_version" {
-  default = "1.29"
+  default = "1.30"
 }
 
 variable "node_pool_name" {
@@ -19,7 +19,7 @@ variable "disk_type" {
 
 variable "disk_size" {
   type = string
-  default = 50
+  default = 40
 }
 
 variable "cluster_name" {

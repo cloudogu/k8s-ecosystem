@@ -4,7 +4,6 @@
 
 # Cloudogu EcoSystem MultiNode (CES MN)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Maintainer](https://img.shields.io/badge/maintainer-Cloudogu-blue)
 
 This is the repository containing all setup scripts and resources to install a Cloudogu EcoSystem MultiNode.

@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 ## Changed
 - Replace terraform kubernetes generic manifests resources with explicit corresponding resources (e.g. daemonsets) because they need the kubeconfig already in plan phase and prevent a single `terraform apply` #87
 - Changed dogu variable in terraform ces-module. All dogus have to be defined. With this change one can change the versions of the necessary dogus like `ldap`.
@@ -16,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - reduce default node disk size in terraform gke module #92
 - add parameters for preemtible and spot VMs in terraform gke module #92
 - (breaking) set `preemtible = false` as default for nodes in terraform gke module #92
+- Relicense to AGPL-3.0-only
 
 ## [v3.0.0] - 2024-06-26
 

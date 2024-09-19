@@ -15,6 +15,6 @@ If you want to run the daemonset only on a specific set on nodes you can specify
 module "increase_max_map_count" {
   depends_on = [module.google_gke] # Change this according your used cloud provider module
   source = "../../max-map-count"
-  node_selectors = ["nodeType: db", "application: elasticsearch"]
+  node_selectors = {"nodeType": "db", "application": "elasticsearch"}
 }
 ```

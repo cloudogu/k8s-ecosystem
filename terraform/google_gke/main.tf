@@ -20,6 +20,17 @@ resource "google_container_cluster" "default" {
   release_channel {
     channel = "REGULAR"
   }
+  maintenance_policy {
+    // GKE has no support for time zones as clusters are global
+    // time zone is always GMT
+    // the end_time is no real date but only used to calculate the duration of the window if recurrence is set.
+    // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#recurring_window
+    recurring_window {
+      start_time = "2024-09-16T23:00:00Z"
+      end_time = "2024-09-17T03:00:00Z"
+      recurrence = "FREQ=DAILY"
+    }
+  }
 
   master_auth {
     client_certificate_config {
@@ -40,7 +51,8 @@ resource "google_container_node_pool" "default_node_pool" {
   node_count = var.node_count
 
   node_config {
-    preemptible  = true
+    preemptible  = var.preemptible
+    spot         = var.spot_vms
     machine_type = var.machine_type
     disk_type    = var.disk_type
     disk_size_gb = var.disk_size

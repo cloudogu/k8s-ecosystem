@@ -25,11 +25,11 @@ variable "gcp_region" {
 variable "gcp_credentials" {
   type      = string
   sensitive = true
-  default   = "secrets/gcp_sa.json"
+  default   = "../secrets/gcp_sa.json"
 }
 
 variable "machine_type" {
-  default = "n1-standard-4" // "e2-medium" "n1-standard-4"
+  default = "n1-standard-4" // "e2-medium" "n1-standard-4" "custom-4-6144" (4 cores - 6gb ram)
 }
 
 variable "disk_type" {
@@ -61,7 +61,7 @@ variable "weekend_scale_down" {
 variable "node_count" {
   description = "The amount of nodes to create"
   type        = number
-  default     = 5
+  default     = 3
 }
 
 variable "scale_jobs" {
@@ -78,35 +78,9 @@ variable "scale_jobs" {
       id              = 0
     },
     {
-      node_count      = 5
+      node_count      = 3
       cron_expression = "0 4 * * 1-5"
       id              = 1
     }
   ]
-}
-
-variable "create_backup_bucket" {
-  type = bool
-  default = false
-}
-
-variable "backup_bucket_name" {
-  description = "The name of the bucket"
-  type        = string
-  default     = "cloudogu-backup-bucket"
-}
-
-variable "use_bucket_encryption" {
-  type = bool
-  default = true
-}
-
-variable "key_ring_name" {
-  type    = string
-  default = "ces-key-ring"
-}
-
-variable "key_name" {
-  type    = string
-  default = "ces-key"
 }

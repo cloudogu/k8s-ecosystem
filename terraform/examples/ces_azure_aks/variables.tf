@@ -103,10 +103,19 @@ variable "ces_admin_password" {
   sensitive   = true
 }
 
-variable "additional_dogus" {
-  description = "The password for the ces admin user"
+variable "dogus" {
+  description = "A list of Dogus to install"
   type        = list(string)
-  default     = ["official/jenkins", "official/scm", "official/nexus"]
+  default     = [
+    "official/ldap:2.6.2-7",
+    "official/postfix:3.8.4-1",
+    "k8s/nginx-static:1.23.1-6",
+    "k8s/nginx-ingress:1.6.4-4",
+    "official/cas:7.0.4.1-1",
+    "official/jenkins",
+    "official/nexus",
+    "official/scm"
+  ]
 }
 
 variable "ces_fqdn" {

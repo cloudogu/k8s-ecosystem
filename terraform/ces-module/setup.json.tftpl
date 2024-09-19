@@ -12,16 +12,8 @@
   },
   "dogus": {
     "defaultDogu": "${default_dogu}",
-    "install": [
-      "official/ldap",
-      "official/postfix",
-      "k8s/nginx-static",
-      "k8s/nginx-ingress",
-      "official/cas"
-      %{ for dogu in additional_dogus ~}
-      , "${dogu}"
-      %{ endfor ~}
-    ],
+    "install":
+      ${jsonencode(dogus)},
     "completed": true
   },
   "admin": {

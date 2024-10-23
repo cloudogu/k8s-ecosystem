@@ -49,16 +49,16 @@ resource "helm_release" "k8s-ces-setup" {
           "${path.module}/setup.json.tftpl",
           {
             # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/
-            "admin_username" = var.ces_admin_username,
-            "admin_password" = var.ces_admin_password,
-            "admin_email"    = var.ces_admin_email,
-            "default_dogu"   = var.default_dogu,
-            "dogus"          = var.dogus,
-            "fqdn" : var.ces_fqdn,
-            "domain" : local.tld
-            "certificateType" : var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate" : var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
-            "certificateKey" : var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
+            "admin_username"  = var.ces_admin_username
+            "admin_password"  = var.ces_admin_password
+            "admin_email"     = var.ces_admin_email
+            "default_dogu"    = var.default_dogu
+            "dogus"           = var.dogus
+            "fqdn"            = var.ces_fqdn
+            "domain"          = local.tld
+            "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
+            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
+            "certificateKey"  = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
           }
         ))
         "resource_patches" = var.resource_patches

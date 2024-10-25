@@ -1,7 +1,7 @@
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "1.0.0"
+  default     = "3.0.0"
 }
 
 variable "setup_chart_namespace" {

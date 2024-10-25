@@ -1,7 +1,7 @@
-docker_registry_secret:
-  url: DOCKER_REGISTRY_SECRET_URL
-  username: "DOCKER_REGISTRY_SECRET_USERNAME"
-  password: "DOCKER_REGISTRY_SECRET_PASSWORD" # Base64 encoded password
+container_registry_secrets:
+  - url: CONTAINER_REGISTRY_SECRET_URL
+    username: "CONTAINER_REGISTRY_SECRET_USERNAME"
+    password: "CONTAINER_REGISTRY_SECRET_PASSWORD" # Base64 encoded password
 dogu_registry_secret:
   url: DOGU_REGISTRY_SECRET_URL
   urlschema: "DOGU_REGISTRY_SECRET_URL_SCHEMA"

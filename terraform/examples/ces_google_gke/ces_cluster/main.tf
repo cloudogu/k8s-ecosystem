@@ -77,18 +77,18 @@ module "increase_max_map_count" {
   source     = "../../../max-map-count"
 }
 
-module "kubelet_private_registry" {
-  depends_on = [module.google_gke]
-  source     = "../../../kubelet-private-registry"
-
-  private_registries = [
-    {
-      "url"      = var.image_registry_url
-      "username" = var.image_registry_username
-      "password" = var.image_registry_password
-    }
-  ]
-}
+#module "kubelet_private_registry" {
+#  depends_on = [module.google_gke]
+#  source     = "../../../kubelet-private-registry"
+#
+#  private_registries = [
+#    {
+#      "url"      = var.image_registry_url
+#      "username" = var.image_registry_username
+#      "password" = var.image_registry_password
+#    }
+#  ]
+#}
 
 module "ces" {
   depends_on = [module.google_gke]
@@ -104,14 +104,11 @@ module "ces" {
   resource_patches      = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
-  image_registry_url      = var.image_registry_url
-  image_registry_username = var.image_registry_username
-  image_registry_password = var.image_registry_password
-
-  dogu_registry_username   = var.dogu_registry_username
-  dogu_registry_password   = var.dogu_registry_password
-  dogu_registry_endpoint   = var.dogu_registry_endpoint
-  dogu_registry_url_schema = var.dogu_registry_url_schema
+  container_registry_secrets = var.container_registry_secrets
+  dogu_registry_username     = var.dogu_registry_username
+  dogu_registry_password     = var.dogu_registry_password
+  dogu_registry_endpoint     = var.dogu_registry_endpoint
+  dogu_registry_url_schema   = var.dogu_registry_url_schema
 
   helm_registry_host         = var.helm_registry_host
   helm_registry_schema       = var.helm_registry_schema

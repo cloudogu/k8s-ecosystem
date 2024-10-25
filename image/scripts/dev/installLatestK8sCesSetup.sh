@@ -44,9 +44,9 @@ applyResources() {
 
   # Replace values in yaml template
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
-  sed --in-place "s|DOCKER_REGISTRY_SECRET_URL|${image_registry_url}|g" ${ADDITIONAL_VALUES_YAML}
-  sed --in-place "s|DOCKER_REGISTRY_SECRET_USERNAME|${image_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
-  sed --in-place "s|DOCKER_REGISTRY_SECRET_PASSWORD|${image_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|CONTAINER_REGISTRY_SECRET_URL|${image_registry_url}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|CONTAINER_REGISTRY_SECRET_USERNAME|${image_registry_username}|g" ${ADDITIONAL_VALUES_YAML}
+  sed --in-place "s|CONTAINER_REGISTRY_SECRET_PASSWORD|${image_registry_password}|g" ${ADDITIONAL_VALUES_YAML}
   sed --in-place "s|DOGU_REGISTRY_SECRET_URL|${dogu_registry_url}|g" ${ADDITIONAL_VALUES_YAML}
   sed --in-place "s|DOGU_REGISTRY_SECRET_URL_SCHEMA|${dogu_registry_urlschema}|g" ${ADDITIONAL_VALUES_YAML}
   sed --in-place "s|DOGU_REGISTRY_SECRET_USERNAME|${dogu_registry_username}|g" ${ADDITIONAL_VALUES_YAML}

@@ -14,9 +14,8 @@ components:
   #    version: latest
   #    helmRepositoryNamespace: k8s
   #    deployNamespace: longhorn-system
-  k8s-etcd:
-    version: latest
-    helmRepositoryNamespace: k8s
+  k8s-blueprint-operator: null
+  k8s-blueprint-operator-crd: null
   k8s-dogu-operator:
     version: latest
     helmRepositoryNamespace: k8s
@@ -63,10 +62,12 @@ ${resource_patches}
 
 # Credentials for the docker registry used by the components.
 # It is mandatory to set username and the base64-encoded password.
-docker_registry_secret:
-  url: "${docker_registry_url}"
-  username: "${docker_registry_username}"
-  password: "${docker_registry_password}"
+container_registry_secrets:
+%{ for secret in container_registry_secrets ~}
+  - url: "${secret.url}"
+    username: "${secret.username}"
+    password: "${secret.password}"
+%{ endfor ~}
 
 # Credentials for the dogu registry used by the components.
 # It is mandatory to set username and the base64-encoded password.

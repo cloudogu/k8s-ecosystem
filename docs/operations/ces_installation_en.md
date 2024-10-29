@@ -197,10 +197,10 @@ required credentials must be configured with a `values.yaml` file.
 Minimal example:
 
 ```yaml
-docker_registry_secret:
-  url: https://registry.cloudogu.com
-  username:
-  password:
+container_registry_secrets:
+  - url: https://registry.cloudogu.com
+    username:
+    password:
 
 dogu_registry_secret:
   url: https://dogu.cloudogu.com/api/v2/dogus

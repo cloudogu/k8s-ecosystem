@@ -1,7 +1,7 @@
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "1.0.0"
+  default     = "3.0.0"
 }
 
 variable "setup_chart_namespace" {
@@ -81,20 +81,13 @@ variable "additional_components" {
   default = []
 }
 
-variable "image_registry_url" {
-  description = "The url for the docker-image-registry"
-  type        = string
-}
-
-variable "image_registry_username" {
-  description = "The username for the docker-image-registry"
-  type        = string
-}
-
-variable "image_registry_password" {
-  description = "The base64-encoded password for the docker-image-registry"
-  type        = string
-  sensitive   = true
+variable "container_registry_secrets" {
+  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
+  type        = list(object({
+    url      = string
+    username = string
+    password = string
+  }))
 }
 
 variable "dogu_registry_username" {

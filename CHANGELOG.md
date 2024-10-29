@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.0.0] - 2024-10-29
+### Changed
+- **Breaking**: Updated k8s-ces-setup configuration in vagrant environment and terraform module to support the new structure of the container registry secret. #96
+For terraform variable declaration see `container_registry_secrets` in [variables.tf](terraform/ces-module/variables.tf).
+- Update default setup helm chart version to 3.0.0 in terraform module `ces-module`.
+
 ## [v3.1.0] - 2024-09-19
 ### Changed
 - Replace terraform kubernetes generic manifests resources with explicit corresponding resources (e.g. daemonsets) because they need the kubeconfig already in plan phase and prevent a single `terraform apply` #87

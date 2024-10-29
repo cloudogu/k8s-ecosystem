@@ -29,6 +29,3 @@ components:
           provisionerReplicaCount: DEFAULTCLASSREPLICACOUNT
           resizerReplicaCount: DEFAULTCLASSREPLICACOUNT
           snapshotterReplicaCount: DEFAULTCLASSREPLICACOUNT
-        longhornUI:
-          # Scale this up, if UI is needed
-          replicas: 0

@@ -16,7 +16,8 @@ helm_registry_secret:
 components:
   k8s-longhorn:
     version: latest
-    helmRepositoryNamespace: longhorn-system
+    helmRepositoryNamespace: k8s
+    deployNamespace: longhorn-system
     valuesYamlOverwrite: |
       longhorn:
         defaultSettings:

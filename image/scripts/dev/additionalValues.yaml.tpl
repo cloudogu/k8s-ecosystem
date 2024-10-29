@@ -17,7 +17,6 @@ components:
   k8s-longhorn:
     version: latest
     helmRepositoryNamespace: k8s
-    deployNamespace: longhorn-system
     valuesYamlOverwrite: |
       longhorn:
         defaultSettings:

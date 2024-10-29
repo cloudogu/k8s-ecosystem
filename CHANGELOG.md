@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v4.0.0] - 2024-10-29
 ### Changed
 - **Breaking**: Updated k8s-ces-setup configuration in vagrant environment and terraform module to support the new structure of the container registry secret. #96
 For terraform variable declaration see `container_registry_secrets` in [variables.tf](terraform/ces-module/variables.tf).

@@ -53,18 +53,18 @@ module "azure" {
   azure_resource_group_location = var.azure_resource_group_location
 }
 
-module "kubelet_private_registry" {
-  depends_on = [module.azure]
-  source     = "../../kubelet-private-registry"
-
-  private_registries = [
-    {
-      "url"      = var.image_registry_url
-      "username" = var.image_registry_username
-      "password" = var.image_registry_password
-    }
-  ]
-}
+#module "kubelet_private_registry" {
+#  depends_on = [module.azure]
+#  source     = "../../kubelet-private-registry"
+#
+#  private_registries = [
+#    {
+#      "url"      = var.image_registry_url
+#      "username" = var.image_registry_username
+#      "password" = var.image_registry_password
+#    }
+#  ]
+#}
 
 module "ces" {
   depends_on = [module.azure]
@@ -79,13 +79,10 @@ module "ces" {
   resource_patches      = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
-  image_registry_url      = var.image_registry_url
-  image_registry_username = var.image_registry_username
-  image_registry_password = var.image_registry_password
-
-  dogu_registry_username = var.dogu_registry_username
-  dogu_registry_password = var.dogu_registry_password
-  dogu_registry_endpoint = var.dogu_registry_endpoint
+  container_registry_secrets = var.container_registry_secrets
+  dogu_registry_username     = var.dogu_registry_username
+  dogu_registry_password     = var.dogu_registry_password
+  dogu_registry_endpoint     = var.dogu_registry_endpoint
 
   helm_registry_host       = var.helm_registry_host
   helm_registry_schema     = var.helm_registry_schema

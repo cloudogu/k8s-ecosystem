@@ -39,9 +39,7 @@ module "ces" {
   resource_patches      = file(var.resource_patches_file)
 
   # Configure access for the registries. Passwords need to be base64-encoded.
-  image_registry_url      = var.image_registry_url
-  image_registry_username = var.image_registry_username
-  image_registry_password = var.image_registry_password
+  container_registry_secrets = var.container_registry_secrets
 
   dogu_registry_username   = var.dogu_registry_username
   dogu_registry_password   = var.dogu_registry_password

@@ -1,7 +1,7 @@
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "3.0.0"
+  default     = "3.0.2"
 }
 
 variable "setup_chart_namespace" {
@@ -68,6 +68,18 @@ variable "dogus" {
     "k8s/nginx-ingress",
     "official/cas"
   ]
+}
+
+variable "component_operator_crd_chart" {
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator-crd:latest"
+}
+
+variable "component_operator_chart" {
+  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator:latest"
 }
 
 variable "components" {

@@ -47,21 +47,21 @@ resource "helm_release" "k8s-ces-setup" {
   values = [
     templatefile("${path.module}/values.yaml.tftpl",
       {
-        "dogu_registry_endpoint"     = var.dogu_registry_endpoint
-        "dogu_registry_username"     = var.dogu_registry_username
-        "dogu_registry_password"     = var.dogu_registry_password
-        "dogu_registry_url_schema"   = var.dogu_registry_url_schema
-        "container_registry_secrets" = var.container_registry_secrets
-        "helm_registry_host"         = var.helm_registry_host
-        "helm_registry_schema"       = var.helm_registry_schema
-        "helm_registry_plain_http"   = var.helm_registry_plain_http
-        "helm_registry_insecure_tls" = var.helm_registry_insecure_tls
-        "helm_registry_username"     = var.helm_registry_username
-        "helm_registry_password"     = var.helm_registry_password
+        "dogu_registry_endpoint"       = var.dogu_registry_endpoint
+        "dogu_registry_username"       = var.dogu_registry_username
+        "dogu_registry_password"       = var.dogu_registry_password
+        "dogu_registry_url_schema"     = var.dogu_registry_url_schema
+        "container_registry_secrets"   = var.container_registry_secrets
+        "helm_registry_host"           = var.helm_registry_host
+        "helm_registry_schema"         = var.helm_registry_schema
+        "helm_registry_plain_http"     = var.helm_registry_plain_http
+        "helm_registry_insecure_tls"   = var.helm_registry_insecure_tls
+        "helm_registry_username"       = var.helm_registry_username
+        "helm_registry_password"       = var.helm_registry_password
         "component_operator_chart"     = var.component_operator_chart
         "component_operator_crd_chart" = var.component_operator_crd_chart
-        "components"                 = local.parsedComponents
-        "setup_json" = yamlencode(templatefile(
+        "components"                   = local.parsedComponents
+        "setup_json"                   = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {
             # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/

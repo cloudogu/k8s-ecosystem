@@ -71,12 +71,15 @@ module "ces" {
   source     = "../../ces-module"
 
   # Configure CES installation options
-  setup_chart_version   = var.setup_chart_version
-  setup_chart_namespace = var.setup_chart_namespace
-  ces_fqdn              = var.ces_fqdn
-  ces_admin_password    = var.ces_admin_password
-  dogus                 = var.dogus
-  resource_patches      = file(var.resource_patches_file)
+  setup_chart_version          = var.setup_chart_version
+  setup_chart_namespace        = var.setup_chart_namespace
+  ces_fqdn                     = var.ces_fqdn
+  ces_admin_password           = var.ces_admin_password
+  dogus                        = var.dogus
+  resource_patches             = file(var.resource_patches_file)
+  component_operator_chart     = var.component_operator_chart
+  component_operator_crd_chart = var.component_operator_crd_chart
+  components                   = var.components
 
   # Configure access for the registries. Passwords need to be base64-encoded.
   container_registry_secrets = var.container_registry_secrets

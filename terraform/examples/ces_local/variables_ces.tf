@@ -114,6 +114,7 @@ variable "components" {
     "k8s/k8s-dogu-operator",
     "k8s/k8s-dogu-operator-crd",
     "k8s/k8s-service-discovery",
+    "k8s/k8s-longhorn",
   ]
 }
 

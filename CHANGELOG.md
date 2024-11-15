@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v4.0.1] - 2024-11-15
+## [v4.1.0] - 2024-11-15
 ### Added
 - [#98] added possibilty to modify components in terraform setup
 

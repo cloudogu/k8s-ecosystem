@@ -144,7 +144,7 @@ variable "setup_chart_namespace" {
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "3.0.3"
+  default     = "3.0.4"
 }
 
 variable "resource_patches_file" {

@@ -1,10 +1,14 @@
 .idea
-image/build
-image/output-*
+image/prod/build
+image/dev/build
+image/prod/output-*
+image/dev/output-*
 
 .vagrant
 .vagrant.rb
 .vagrant.rb.asc
+.vagrant.secret.rb
+.vagrant.rb.gpg
 *.log
 
 tmp
@@ -17,3 +21,10 @@ terraform.tfvars
 
 # generated setup.json
 .setup.json
+# generated values file for the setup
+additionalValues.yaml
+
+**/gcp_sa.json
+**/.terraform
+/terraform/examples/ces_google_gke/ces_cluster/kubeconfig
+/terraform/examples/ces_google_gke/secretVars.tfvars

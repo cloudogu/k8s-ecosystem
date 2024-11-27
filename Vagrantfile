@@ -26,8 +26,8 @@ helm_registry_schema = ""
 helm_registry_plain_http = ""
 helm_registry_username = ""
 helm_registry_password = ""
-basebox_version = "v2.1.0"
-basebox_checksum = "6a4a05be10cca0d1cc852720514cd27c6020e6e4ae83211780779d2180899d53"
+basebox_version = "v3.0.0"
+basebox_checksum = "dee0b0c17e11818d069d2f4e032a09689e3b4e78fe105e9fee09ec1c3c12e25f"
 basebox_checksum_type = "sha256"
 basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
 basebox_name = "basebox-mn-" + basebox_version
@@ -190,6 +190,7 @@ Vagrant.configure("2") do |config|
 
   if install_setup
     config.trigger.after :up do |trigger|
+      longhorn_replicas = [worker_count + 1, 3].min
       if worker_count > 0
         trigger.only_on = "worker-#{worker_count - 1}"
       else
@@ -210,7 +211,10 @@ Vagrant.configure("2") do |config|
                             helm_registry_host,
                             helm_registry_schema,
                             helm_registry_plain_http,
-                            kube_ctx_name] }
+                            kube_ctx_name,
+                            longhorn_replicas
+                      ]
+      }
     end
   end
 end

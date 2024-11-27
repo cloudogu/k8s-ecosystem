@@ -1,7 +1,7 @@
 # Chart of the component operator
 # Format: <namespace>/<name>:<version>
-# component_operator_crd_chart: "k8s/k8s-component-operator-crd:latest"
-# component_operator_chart: "k8s/k8s-component-operator:latest"
+component_operator_crd_chart: "${component_operator_crd_chart}"
+component_operator_chart: "${component_operator_chart}"
 
 # Components to be installed by the k8s-ces-setup.
 # Mandatory components are listed below as the default. Moreover, one can specify components like k8s-ces-control or
@@ -9,23 +9,17 @@
 #
 # Format: <namespace>/<name>: <version>
 components:
-  # Use longhorn if your cluster has no storage provisioner.
-  #  k8s-longhorn:
-  #    version: latest
-  #    helmRepositoryNamespace: k8s
-  #    deployNamespace: longhorn-system
-  k8s-etcd:
-    version: latest
-    helmRepositoryNamespace: k8s
-  k8s-dogu-operator:
-    version: latest
-    helmRepositoryNamespace: k8s
-  k8s-dogu-operator-crd:
-    version: latest
-    helmRepositoryNamespace: k8s
-  k8s-service-discovery:
-    version: latest
-    helmRepositoryNamespace: k8s
+%{ for component in components ~}
+  ${component.name}:
+    version: ${component.version}
+    helmRepositoryNamespace: ${component.namespace}
+    deployNamespace: ${component.deployNamespace}
+%{ endfor ~}
+# Use longhorn if your cluster has no storage provisioner.
+#  k8s-longhorn:
+#    version: latest
+#    helmRepositoryNamespace: k8s
+#    deployNamespace: longhorn-system
 #  k8s-snapshot-controller:
 #    version: latest
 #    helmRepositoryNamespace: k8s
@@ -57,10 +51,12 @@ ${resource_patches}
 
 # Credentials for the docker registry used by the components.
 # It is mandatory to set username and the base64-encoded password.
-docker_registry_secret:
-  url: "${docker_registry_url}"
-  username: "${docker_registry_username}"
-  password: "${docker_registry_password}"
+container_registry_secrets:
+%{ for secret in container_registry_secrets ~}
+  - url: "${secret.url}"
+    username: "${secret.username}"
+    password: "${secret.password}"
+%{ endfor ~}
 
 # Credentials for the dogu registry used by the components.
 # It is mandatory to set username and the base64-encoded password.

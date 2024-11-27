@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Installs quest addition based on the provided builder.
+# Installs guest addition based on the provided builder.
 installGuestAdditions() {
   case "${PACKER_BUILDER_TYPE}" in
   virtualbox-iso) installGuestAdditionsVirtualBox ;;
@@ -21,11 +21,11 @@ installGuestAdditions() {
   esac
 }
 
-# Installs quest additions for the VirtualBox hypervisor.
+# Installs guest additions for the VirtualBox hypervisor.
 installGuestAdditionsVirtualBox() {
   echo "**** Installing guest additions for VirtualBox hypervisor..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    gcc make perl
+    gcc make perl libxt6 libxmu6
 
   mkdir -p /mnt/virtualbox
   mount -o loop "${HOME_DIR}"/VBoxGuest*.iso /mnt/virtualbox
@@ -40,7 +40,7 @@ installGuestAdditionsVirtualBox() {
   rm -rf "${HOME_DIR}"/VBoxGuest*.iso
 }
 
-# Installs quest additions for the VMWare hypervisor.
+# Installs guest additions for the VMWare hypervisor.
 installGuestAdditionsVMWare() {
   echo "**** Installing guest additions for VMWare hypervisor..."
   DEBIAN_FRONTEND=noninteractive apt-get -y install \

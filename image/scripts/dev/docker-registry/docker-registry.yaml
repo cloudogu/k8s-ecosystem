@@ -196,3 +196,24 @@ spec:
         - name: docker-registry-proxy-config
           configMap:
             name: docker-registry-proxy-config
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: local-registry-ingress
+  namespace: ecosystem
+spec:
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - port: 30099
+          protocol: TCP
+        - port: 30098
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      app: docker-registry
+  policyTypes:
+    - Ingress

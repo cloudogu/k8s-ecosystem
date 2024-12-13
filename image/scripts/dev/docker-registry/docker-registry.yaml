@@ -207,6 +207,7 @@ spec:
     - from:
         - ipBlock:
             cidr: 0.0.0.0/0
+        - podSelector: {}
       ports:
         - port: 30099
           protocol: TCP

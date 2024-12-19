@@ -1,7 +1,7 @@
 # Chart of the component operator
 # Format: <namespace>/<name>:<version>
-# component_operator_crd_chart: "k8s/k8s-component-operator-crd:latest"
-# component_operator_chart: "k8s/k8s-component-operator:latest"
+component_operator_crd_chart: "${component_operator_crd_chart}"
+component_operator_chart: "${component_operator_chart}"
 
 # Components to be installed by the k8s-ces-setup.
 # Mandatory components are listed below as the default. Moreover, one can specify components like k8s-ces-control or
@@ -9,28 +9,17 @@
 #
 # Format: <namespace>/<name>: <version>
 components:
-  # Use longhorn if your cluster has no storage provisioner.
-  #  k8s-longhorn:
-  #    version: latest
-  #    helmRepositoryNamespace: k8s
-  #    deployNamespace: longhorn-system
-  k8s-blueprint-operator: null
-  k8s-blueprint-operator-crd: null
-  k8s-dogu-operator:
-    version: latest
-    helmRepositoryNamespace: k8s
-  k8s-dogu-operator-crd:
-    version: latest
-    helmRepositoryNamespace: k8s
-  k8s-service-discovery:
-    version: latest
-    helmRepositoryNamespace: k8s
-%{ for component in additional_components ~}
+%{ for component in components ~}
   ${component.name}:
     version: ${component.version}
     helmRepositoryNamespace: ${component.namespace}
     deployNamespace: ${component.deployNamespace}
 %{ endfor ~}
+# Use longhorn if your cluster has no storage provisioner.
+#  k8s-longhorn:
+#    version: latest
+#    helmRepositoryNamespace: k8s
+#    deployNamespace: longhorn-system
 #  k8s-snapshot-controller:
 #    version: latest
 #    helmRepositoryNamespace: k8s

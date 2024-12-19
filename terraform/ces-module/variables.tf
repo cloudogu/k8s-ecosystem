@@ -1,7 +1,7 @@
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "3.0.0"
+  default     = "3.0.4"
 }
 
 variable "setup_chart_namespace" {
@@ -59,9 +59,9 @@ variable "default_dogu" {
 }
 
 variable "dogus" {
-  description = "A list of Dogus to install"
-  type        = list(string)
-  default     = [
+  description = "A list of Dogus to install, optional with version like official/cas:7.0.8-3"
+  type = list(string)
+  default = [
     "official/ldap",
     "official/postfix",
     "k8s/nginx-static",
@@ -70,20 +70,31 @@ variable "dogus" {
   ]
 }
 
-variable "additional_components" {
-  description = "A list of additional components to install"
-  type        = list(object({
-    name            = string
-    version         = string
-    namespace       = string
-    deployNamespace = string
-  }))
-  default = []
+variable "component_operator_crd_chart" {
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator-crd:latest"
+}
+
+variable "component_operator_chart" {
+  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator:latest"
+}
+
+variable "components" {
+  description = "A list of components to install, optional with version like k8s/k8s-dogu-operator:3.0.1"
+  type = list(string)
+  default = [
+    "k8s/k8s-dogu-operator",
+    "k8s/k8s-dogu-operator-crd",
+    "k8s/k8s-service-discovery",
+  ]
 }
 
 variable "container_registry_secrets" {
   description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
-  type        = list(object({
+  type = list(object({
     url      = string
     username = string
     password = string
@@ -153,13 +164,14 @@ variable "resource_patches" {
 
 variable "is_setup_applied_matching_resource" {
   description = "This variable defines a resource with its kind, api and field selector and is used to determine if the setup has already been executed or not."
-  type        = object({
+  type = object({
     kind           = string
     api            = string
     field_selector = string
   })
   default = {
-    kind           = "CustomResourceDefinition", api = "apiextensions.k8s.io/v1",
+    kind           = "CustomResourceDefinition",
+    api            = "apiextensions.k8s.io/v1",
     field_selector = "metadata.name==dogus.k8s.cloudogu.com"
   }
 }

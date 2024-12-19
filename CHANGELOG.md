@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.1.2] - 2024-12-19
+### Added
+- [#102] Add networkpolicy for dev docker registry.
+
+## [v4.1.1] - 2024-11-18
+### Changed
+- [#100] update k8s-ces-setup in terraform to 3.0.4
+
+## [v4.1.0] - 2024-11-15
+### Added
+- [#98] added possibilty to modify components in terraform setup
+
 ## [v4.0.0] - 2024-10-29
 ### Changed
 - **Breaking**: Updated k8s-ces-setup configuration in vagrant environment and terraform module to support the new structure of the container registry secret. #96

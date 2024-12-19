@@ -78,17 +78,43 @@ variable "ces_admin_password" {
 }
 
 variable "dogus" {
-  description = "A list of Dogus to install"
-  type        = list(string)
-  default     = [
+  description = "A list of Dogus to install, optional with version like official/cas:7.0.8-3"
+  type = list(string)
+  default = [
     "official/ldap",
     "official/postfix",
     "k8s/nginx-static",
     "k8s/nginx-ingress",
-    "official/cas",
-    "official/jenkins",
-    "official/nexus",
-    "official/scm"
+    "official/cas"
+  ]
+}
+
+variable "ces_namespace" {
+  description = "The namespace for the CES"
+  type        = string
+  default     = "ecosystem"
+}
+
+variable "component_operator_crd_chart" {
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator-crd:latest"
+}
+
+variable "component_operator_chart" {
+  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
+  type = string
+  default = "k8s/k8s-component-operator:latest"
+}
+
+variable "components" {
+  description = "A list of components to install, optional with version like k8s/k8s-dogu-operator:3.0.1"
+  type = list(string)
+  default = [
+    "k8s/k8s-dogu-operator",
+    "k8s/k8s-dogu-operator-crd",
+    "k8s/k8s-service-discovery",
+    "k8s/k8s-longhorn",
   ]
 }
 
@@ -118,7 +144,7 @@ variable "setup_chart_namespace" {
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "3.0.0"
+  default     = "3.0.4"
 }
 
 variable "resource_patches_file" {

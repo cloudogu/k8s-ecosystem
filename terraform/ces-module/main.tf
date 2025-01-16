@@ -74,8 +74,7 @@ resource "helm_release" "k8s-ces-setup" {
             "fqdn"            = var.ces_fqdn
             "domain"          = local.topLevelDomain
             "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n")
-              : ""
+            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
             "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
             # Cas OIDC config values
             "cas_oidc_enabled"= var.cas_oidc_enabled

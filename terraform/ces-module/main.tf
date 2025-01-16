@@ -86,8 +86,8 @@ resource "helm_release" "k8s-ces-setup" {
             "cas_oidc_scopes"= join(" ", var.cas_oidc_scopes)
             "cas_oidc_attribute_mapping"= var.cas_oidc_attribute_mapping
             "cas_oidc_principal_attribute"= var.cas_oidc_principal_attribute
-            "cas_oidc_allowed_groups"= var.cas_oidc_allowed_groups
-            "cas_oidc_initial_admin_usernames"= var.cas_oidc_initial_admin_usernames
+            "cas_oidc_allowed_groups"= join(", ", var.cas_oidc_allowed_groups)
+            "cas_oidc_initial_admin_usernames"= join(", ", var.cas_oidc_initial_admin_usernames)
           }
         ))
         "resource_patches" = var.resource_patches

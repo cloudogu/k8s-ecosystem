@@ -222,12 +222,12 @@ variable "cas_oidc_scopes" {
   user's email, profile information, and the groups assigned to the user.
   EOT
   type = list(string)
-  default = jsonencode([
+  default = [
     "openid",
     "email",
     "profile",
     "GroupScope"
-  ])
+  ]
 }
 
 variable "cas_oidc_principal_attribute" {

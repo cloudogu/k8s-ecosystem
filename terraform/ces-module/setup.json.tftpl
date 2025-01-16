@@ -49,5 +49,28 @@
     "groupAttributeName": "",
     "groupAttributeDescription": "",
     "groupAttributeMember": ""
+  },
+  "registryConfig": {
+    "cas": {
+      "oidc": {
+        "enabled": "${cas_oidc_enabled}",
+        "discovery_uri": "${cas_oidc_discovery_uri}",
+        "client_id": "${cas_oidc_client_id}",
+        "display_name": "${cas_oidc_display_name}",
+        "optional": "${cas_oidc_optional}",
+        "scopes": "${cas_oidc_scopes}",
+        "attribute_mapping": "${cas_oidc_attribute_mapping}",
+        "pricipal_attribute": "${cas_oidc_principal_attribute}",
+        "allowed_groups": "${cas_oidc_allowed_groups}",
+        "initial_admin_usernames": "${cas_oidc_initial_admin_usernames}"
+      }
+    }
+  },
+  "registryConfigEncrypted": {
+    "cas": {
+      "oidc": {
+        "client_secret": "${cas_oidc_client_secret}"
+      }
+    }
   }
 }

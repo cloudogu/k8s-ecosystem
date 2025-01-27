@@ -188,21 +188,26 @@ variable "cas_oidc_discovery_uri" {
   configuration. This is usually structured as follows: `https://[base-server-url]/.well-known/openid-configuration`."
   EOT
   type = string
+  default = ""
 }
 
 variable "cas_oidc_client_id" {
   description = "Contains the identifier to be used to identify the CAS to the OIDC provider."
   type = string
+  default = ""
 }
 
 variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
   type = string
+  sensitive = true
+  default = ""
 }
 
 variable "cas_oidc_display_name" {
   description = "The display name is used for the OIDC provider on the user interface."
   type = string
+  default = "CAS oidc provider"
 }
 
 variable "cas_oidc_optional" {
@@ -255,9 +260,11 @@ variable "cas_oidc_attribute_mapping" {
 variable "cas_oidc_allowed_groups" {
   description  = "Specifies cloudogu platform groups whose members can use the platform login. Only relevant if platform login is enabled."
   type         = list(string)
+  default = []
 }
 
 variable "cas_oidc_initial_admin_usernames" {
   description  = "Specifies cloudogu platform usernames that are given admin rights in this CES. Only relevant if platform login is enabled."
   type         = list(string)
+  default = []
 }

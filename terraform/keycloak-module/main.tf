@@ -21,19 +21,13 @@ provider "keycloak" {
 }
 
 resource "random_uuid" "external_cas_openid_client_uuid" {
-  keepers = {
-    openid_client = keycloak_openid_client.external_cas_openid_client.id
-  }
 }
 
 locals {
-  external_cas_openid_client_id = "ces-${random_uuid.external_cas_openid_client_uuid[0].result}"
+  external_cas_openid_client_id = "ces-${random_uuid.external_cas_openid_client_uuid.result}"
 }
 
 resource "random_password" "external_cas_openid_client_secret" {
-  keepers = {
-    openid_client = keycloak_openid_client.external_cas_openid_client.id
-  }
   length = 32
 }
 
@@ -42,7 +36,7 @@ resource "keycloak_openid_client" "external_cas_openid_client" {
   client_id   = local.external_cas_openid_client_id
 
   access_type = "CONFIDENTIAL"
-  client_secret = random_password.external_cas_openid_client_secret[0].result
+  client_secret = random_password.external_cas_openid_client_secret.result
   standard_flow_enabled = true
   service_accounts_enabled = true
   authorization {
@@ -64,6 +58,6 @@ resource "keycloak_openid_client" "external_cas_openid_client" {
 
 resource "keycloak_openid_client_default_scopes" "external_cas_openid_client_scopes" {
   realm_id  = var.keycloak_realm_id
-  client_id = keycloak_openid_client.external_cas_openid_client[0].id
-  default_scopes = ["acr", "email", "groups", "profile", "roles", "web-origins"]
+  client_id = keycloak_openid_client.external_cas_openid_client.id
+  default_scopes = var.keycloak_client_scopes
 }

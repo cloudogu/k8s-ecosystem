@@ -22,13 +22,3 @@ variable "keycloak_service_account_client_secret" {
   type = string
   sensitive = true
 }
-
-variable "ces_fqdn" {
-  type = string
-  nullable = false
-}
-
-variable "keycloak_client_scopes" {
-  type = list(string)
-  default = ["acr", "email", "groups", "profile", "roles", "web-origins"]
-}

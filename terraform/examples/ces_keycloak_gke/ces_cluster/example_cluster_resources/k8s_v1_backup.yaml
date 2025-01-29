@@ -1,0 +1,12 @@
+apiVersion: k8s.cloudogu.com/v1
+kind: Backup
+metadata:
+  labels:
+    app.kubernetes.io/name: backup
+    app.kubernetes.io/instance: backup-sample
+    app.kubernetes.io/part-of: k8s-backup-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: k8s-backup-operator
+  name: backup-sample
+spec:
+  provider: velero

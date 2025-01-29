@@ -24,11 +24,13 @@ variable "keycloak_service_account_client_secret" {
 }
 
 variable "ces_fqdn" {
+  description = "FQDN or IP address of the CES"
   type = string
   nullable = false
 }
 
 variable "keycloak_client_scopes" {
+  description = "OIDC scopes to add as default scopes in the keycloak client"
   type = list(string)
   default = ["acr", "email", "groups", "profile", "roles", "web-origins"]
 }

@@ -8,6 +8,14 @@ terraform {
       source  = "hashicorp/google"
       version = ">= 5.31.1"
     }
+    keycloak = {
+      source  = "mrparkers/keycloak"
+      version = "~> 4.4"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 
   required_version = ">= 1.7.0"
@@ -86,12 +94,19 @@ module "increase_max_map_count" {
   source = "../../../max-map-count"
 }
 
+provider "keycloak" {
+  client_id     = var.keycloak_service_account_client_id
+  client_secret = var.keycloak_service_account_client_secret
+  url           = var.keycloak_url
+  realm         = var.keycloak_realm_id
+}
+
 module "keycloak" {
+  providers = {
+    keycloak = keycloak
+  }
   source                                 = "../../../keycloak-module"
   ces_fqdn                               = google_compute_address.ip_address.address
-  keycloak_url                           = var.keycloak_url
-  keycloak_service_account_client_id     = var.keycloak_service_account_client_id
-  keycloak_service_account_client_secret = var.keycloak_service_account_client_secret
 }
 
 module "ces" {

@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.7.0"
 
   required_providers {
     keycloak = {
@@ -11,13 +11,6 @@ terraform {
       version = "~> 3.6"
     }
   }
-}
-
-provider "keycloak" {
-  client_id = var.keycloak_service_account_client_id
-  client_secret = var.keycloak_service_account_client_secret
-  url       = var.keycloak_url
-  realm = var.keycloak_realm_id
 }
 
 resource "random_uuid" "external_cas_openid_client_uuid" {
@@ -32,16 +25,17 @@ resource "random_password" "external_cas_openid_client_secret" {
 }
 
 resource "keycloak_openid_client" "external_cas_openid_client" {
-  realm_id    = var.keycloak_realm_id
-  client_id   = local.external_cas_openid_client_id
+  provider  = keycloak
+  realm_id  = var.keycloak_realm_id
+  client_id = local.external_cas_openid_client_id
 
-  access_type = "CONFIDENTIAL"
-  client_secret = random_password.external_cas_openid_client_secret.result
-  standard_flow_enabled = true
+  access_type              = "CONFIDENTIAL"
+  client_secret            = random_password.external_cas_openid_client_secret.result
+  standard_flow_enabled    = true
   service_accounts_enabled = true
   authorization {
-    policy_enforcement_mode = "ENFORCING"
-    decision_strategy = "UNANIMOUS"
+    policy_enforcement_mode          = "ENFORCING"
+    decision_strategy                = "UNANIMOUS"
     allow_remote_resource_management = true
   }
 
@@ -52,12 +46,13 @@ resource "keycloak_openid_client" "external_cas_openid_client" {
     "https://${var.ces_fqdn}/cas/*"
   ]
   web_origins = ["http://${var.ces_fqdn}"]
-  admin_url = "http://${var.ces_fqdn}/cas"
+  admin_url   = "http://${var.ces_fqdn}/cas"
   login_theme = "cloudogu"
 }
 
 resource "keycloak_openid_client_default_scopes" "external_cas_openid_client_scopes" {
-  realm_id  = var.keycloak_realm_id
-  client_id = keycloak_openid_client.external_cas_openid_client.id
+  provider       = keycloak
+  realm_id       = var.keycloak_realm_id
+  client_id      = keycloak_openid_client.external_cas_openid_client.id
   default_scopes = var.keycloak_client_scopes
 }

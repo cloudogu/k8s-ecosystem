@@ -2,3 +2,7 @@
 gcp_project_name = "my-project"
 gcp_zone         = "europe-west3-c"
 cluster_name     = "test-cluster"
+
+keycloak_url = "https://<my-keycloak-domain>/auth"
+keycloak_service_account_client_id = "my-client-id"
+keycloak_service_account_client_secret = "my-client-secret"

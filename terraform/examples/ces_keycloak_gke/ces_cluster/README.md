@@ -17,7 +17,7 @@ Ensure you are in the correct project.
 
 `gcloud config set project $PROJECT_ID`
 
-You need to create a service account for the google provider.
+You need to create a service account for the Google provider.
 
 `gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME" --project=$PROJECT_ID`
 
@@ -31,9 +31,9 @@ Get that service account and save it to `secrets/gcp_sa.json`:
 `gcloud iam service-accounts keys create secrets/gcp_sa.json --iam-account=$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com`
 
 # General configuration
-Use the `vars.tfvars.template` file to create `vars.tfvars` and set your GCP project and cluster name in it.
+Use the `terraform.tfvars.template` file to create `terraform.tfvars` and set your GCP project and cluster name in it.
 
-If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
+If you wish for example to create the cluster in another region you should template `terraform.tfvars.template`.
 See `variables.tf` for possibilities.
 
 Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
@@ -41,7 +41,9 @@ Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set 
 Use the `var.gcs.tfbackend.template` file to create `var.gcs.tfbackend` and set information where to store your terraform state. For further information look [here](../google_bucket/README.md). 
 This is needed when multiple people want to be able to modify the same terraform resources. If you wish to store your state locally, remove the line `backend "gcs" {}` from `main.tf`.
 
-If you already have a local terraform state file, you can just reinit your project and you should be asked to copy your current state into the bucket.
+If you already have a local terraform state file, you can just reinit your project, and you should be asked to copy your current state into the bucket.
+
+If you wish to know more about how to use the keycloak-module, have a look at its [Readme](../../../keycloak-client-module).
 
 # Create cluster
 

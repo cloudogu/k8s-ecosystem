@@ -125,12 +125,6 @@ variable "setup_chart_version" {
   default     = "3.3.0"
 }
 
-variable "additional_resource_patches" {
-  description = "Additional resource-patches for the CES installation"
-  type        = string
-  default     = ""
-}
-
 variable "cas_oidc_display_name" {
   description = "The display name is used for the OIDC provider on the user interface."
   type = string
@@ -146,20 +140,6 @@ variable "cas_oidc_optional" {
   EOT
   type = bool
   default = false
-}
-
-variable "cas_oidc_scopes" {
-  description = <<EOT
-  Specifies the resource to query against OIDC. Normally, this enumeration should include at least the openid, the
-  user's email, profile information, and the groups assigned to the user.
-  EOT
-  type = list(string)
-  default = [
-    "openid",
-    "email",
-    "profile",
-    "groups"
-  ]
 }
 
 variable "cas_oidc_allowed_groups" {

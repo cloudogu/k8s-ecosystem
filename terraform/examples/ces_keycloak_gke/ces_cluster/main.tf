@@ -105,8 +105,8 @@ module "keycloak" {
   providers = {
     keycloak = keycloak
   }
-  source                                 = "../../../keycloak-module"
-  ces_fqdn                               = google_compute_address.ip_address.address
+  source   = "../../../keycloak-client-module"
+  ces_fqdn = google_compute_address.ip_address.address
 }
 
 module "ces" {
@@ -120,11 +120,9 @@ module "ces" {
   ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
   dogus                 = var.dogus
-  resource_patches = format("%s\n%s",
-    templatefile("resource_patches.yaml.tftpl", {
-      external_ip = google_compute_address.ip_address.address,
-    }),
-    var.additional_resource_patches)
+  resource_patches = templatefile("resource_patches.yaml.tftpl", {
+    external_ip = google_compute_address.ip_address.address,
+  })
   component_operator_chart     = var.component_operator_chart
   component_operator_crd_chart = var.component_operator_crd_chart
   components = var.components
@@ -149,7 +147,7 @@ module "ces" {
   cas_oidc_client_secret           = module.keycloak.external_cas_openid_client_secret
   cas_oidc_display_name            = var.cas_oidc_display_name
   cas_oidc_optional                = var.cas_oidc_optional
-  cas_oidc_scopes                  = var.cas_oidc_scopes
+  cas_oidc_scopes                  = concat(["openid"], var.keycloak_client_scopes)
   cas_oidc_allowed_groups          = var.cas_oidc_allowed_groups
   cas_oidc_initial_admin_usernames = var.cas_oidc_initial_admin_usernames
 }

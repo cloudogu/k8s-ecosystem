@@ -231,7 +231,7 @@ variable "cas_oidc_scopes" {
     "openid",
     "email",
     "profile",
-    "GroupScope"
+    "groups"
   ]
 }
 

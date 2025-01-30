@@ -14,6 +14,9 @@ terraform {
 }
 
 resource "random_uuid" "external_cas_openid_client_uuid" {
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 locals {
@@ -22,6 +25,9 @@ locals {
 
 resource "random_password" "external_cas_openid_client_secret" {
   length = 32
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "keycloak_openid_client" "external_cas_openid_client" {

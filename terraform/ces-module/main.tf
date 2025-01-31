@@ -78,6 +78,7 @@ resource "helm_release" "k8s-ces-setup" {
             "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
 
             "cas_oidc_config" = jsonencode(var.cas_oidc_config)
+            "cas_oidc_client_secret" = var.cas_oidc_client_secret
           }
         ))
         "resource_patches" = var.resource_patches

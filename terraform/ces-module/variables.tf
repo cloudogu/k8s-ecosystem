@@ -182,7 +182,6 @@ variable "cas_oidc_config" {
     enabled                 = bool
     discovery_uri           = string
     client_id               = string
-    client_secret           = string
     display_name            = string
     optional                = bool
     scopes                  = list(string)
@@ -195,7 +194,6 @@ variable "cas_oidc_config" {
     enabled                 = false
     discovery_uri           = ""
     client_id               = ""
-    client_secret           = ""
     display_name            = "CAS oidc provider"
     optional                = false
     scopes                  = ["openid", "email", "profile", "groups"]
@@ -204,4 +202,11 @@ variable "cas_oidc_config" {
     allowed_groups          = []
     initial_admin_usernames = []
   }
+}
+
+variable "cas_oidc_client_secret" {
+  description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
+  type = string
+  sensitive = true
+  default = ""
 }

@@ -9,7 +9,7 @@ terraform {
       version = ">= 5.31.1"
     }
     keycloak = {
-      source  = "keycloak/keycloak"
+      source = "keycloak/keycloak"
       version = ">= 5.0.0"
     }
     random = {
@@ -142,13 +142,15 @@ module "ces" {
   helm_registry_username = var.helm_registry_username
   helm_registry_password = var.helm_registry_password
 
-  cas_oidc_enabled                 = true
-  cas_oidc_discovery_uri           = "${var.keycloak_url}/realms/${var.keycloak_realm_id}/.well-known/openid-configuration"
-  cas_oidc_client_id               = local.external_cas_openid_client_id
-  cas_oidc_client_secret           = module.keycloak.client_secret
-  cas_oidc_display_name            = "CAS oidc provider"
-  cas_oidc_optional                = var.cas_oidc_optional
-  cas_oidc_scopes = concat(["openid"], var.keycloak_client_scopes)
-  cas_oidc_allowed_groups          = var.cas_oidc_allowed_groups
-  cas_oidc_initial_admin_usernames = var.cas_oidc_initial_admin_usernames
+  cas_oidc_config = {
+    enabled                 = true
+    discovery_uri           = "${var.keycloak_url}/realms/${var.keycloak_realm_id}/.well-known/openid-configuration"
+    client_id               = local.external_cas_openid_client_id
+    client_secret           = module.keycloak.client_secret
+    display_name            = "CAS oidc provider"
+    optional                = var.cas_oidc_optional
+    scopes = concat(["openid"], var.keycloak_client_scopes)
+    allowed_groups          = var.cas_oidc_allowed_groups
+    initial_admin_usernames = var.cas_oidc_initial_admin_usernames
+  }
 }

@@ -16,9 +16,7 @@ terraform {
 locals {
   split_fqdn = split(".", var.ces_fqdn)
   # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
-  topLevelDomain = var.ces_fqdn != "" ?
-    "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}"
-    : "k3ces.local"
+  topLevelDomain = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}": "k3ces.local"
   splitComponentNamespaces = [
     for componentStr in var.components :
     {
@@ -76,10 +74,8 @@ resource "helm_release" "k8s-ces-setup" {
             "fqdn"            = var.ces_fqdn
             "domain"          = local.topLevelDomain
             "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n")
-              : ""
-            "certificateKey" = var.ces_certificate_key_path != null ?
-              replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
+            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
+            "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
 
             "cas_oidc_config" = jsonencode(var.cas_oidc_config)
           }

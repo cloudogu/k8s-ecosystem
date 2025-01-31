@@ -10,11 +10,11 @@ terraform {
     }
     keycloak = {
       source  = "mrparkers/keycloak"
-      version = "~> 4.4"
+      version = ">= 4.4"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6"
+      version = ">= 3.6"
     }
   }
 
@@ -22,9 +22,9 @@ terraform {
 }
 
 provider "google" {
-  credentials = var.gcp_credentials
+  credentials = "secrets/gcp_sa.json"
   project     = var.gcp_project_name
-  zone        = var.gcp_zone
+  zone        = "europe-west3-c"
 }
 
 locals {
@@ -39,6 +39,11 @@ provider "kubernetes" {
   cluster_ca_certificate = local.gke_module_ca_certificate
 }
 
+locals {
+  helm_registry_schema = "oci"
+  helm_registry_host   = "registry.cloudogu.com"
+}
+
 provider "helm" {
   kubernetes {
     host                   = local.gke_module_host
@@ -51,31 +56,21 @@ provider "helm" {
   }
 
   registry {
-    url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
+    url      = "${local.helm_registry_schema}://${local.helm_registry_host}"
     username = var.helm_registry_username
     password = base64decode(var.helm_registry_password)
   }
 }
 
-module "kubeconfig_generator" {
-  source                 = "../../../kubeconfig_generator"
-  cluster_name           = var.cluster_name
-  access_token           = module.google_gke.access_token
-  cluster_ca_certificate = module.google_gke.ca_certificate
-  cluster_endpoint       = "https://${module.google_gke.endpoint}"
-
-  kubeconfig_path = "kubeconfig"
-}
-
 module "google_gke" {
-  source             = "../../../google_gke"
+  source             = "../../google_gke"
   cluster_name       = var.cluster_name
-  kubernetes_version = var.kubernetes_version
-  idp_enabled        = var.idp_enabled
+  kubernetes_version = "1.30"
+  idp_enabled        = false
 
-  node_pool_name = var.node_pool_name
-  machine_type   = var.machine_type
-  node_count     = var.node_count
+  node_pool_name = "default"
+  machine_type   = "n1-standard-4"
+  node_count     = 3
 }
 
 resource "random_uuid" "ip_address_uuid" {
@@ -89,11 +84,6 @@ resource "google_compute_address" "ip_address" {
   name = local.ip_address_name
 }
 
-module "increase_max_map_count" {
-  depends_on = [module.google_gke]
-  source = "../../../max-map-count"
-}
-
 provider "keycloak" {
   client_id     = var.keycloak_service_account_client_id
   client_secret = var.keycloak_service_account_client_secret
@@ -105,17 +95,18 @@ module "keycloak" {
   providers = {
     keycloak = keycloak
   }
-  source   = "../../../keycloak-client-module"
-  ces_fqdn = google_compute_address.ip_address.address
+  source                 = "../../keycloak-client-module"
+  ces_fqdn               = google_compute_address.ip_address.address
+  keycloak_client_scopes = var.keycloak_client_scopes
 }
 
 module "ces" {
   depends_on = [module.google_gke, module.keycloak]
-  source = "../../../ces-module"
+  source = "../../ces-module"
 
   # Configure CES installation options
-  setup_chart_version   = var.setup_chart_version
-  setup_chart_namespace = var.setup_chart_namespace
+  setup_chart_version   = "3.3.0"
+  setup_chart_namespace = "k8s"
   ces_fqdn              = google_compute_address.ip_address.address
   ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
@@ -131,45 +122,20 @@ module "ces" {
   container_registry_secrets = var.container_registry_secrets
   dogu_registry_username     = var.dogu_registry_username
   dogu_registry_password     = var.dogu_registry_password
-  dogu_registry_endpoint     = var.dogu_registry_endpoint
-  dogu_registry_url_schema   = var.dogu_registry_url_schema
+  dogu_registry_endpoint     = "https://dogu.cloudogu.com/api/v2/dogus"
 
-  helm_registry_host         = var.helm_registry_host
-  helm_registry_schema       = var.helm_registry_schema
-  helm_registry_plain_http   = var.helm_registry_plain_http
-  helm_registry_insecure_tls = var.helm_registry_insecure_tls
-  helm_registry_username     = var.helm_registry_username
-  helm_registry_password     = var.helm_registry_password
+  helm_registry_host     = local.helm_registry_host
+  helm_registry_schema   = local.helm_registry_schema
+  helm_registry_username = var.helm_registry_username
+  helm_registry_password = var.helm_registry_password
 
   cas_oidc_enabled                 = true
   cas_oidc_discovery_uri           = "${var.keycloak_url}/realms/${var.keycloak_realm_id}/.well-known/openid-configuration"
   cas_oidc_client_id               = module.keycloak.external_cas_openid_client_id
   cas_oidc_client_secret           = module.keycloak.external_cas_openid_client_secret
-  cas_oidc_display_name            = var.cas_oidc_display_name
+  cas_oidc_display_name            = "CAS oidc provider"
   cas_oidc_optional                = var.cas_oidc_optional
-  cas_oidc_scopes                  = concat(["openid"], var.keycloak_client_scopes)
+  cas_oidc_scopes = concat(["openid"], var.keycloak_client_scopes)
   cas_oidc_allowed_groups          = var.cas_oidc_allowed_groups
   cas_oidc_initial_admin_usernames = var.cas_oidc_initial_admin_usernames
-}
-
-locals {
-  scalingUri            = "https://container.googleapis.com/v1beta1/projects/${var.gcp_project_name}/zones/${var.gcp_zone}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}/setSize"
-  service_account_email = jsondecode(file(var.gcp_credentials)).client_email
-}
-
-module "scale_jobs" {
-  depends_on = [module.google_gke]
-  source   = "../../../google_gke_http_cron"
-  for_each = {
-    for index, job in var.scale_jobs :
-    job.id => job
-  }
-  name                  = "${var.cluster_name}-scale-to-${each.value.node_count}-job-${index(var.scale_jobs, each.value)}"
-  uri                   = local.scalingUri
-  method                = "POST"
-  content_type          = "application/json"
-  body                  = "{\"nodeCount\":${each.value.node_count}}"
-  cron_expression       = each.value.cron_expression
-  gcp_region            = var.gcp_region
-  service_account_email = local.service_account_email
 }

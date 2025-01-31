@@ -17,42 +17,6 @@ variable "dogu_registry_password" {
   sensitive   = true
 }
 
-variable "dogu_registry_endpoint" {
-  description = "The endpoint for the dogu-registry"
-  type        = string
-  default     = "https://dogu.cloudogu.com/api/v2/dogus"
-}
-
-variable "dogu_registry_url_schema" {
-  description = "The URL schema for the dogu-registry ('default' or 'index')"
-  type        = string
-  default     = "default"
-}
-
-variable "helm_registry_host" {
-  description = "The host for the helm-registry"
-  type        = string
-  default     = "registry.cloudogu.com"
-}
-
-variable "helm_registry_schema" {
-  description = "The schema for the helm-registry"
-  type        = string
-  default     = "oci"
-}
-
-variable "helm_registry_plain_http" {
-  description = "A flag which indicates if the component-operator should use plain http for the helm-registry"
-  type        = bool
-  default     = false
-}
-
-variable "helm_registry_insecure_tls" {
-  description = "A flag which indicates if the component-operator should use insecure TLS for the helm-registry"
-  type        = bool
-  default     = false
-}
-
 variable "helm_registry_username" {
   description = "The username for the helm-registry"
   type        = string
@@ -85,9 +49,7 @@ variable "dogus" {
     "k8s/nginx-static",
     "k8s/nginx-ingress",
     "official/cas",
-    "official/jenkins",
-    "official/nexus",
-    "official/scm"
+    "official/usermgt"
   ]
 }
 
@@ -111,24 +73,6 @@ variable "components" {
     "k8s/k8s-dogu-operator-crd",
     "k8s/k8s-service-discovery",
   ]
-}
-
-variable "setup_chart_namespace" {
-  description = "The namespace of k8s-ces-setup chart"
-  type        = string
-  default     = "k8s"
-}
-
-variable "setup_chart_version" {
-  description = "The version of the k8s-ces-setup chart"
-  type        = string
-  default     = "3.3.0"
-}
-
-variable "cas_oidc_display_name" {
-  description = "The display name is used for the OIDC provider on the user interface."
-  type = string
-  default = "CAS oidc provider"
 }
 
 variable "cas_oidc_optional" {

@@ -1,3 +1,0 @@
-bucket  = "YOUR_BUCKET_NAME"
-prefix  = "STATE_PATH"
-credentials = "YOUR_CREDENTIALS_JSON"

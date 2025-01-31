@@ -3,7 +3,7 @@
 ## Create Keycloak Service Account Client
 
 Create a new client in your desired Keycloak Realm that will get the access rights to create new clients for each CES 
-instance. See [example json](ces-service-account-client.json).
+instance. See [example json](ces-service-account-client-example.json).
 
 Most important configurations:
 - Settings:

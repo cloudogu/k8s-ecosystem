@@ -176,95 +176,32 @@ variable "is_setup_applied_matching_resource" {
   }
 }
 
-variable "cas_oidc_enabled" {
-  description = "Specifies if the ecosystem should provide the possibility to log in with an external oidc authenticator."
-  type = bool
-  default = false
-}
-
-variable "cas_oidc_discovery_uri" {
-  description = <<EOT
-  Describes the URI containing the description for the target provider's OIDC protocol. Must point to the openid-connect
-  configuration. This is usually structured as follows: `https://[base-server-url]/.well-known/openid-configuration`."
-  EOT
-  type = string
-  default = ""
-}
-
-variable "cas_oidc_client_id" {
-  description = "Contains the identifier to be used to identify the CAS to the OIDC provider."
-  type = string
-  default = ""
-}
-
-variable "cas_oidc_client_secret" {
-  description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
-  type = string
-  sensitive = true
-  default = ""
-}
-
-variable "cas_oidc_display_name" {
-  description = "The display name is used for the OIDC provider on the user interface."
-  type = string
-  default = "CAS oidc provider"
-}
-
-variable "cas_oidc_optional" {
-  description = <<EOT
-  Specifies whether authentication via the configured OIDC provider is optional. The user will be automatically
-  redirected to the OIDC provider login page if this property is set to 'false'. The 'true' entry makes authentication
-  via the OIDC provider optional. This is done by displaying an additional button for the OIDC provider on the login
-  page of the CAS, which can be used to authenticate with the OIDC provider.
-  EOT
-  type = bool
-  default = false
-}
-
-variable "cas_oidc_scopes" {
-  description = <<EOT
-  Specifies the resource to query against OIDC. Normally, this enumeration should include at least the openid, the
-  user's email, profile information, and the groups assigned to the user.
-  EOT
-  type = list(string)
-  default = [
-    "openid",
-    "email",
-    "profile",
-    "groups"
-  ]
-}
-
-variable "cas_oidc_principal_attribute" {
-  description = <<EOT
-  Specifies an attribute that should be used as principal id inside the CES. CAS uses the ID provided by the OIDC
-  provider when this property is empty.
-  EOT
-  type = string
-  default = "preferred_username"
-}
-
-variable "cas_oidc_attribute_mapping" {
-  description = <<EOT
-  The attributes provided by OIDC do not exactly match the attributes required by CAS. It is necessary to convert the
-  OIDC attributes to attributes accepted by the CAS. Therefore, this entry should contain rules for converting an
-  attribute provided by the OIDC vendor to an attribute required by the CAS. The rules should be specified in the
-  following format: email:mail,familyname:lastname'. In the given example, the OIDC attributes "email" and "family_name"
-  are converted to "mail" and "surname" respectively.
-  The CAS needs the following attributes to work properly: 'mail,surname,givenName,username,displayName'.
-  EOT
-  type = string
-  default = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
-}
-
-variable "cas_oidc_allowed_groups" {
-  description  = "Specifies cloudogu platform groups whose members can use the platform login. Only relevant if platform login is enabled."
-  type         = list(string)
-  default = []
-}
-
-variable "cas_oidc_initial_admin_usernames" {
-  description  = "Specifies cloudogu platform usernames that are given admin rights in this CES. Only relevant if platform login is enabled."
-  type         = list(string)
-  default = []
+variable "cas_oidc_config" {
+  description = "Configuration of an external cas oidc authenticator. For more information [see here](https://docs.cloudogu.com/en/docs/dogus/cas/operations/Configure_OIDC_Provider/)"
+  type = object({
+    enabled                 = bool
+    discovery_uri           = string
+    client_id               = string
+    client_secret           = string
+    display_name            = string
+    optional                = bool
+    scopes                  = list(string)
+    attribute_mapping       = string
+    principal_attribute     = string
+    allowed_groups          = list(string)
+    initial_admin_usernames = list(string)
+  })
+  default = {
+    enabled                 = false
+    discovery_uri           = ""
+    client_id               = ""
+    client_secret           = ""
+    display_name            = "CAS oidc provider"
+    optional                = false
+    scopes                  = ["openid", "email", "profile", "groups"]
+    attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
+    principal_attribute     = "preferred_username"
+    allowed_groups          = []
+    initial_admin_usernames = []
+  }
 }

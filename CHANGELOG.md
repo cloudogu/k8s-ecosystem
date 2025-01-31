@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [#105] Terraform module to create Keycloak-Clients for CES delegated authentication
+- [#105] Example for using the new `keycloak-client-module` with a CES in GKE
+### Changed
+- [#105] Extend Terraform CES module to configure CAS delegated authentication
 
 ## [v4.1.2] - 2024-12-19
 ### Added

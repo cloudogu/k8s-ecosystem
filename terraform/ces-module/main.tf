@@ -16,7 +16,9 @@ terraform {
 locals {
   split_fqdn = split(".", var.ces_fqdn)
   # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
-  topLevelDomain = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
+  topLevelDomain = var.ces_fqdn != "" ?
+    "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}"
+    : "k3ces.local"
   splitComponentNamespaces = [
     for componentStr in var.components :
     {
@@ -74,20 +76,12 @@ resource "helm_release" "k8s-ces-setup" {
             "fqdn"            = var.ces_fqdn
             "domain"          = local.topLevelDomain
             "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
-            "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
-            # Cas OIDC config values
-            "cas_oidc_enabled"= var.cas_oidc_enabled
-            "cas_oidc_discovery_uri"= var.cas_oidc_discovery_uri
-            "cas_oidc_client_id"= var.cas_oidc_client_id
-            "cas_oidc_client_secret"= var.cas_oidc_client_secret
-            "cas_oidc_display_name"= var.cas_oidc_display_name
-            "cas_oidc_optional"= var.cas_oidc_optional
-            "cas_oidc_scopes"= join(" ", var.cas_oidc_scopes)
-            "cas_oidc_attribute_mapping"= var.cas_oidc_attribute_mapping
-            "cas_oidc_principal_attribute"= var.cas_oidc_principal_attribute
-            "cas_oidc_allowed_groups"= join(", ", var.cas_oidc_allowed_groups)
-            "cas_oidc_initial_admin_usernames"= join(", ", var.cas_oidc_initial_admin_usernames)
+            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n")
+              : ""
+            "certificateKey" = var.ces_certificate_key_path != null ?
+              replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
+
+            "cas_oidc_config" = jsonencode(var.cas_oidc_config)
           }
         ))
         "resource_patches" = var.resource_patches

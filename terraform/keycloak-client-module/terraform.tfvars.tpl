@@ -1,2 +1,6 @@
 ces_fqdn = ""
-keycloak_url = "<keycloak-url>/auth"
+realm_id = "Cloudogu"
+client_id = ""
+description = ""
+client_scopes = ["email", "groups", "profile"]
+login_theme = "cloudogu"

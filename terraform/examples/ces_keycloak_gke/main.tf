@@ -9,8 +9,8 @@ terraform {
       version = ">= 5.31.1"
     }
     keycloak = {
-      source  = "mrparkers/keycloak"
-      version = ">= 4.4"
+      source  = "keycloak/keycloak"
+      version = ">= 5.0.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -91,13 +91,26 @@ provider "keycloak" {
   realm         = var.keycloak_realm_id
 }
 
+resource "random_uuid" "external_cas_openid_client_uuid" {
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
+locals {
+  external_cas_openid_client_id = "ces-${random_uuid.external_cas_openid_client_uuid.result}"
+}
+
 module "keycloak" {
   providers = {
     keycloak = keycloak
   }
-  source                 = "../../keycloak-client-module"
-  ces_fqdn               = google_compute_address.ip_address.address
-  keycloak_client_scopes = var.keycloak_client_scopes
+  source        = "../../keycloak-client-module"
+  realm_id      = "Cloudogu"
+  client_id     = local.external_cas_openid_client_id
+  login_theme   = "cloudogu"
+  client_scopes = var.keycloak_client_scopes
+  ces_fqdn      = google_compute_address.ip_address.address
 }
 
 module "ces" {
@@ -131,8 +144,8 @@ module "ces" {
 
   cas_oidc_enabled                 = true
   cas_oidc_discovery_uri           = "${var.keycloak_url}/realms/${var.keycloak_realm_id}/.well-known/openid-configuration"
-  cas_oidc_client_id               = module.keycloak.external_cas_openid_client_id
-  cas_oidc_client_secret           = module.keycloak.external_cas_openid_client_secret
+  cas_oidc_client_id               = local.external_cas_openid_client_id
+  cas_oidc_client_secret           = module.keycloak.client_secret
   cas_oidc_display_name            = "CAS oidc provider"
   cas_oidc_optional                = var.cas_oidc_optional
   cas_oidc_scopes = concat(["openid"], var.keycloak_client_scopes)

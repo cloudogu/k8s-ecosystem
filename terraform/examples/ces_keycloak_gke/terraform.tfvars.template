@@ -1,6 +1,5 @@
 // For further configuration it is useful to use a separate variable file instead of the file for the secrets.
 gcp_project_name = "my-project"
-gcp_zone         = "europe-west3-c"
 cluster_name     = "keycloak-ces-test-cluster"
 
 keycloak_url = "https://<my-keycloak-domain>/auth"

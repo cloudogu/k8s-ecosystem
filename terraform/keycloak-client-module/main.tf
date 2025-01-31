@@ -3,27 +3,17 @@ terraform {
 
   required_providers {
     keycloak = {
-      source  = "mrparkers/keycloak"
-      version = "~> 4.4"
+      source = "keycloak/keycloak"
+      version = ">= 5.0.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6"
+      version = ">= 3.6"
     }
   }
 }
 
-resource "random_uuid" "external_cas_openid_client_uuid" {
-  lifecycle {
-    ignore_changes = all
-  }
-}
-
-locals {
-  external_cas_openid_client_id = "ces-${random_uuid.external_cas_openid_client_uuid.result}"
-}
-
-resource "random_password" "external_cas_openid_client_secret" {
+resource "random_password" "client_secret" {
   length = 32
   lifecycle {
     ignore_changes = all
@@ -31,12 +21,12 @@ resource "random_password" "external_cas_openid_client_secret" {
 }
 
 resource "keycloak_openid_client" "external_cas_openid_client" {
-  provider  = keycloak
-  realm_id  = var.keycloak_realm_id
-  client_id = local.external_cas_openid_client_id
+  realm_id  = var.realm_id
+  client_id = var.client_id
+  description = var.description
 
   access_type              = "CONFIDENTIAL"
-  client_secret            = random_password.external_cas_openid_client_secret.result
+  client_secret            = random_password.client_secret.result
   standard_flow_enabled    = true
   service_accounts_enabled = true
   authorization {
@@ -53,12 +43,11 @@ resource "keycloak_openid_client" "external_cas_openid_client" {
   ]
   web_origins = ["http://${var.ces_fqdn}"]
   admin_url   = "http://${var.ces_fqdn}/cas"
-  login_theme = "cloudogu"
+  login_theme = var.login_theme
 }
 
 resource "keycloak_openid_client_default_scopes" "external_cas_openid_client_scopes" {
-  provider       = keycloak
-  realm_id       = var.keycloak_realm_id
+  realm_id       = var.realm_id
   client_id      = keycloak_openid_client.external_cas_openid_client.id
-  default_scopes = var.keycloak_client_scopes
+  default_scopes = var.client_scopes
 }

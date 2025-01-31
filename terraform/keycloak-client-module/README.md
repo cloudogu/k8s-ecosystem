@@ -31,8 +31,7 @@ Configuration:
     - Mapper type: Group Membership
     - Name: groups
     - Token Claim Name: groups
-    - Add to ID token: On (Maybe not needed?)
-    - Add to access token: On (Maybe not needed?)
+    - Add to ID token: On
+    - Add to access token: On
     - Add to userinfo: On
-    - Add to token introspection: On (Maybe not needed?)
-
+    - Add to token introspection: On

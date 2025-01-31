@@ -13,7 +13,7 @@ variable "client_id" {
 variable "description" {
   description = "Description for the created keycloak client"
   type = string
-  default = ""
+  default = "CES client created via Terraform"
 }
 
 variable "client_scopes" {

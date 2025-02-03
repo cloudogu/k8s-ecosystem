@@ -143,7 +143,7 @@ module "ces" {
   helm_registry_password = var.helm_registry_password
 
   cas_oidc_config = {
-    enabled                 = "true"
+    enabled                 = true
     discovery_uri           = "${var.keycloak_url}/realms/${var.keycloak_realm_id}/.well-known/openid-configuration"
     client_id               = local.external_cas_openid_client_id
     display_name            = "CAS oidc provider"

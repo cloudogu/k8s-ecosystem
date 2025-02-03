@@ -191,11 +191,11 @@ variable "cas_oidc_config" {
     initial_admin_usernames = string
   })
   default = {
-    enabled                 = "false"
+    enabled                 = false
     discovery_uri           = ""
     client_id               = ""
     display_name            = "CAS oidc provider"
-    optional                = "false"
+    optional                = false
     scopes                  = "openid email profile groups"
     attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
     principal_attribute     = "preferred_username"

@@ -82,8 +82,8 @@ variable "cas_oidc_optional" {
   via the OIDC provider optional. This is done by displaying an additional button for the OIDC provider on the login
   page of the CAS, which can be used to authenticate with the OIDC provider.
   EOT
-  type = bool
-  default = false
+  type = string
+  default = "false"
 }
 
 variable "cas_oidc_allowed_groups" {

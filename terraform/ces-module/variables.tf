@@ -179,11 +179,11 @@ variable "is_setup_applied_matching_resource" {
 variable "cas_oidc_config" {
   description = "Configuration of an external cas oidc authenticator. For more information [see here](https://docs.cloudogu.com/en/docs/dogus/cas/operations/Configure_OIDC_Provider/)"
   type = object({
-    enabled                 = bool
+    enabled                 = string
     discovery_uri           = string
     client_id               = string
     display_name            = string
-    optional                = bool
+    optional                = string
     scopes                  = string
     attribute_mapping       = string
     principal_attribute     = string
@@ -191,11 +191,11 @@ variable "cas_oidc_config" {
     initial_admin_usernames = string
   })
   default = {
-    enabled                 = false
+    enabled                 = "false"
     discovery_uri           = ""
     client_id               = ""
     display_name            = "CAS oidc provider"
-    optional                = false
+    optional                = "false"
     scopes                  = "openid email profile groups"
     attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
     principal_attribute     = "preferred_username"

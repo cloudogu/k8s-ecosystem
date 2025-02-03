@@ -184,7 +184,7 @@ variable "cas_oidc_config" {
     client_id               = string
     display_name            = string
     optional                = bool
-    scopes                  = list(string)
+    scopes                  = string
     attribute_mapping       = string
     principal_attribute     = string
     allowed_groups          = list(string)
@@ -196,7 +196,7 @@ variable "cas_oidc_config" {
     client_id               = ""
     display_name            = "CAS oidc provider"
     optional                = false
-    scopes                  = ["openid", "email", "profile", "groups"]
+    scopes                  = "openid email profile groups"
     attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
     principal_attribute     = "preferred_username"
     allowed_groups          = []

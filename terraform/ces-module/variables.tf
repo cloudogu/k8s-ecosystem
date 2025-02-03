@@ -187,8 +187,8 @@ variable "cas_oidc_config" {
     scopes                  = string
     attribute_mapping       = string
     principal_attribute     = string
-    allowed_groups          = list(string)
-    initial_admin_usernames = list(string)
+    allowed_groups          = string
+    initial_admin_usernames = string
   })
   default = {
     enabled                 = false
@@ -199,8 +199,8 @@ variable "cas_oidc_config" {
     scopes                  = "openid email profile groups"
     attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
     principal_attribute     = "preferred_username"
-    allowed_groups          = []
-    initial_admin_usernames = []
+    allowed_groups          = ""
+    initial_admin_usernames = ""
   }
 }
 

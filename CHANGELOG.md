@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- [#107] add `google_gke_scaling_scheduler` terraform module
+
+### Removed
+- [#107] remove `google_gke_http_cron` terraform module
+  - use the new `google_gke_scaling_scheduler` module
+
 ## [v4.1.2] - 2024-12-19
 ### Added
 - [#102] Add networkpolicy for dev docker registry.

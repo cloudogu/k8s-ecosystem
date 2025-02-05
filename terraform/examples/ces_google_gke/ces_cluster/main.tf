@@ -2,17 +2,15 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = ">=2.13.2"
+      version = "~>2.7"
     }
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.31.1"
+      version = "~>6.19"
     }
   }
 
-  backend "gcs" {}
-
-  required_version = ">= 1.7.0"
+  required_version = ">= 1.10.0"
 }
 
 provider "google" {
@@ -22,8 +20,8 @@ provider "google" {
 }
 
 locals {
-  gke_module_host           = "https://${module.google_gke.endpoint}"
-  gke_module_token          = module.google_gke.access_token
+  gke_module_host  = "https://${module.google_gke.endpoint}"
+  gke_module_token = module.google_gke.access_token
   gke_module_ca_certificate = base64decode(module.google_gke.ca_certificate)
 }
 
@@ -74,7 +72,7 @@ module "google_gke" {
 
 module "increase_max_map_count" {
   depends_on = [module.google_gke]
-  source     = "../../../max-map-count"
+  source = "../../../max-map-count"
 }
 
 #module "kubelet_private_registry" {
@@ -92,7 +90,7 @@ module "increase_max_map_count" {
 
 module "ces" {
   depends_on = [module.google_gke]
-  source     = "../../../ces-module"
+  source = "../../../ces-module"
 
   # Configure CES installation options
   setup_chart_version          = var.setup_chart_version
@@ -101,10 +99,10 @@ module "ces" {
   ces_admin_username           = var.ces_admin_username
   ces_admin_password           = var.ces_admin_password
   dogus                        = var.dogus
-  resource_patches             = file(var.resource_patches_file)
+  resource_patches = file(var.resource_patches_file)
   component_operator_chart     = var.component_operator_chart
   component_operator_crd_chart = var.component_operator_crd_chart
-  components                   = var.components
+  components = var.components
 
   # Configure access for the registries. Passwords need to be base64-encoded.
   container_registry_secrets = var.container_registry_secrets
@@ -123,18 +121,20 @@ module "ces" {
 
 module "scale_jobs" {
   depends_on = [module.google_gke]
-  source     = "../../../google_gke_scaling_scheduler"
+  source                = "../../../google_gke_scaling_scheduler"
+  project_id            = var.gcp_project_name
+  region                = var.gcp_region
+  zone                  = var.gcp_zone
+  cluster_name          = var.cluster_name
+  node_pool_name        = var.node_pool_name
   service_account_email = jsondecode(file(var.gcp_credentials)).client_email
-  cluster_name   = var.cluster_name
-  node_pool_name = var.node_pool_name
-  zone           = var.gcp_zone
   scale_jobs = [
     {
       node_count      = 0
       cron_expression = "0 18 * * *"
     },
     {
-      node_count      = 1
+      node_count      = var.node_count
       cron_expression = "0 4 * * 1-5"
     }
   ]

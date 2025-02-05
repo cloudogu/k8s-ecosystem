@@ -17,7 +17,7 @@ Ensure you are in the correct project.
 
 `gcloud config set project $PROJECT_ID`
 
-You need to create a service account for the google provider.
+You need to create a service account for the Google provider.
 
 `gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME --description="DESCRIPTION" --display-name="$SERVICE_ACCOUNT_NAME" --project=$PROJECT_ID`
 

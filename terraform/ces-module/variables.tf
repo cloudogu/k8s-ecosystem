@@ -175,3 +175,38 @@ variable "is_setup_applied_matching_resource" {
     field_selector = "metadata.name==dogus.k8s.cloudogu.com"
   }
 }
+
+variable "cas_oidc_config" {
+  description = "Configuration of an external cas oidc authenticator. For more information [see here](https://docs.cloudogu.com/en/docs/dogus/cas/operations/Configure_OIDC_Provider/)"
+  type = object({
+    enabled                 = string
+    discovery_uri           = string
+    client_id               = string
+    display_name            = string
+    optional                = string
+    scopes                  = list(string)
+    attribute_mapping       = string
+    principal_attribute     = string
+    allowed_groups          = list(string)
+    initial_admin_usernames = list(string)
+  })
+  default = {
+    enabled                 = false
+    discovery_uri           = ""
+    client_id               = ""
+    display_name            = "CAS oidc provider"
+    optional                = false
+    scopes                  = ["openid", "email", "profile", "groups"]
+    attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
+    principal_attribute     = "preferred_username"
+    allowed_groups          = []
+    initial_admin_usernames = []
+  }
+}
+
+variable "cas_oidc_client_secret" {
+  description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
+  type = string
+  sensitive = true
+  default = ""
+}

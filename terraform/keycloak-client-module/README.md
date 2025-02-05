@@ -1,5 +1,10 @@
 # Keycloak preparation for CES use
 
+This is a Terraform module for managing a Keycloak instance to be used with a CES for a federated login. 
+The module uses a service account client to create a new Keycloak client for the ecosystem. This client is 
+given to the CAS to integrate the keycloak login into the ecosystem. Learn how to configure the CAS 
+[here](https://docs.cloudogu.com/en/docs/dogus/cas/operations/Configure_OIDC_Provider/).
+
 ## Create Keycloak Service Account Client
 
 Create a new client in your desired Keycloak Realm that will get the access rights to create new clients for each CES 

@@ -121,24 +121,21 @@ module "ces" {
   helm_registry_password     = var.helm_registry_password
 }
 
-locals {
-  scalingUri            = "https://container.googleapis.com/v1beta1/projects/${var.gcp_project_name}/zones/${var.gcp_zone}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}/setSize"
-  service_account_email = jsondecode(file(var.gcp_credentials)).client_email
-}
-
 module "scale_jobs" {
   depends_on = [module.google_gke]
-  source     = "../../../google_gke_http_cron"
-  for_each   = {
-    for index, job in var.scale_jobs :
-    job.id => job
-  }
-  name                  = "${var.cluster_name}-scale-to-${each.value.node_count}-job-${index(var.scale_jobs, each.value)}"
-  uri                   = local.scalingUri
-  method                = "POST"
-  content_type          = "application/json"
-  body                  = "{\"nodeCount\":${each.value.node_count}}"
-  cron_expression       = each.value.cron_expression
-  gcp_region            = var.gcp_region
-  service_account_email = local.service_account_email
+  source     = "../../../google_gke_scaling_scheduler"
+  service_account_email = jsondecode(file(var.gcp_credentials)).client_email
+  cluster_name   = var.cluster_name
+  node_pool_name = var.node_pool_name
+  zone           = var.gcp_zone
+  scale_jobs = [
+    {
+      node_count      = 0
+      cron_expression = "0 18 * * *"
+    },
+    {
+      node_count      = 1
+      cron_expression = "0 4 * * 1-5"
+    }
+  ]
 }

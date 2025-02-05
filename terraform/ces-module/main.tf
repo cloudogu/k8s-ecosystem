@@ -34,6 +34,18 @@ locals {
       deployNamespace = split(":", namespaceAndRest.rest)[0] != "k8s-longhorn" ? var.ces_namespace : "longhorn-system"
     }
   ]
+  cas_oidc_config_formatted = {
+    enable = var.cas_oidc_config.enabled
+    discovery_uri = var.cas_oidc_config.discovery_uri
+    client_id = var.cas_oidc_config.client_id
+    display_name = var.cas_oidc_config.display_name
+    optional = var.cas_oidc_config.optional
+    scopes = join(" ", var.cas_oidc_config.scopes)
+    principal_attribute = var.cas_oidc_config.principal_attribute
+    attribute_mapping = var.cas_oidc_config.attribute_mapping
+    allowed_groups = join(", ", var.cas_oidc_config.allowed_groups)
+    initial_admin_usernames = join(", ", var.cas_oidc_config.initial_admin_usernames)
+  }
 }
 
 resource "helm_release" "k8s-ces-setup" {
@@ -77,7 +89,7 @@ resource "helm_release" "k8s-ces-setup" {
             "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
             "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
 
-            "cas_oidc_config" = jsonencode(var.cas_oidc_config)
+            "cas_oidc_config" = jsonencode(local.cas_oidc_config_formatted)
             "cas_oidc_client_secret" = var.cas_oidc_client_secret
           }
         ))

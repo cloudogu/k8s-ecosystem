@@ -148,9 +148,9 @@ module "ces" {
     client_id               = local.external_cas_openid_client_id
     display_name            = "CAS oidc provider"
     optional                = var.cas_oidc_optional
-    scopes = join(" ", concat(["openid"], var.keycloak_client_scopes))
-    allowed_groups          = join(", ", var.cas_oidc_allowed_groups)
-    initial_admin_usernames = join(", ", var.cas_oidc_initial_admin_usernames)
+    scopes = concat(["openid"], var.keycloak_client_scopes)
+    allowed_groups          = var.cas_oidc_allowed_groups
+    initial_admin_usernames = var.cas_oidc_initial_admin_usernames
   }
   cas_oidc_client_secret = module.keycloak.client_secret
 }

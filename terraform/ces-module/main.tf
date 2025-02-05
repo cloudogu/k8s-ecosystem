@@ -35,7 +35,7 @@ locals {
     }
   ]
   cas_oidc_config_formatted = {
-    enable = var.cas_oidc_config.enabled
+    enabled = var.cas_oidc_config.enabled
     discovery_uri = var.cas_oidc_config.discovery_uri
     client_id = var.cas_oidc_config.client_id
     display_name = var.cas_oidc_config.display_name

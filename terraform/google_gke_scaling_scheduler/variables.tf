@@ -1,13 +1,11 @@
 variable "project_id" {
-  description = "The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
+  description = "The ID of the project in which the resource belongs."
   type = string
-  default = null
 }
 
 variable "region" {
-  description = "Region where the scheduler job resides. If it is not provided, Terraform will use the provider default."
+  description = "Region where the scheduler job resides."
   type = string
-  default = null
 }
 
 variable "zone" {

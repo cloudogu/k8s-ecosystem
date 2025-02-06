@@ -50,11 +50,9 @@ provider "kubernetes" {
   config_path = local.shoot_kube_config_path
 }
 
-
-
 resource "null_resource" "getShootKubeConfig" {
   provisioner "local-exec" {
-    command = "./getShootKubeConfig.sh ${var.garden_namespace} ${module.plusserver.shoot_name} ${var.gardener_kube_config_path} ${local.shoot_kube_config_path}"
+    command = "./scripts/getShootKubeConfig.sh ${var.garden_namespace} ${module.plusserver.shoot_name} ${var.gardener_kube_config_path} ${local.shoot_kube_config_path}"
   }
 
   // Always trigger this resource to ensure kube config is always valid.
@@ -69,7 +67,7 @@ resource "null_resource" "getShootKubeConfig" {
 // Create namespace without putting it into terraform state because it would block terraform destroy due to finalizers.
 resource "null_resource" "create_namespace_ecosystem" {
   provisioner "local-exec" {
-    command = "./createNamespace.sh ${local.shoot_kube_config_path} ecosystem"
+    command = "./scripts/createNamespace.sh ${local.shoot_kube_config_path} ecosystem"
   }
 
   depends_on = [null_resource.getShootKubeConfig]
@@ -82,11 +80,13 @@ resource "kubernetes_service_v1" "ces-loadbalancer" {
   metadata {
     name        = "ces-loadbalancer"
     annotations = {
-      // TODO Change to true if it works. And on destroy we have to change this to false again to release the ip.
-      "loadbalancer.openstack.org/keep-floatingip" : "false"
+      "loadbalancer.openstack.org/keep-floatingip" : "true"
     }
     labels = {
-      "app" : "ces"
+      app : "ces"
+      // We have to persist the cluster name to get the correct kubeconfig in the destroy provisioner because the provisioner
+      // can only access self attributes.
+      cluster-name: module.plusserver.shoot_name
     }
     namespace = "ecosystem"
   }
@@ -115,6 +115,11 @@ resource "kubernetes_service_v1" "ces-loadbalancer" {
   depends_on = [null_resource.create_namespace_ecosystem]
 
   provider = kubernetes.kubernetes_shoot
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "./scripts/releaseLoadBalancerIP.sh ${self.metadata[0].labels.cluster-name}_kubeconfig.yaml ecosystem"
+  }
 }
 
 locals {

@@ -1,5 +1,6 @@
 # How to set up
 
+- Template vars
 - Get gardener kubeconfig from PSKE and save as `gardener_kubeconfig.yaml`
 - `terraform apply -var-file=secretVars.tfvars -var-file=vars.tfvars -target=null_resource.getShootKubeConfig`
 - Wait a minute
@@ -56,6 +57,8 @@ Create kubeconfig with curl:
 ## Releasing reserved ip
 - Loadbalancer should reserve IP via annotation.
 - On destroy the loadbalancer have to be patched with reserve: false to release the ip
+
+## Wait for shoot api
 
 ## Jenkins Bug
 - Analyse (s.o.)

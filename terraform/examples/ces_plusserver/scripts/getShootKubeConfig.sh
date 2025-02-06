@@ -31,6 +31,7 @@ token=$(grep -A 1 token "${gardenKubeConfig}" | tail -1 | awk '{$1=$1};1')
 certFile="./shoot_cert"
 grep -A 1 certificate-authority-data "${gardenKubeConfig}" | tail -1 | awk '{$1=$1};1' | base64 --decode > "${certFile}"
 
+# TODO Reduce expiration time
 response=$(curl -s "${server}/apis/core.gardener.cloud/v1beta1/namespaces/${gardenNamespace}/shoots/${shootName}/adminkubeconfig" -H "Authorization: Bearer ${token}" --cacert "${certFile}" -X POST -d '{"spec":{"expirationSeconds":6000}}' -H "Content-Type: application/json")
 
 echo "${response}" | grep '"kubeconfig":' | sed 's/"kubeconfig"://g' | awk '{$1=$1};1' | sed 's/"//g' | sed 's/,//g' | base64 --decode > "${outputShootKubeConfig}"

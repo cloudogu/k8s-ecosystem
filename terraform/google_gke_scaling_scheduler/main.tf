@@ -17,7 +17,7 @@ resource "google_cloud_scheduler_job" "scale_job" {
   schedule         = each.value.cron_expression
   time_zone        = var.timer_zone
   attempt_deadline = var.attempt_deadline
-  region           = var.region
+  region           = var.scheduler_region
 
   retry_config {
     retry_count = var.retry_count
@@ -25,7 +25,7 @@ resource "google_cloud_scheduler_job" "scale_job" {
 
   http_target {
     http_method = "POST"
-    uri         = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}:setSize"
+    uri         = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${var.cluster_location}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}:setSize"
     body = base64encode("{\"nodeCount\":${each.value.node_count}}")
     headers = {
       "Content-Type" = "application/json"

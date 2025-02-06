@@ -3,13 +3,13 @@ variable "project_id" {
   type = string
 }
 
-variable "region" {
+variable "scheduler_region" {
   description = "Region where the scheduler job resides."
   type = string
 }
 
-variable "zone" {
-  description = "the name of the gcp zone"
+variable "cluster_location" {
+  description = "the location of the cluster, e.g. europe-west3-c for a zonal cluster or europe-west3 for a regional cluster."
   type = string
 }
 

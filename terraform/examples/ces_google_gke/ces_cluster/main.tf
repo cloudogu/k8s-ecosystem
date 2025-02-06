@@ -123,8 +123,8 @@ module "scale_jobs" {
   depends_on = [module.google_gke]
   source                = "../../../google_gke_scaling_scheduler"
   project_id            = var.gcp_project_name
-  region                = var.gcp_region
-  zone                  = var.gcp_zone
+  cluster_location      = var.gcp_zone
+  scheduler_region      = var.gcp_region
   cluster_name          = var.cluster_name
   node_pool_name        = var.node_pool_name
   service_account_email = jsondecode(file(var.gcp_credentials)).client_email

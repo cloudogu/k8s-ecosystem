@@ -1,8 +1,9 @@
 terraform {
-  required_version = ">= 0.13"
+  required_version = ">= 0.14"
 
   required_providers {
     kubectl = {
+      // The official kubectl provider from hashicorp can't be used because it requires crd read permissions on generic cr apply.
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
@@ -10,109 +11,123 @@ terraform {
 }
 
 provider "kubectl" {
-  config_path = var.kube_config_path
+  config_path = var.gardener_kube_config_path
 }
 
-resource "openstack_networking_floatingip_v2" "ip" {
-  pool = "public"
-  count = 1
+resource "random_string" "id" {
+  length  = 8
+  special = false
+  upper   = false
 }
 
-// TODO. Creat correct shoot configuration via UI if credentials are available and use variables.
 resource "kubectl_manifest" "cluster" {
   yaml_body = yamlencode({
-    kind : "Shoot"
-    apiVersion : "core.gardener.cloud/v1beta1"
-    metadata : {
-      namespace : "garden-ma-24"
-      confirmation.gardener.cloud/deletion: "true"
+    "apiVersion" = "core.gardener.cloud/v1beta1"
+    "kind"       = "Shoot"
+    "metadata"   = {
+      "name"      = "${var.shoot_name_prefix}${random_string.id.result}"
+      "namespace" = var.garden_namespace
+      "annotations" : {
+        "confirmation.gardener.cloud/deletion" : var.cluster_removable
+      }
     }
-    name : "terraform-test"
-    spec : {
-      provider : {
-        type : "openstack"
-        infrastructureConfig : {
-          apiVersion : "openstack.provider.extensions.gardener.cloud/v1alpha1"
-          kind : "InfrastructureConfig"
-          networks : {
-            workers : "10.250.0.0/16"
-          }
-          floatingPoolName : "ext01"
+    "spec" = {
+      "addons" = {
+        "kubernetesDashboard" = {
+          "enabled" = false
         }
-        controlPlaneConfig : {
-          apiVersion : "openstack.provider.extensions.gardener.cloud/v1alpha1"
-          kind : "ControlPlaneConfig"
-          loadBalancerProvider : "amphora"
+        "nginxIngress" = {
+          "enabled" = false
         }
-        workers : [
-          {
-            name : "k8s-worker"
-            minimum : 1
-            maximum : 2
-            maxSurge : 1
-            machine : {
-              type : "SCS-2V:4:100"
-              image : {
-                name : ubuntu
-                version : 22.4.2
-              }
-              architecture : amd64
-            }
-            zones : ["nova"]
-            cri : {
-              name : "containerd"
-            }
-            volume : {
-              size : "50Gi"
-            }
-          }
-        ]
-        networking : {
-          nodes : "10.250.0.0/16"
-          type : "cilium"
-        }
-        cloudProfileName : "pluscloudopen-hire"
-        secretBindingName : "my-openstack-secret"
-        region : "RegionOne"
-        purpose : "evaluation"
-        kubernetes : {
-          version : "1.27.5"
-          enableStaticTokenKubeconfig : false
-        }
-        addons : {
-          kubernetesDashboard : {
-            enabled : "false"
-          }
-          nginxIngress : {
-            enabled : "false"
-          }
-        }
-        maintenance : {
-          timeWindow : {
-            begin : "010000+0200"
-            end : "020000+0200"
-          }
-          autoUpdate : {
-            kubernetesVersion : true
-            machineImageVersion : true
-          }
-        }
-        hibernation : {
-          schedules : [
-            {
-              start : "00 17 * * 1, 2, 3, 4,5"
-              location : Europe/Berlin
-            }
-          ]
-        }
-        controlPlane : {
-          highAvailability : {
-            failureTolerance : {
-              type : "none"
-            }
+      }
+      "cloudProfileName" = var.cloud_profile_name
+      "controlPlane"     = {
+        "highAvailability" = {
+          "failureTolerance" = {
+            "type" = "node"
           }
         }
       }
+      "hibernation" = {
+        "schedules" = var.hibernation_schedules
+      }
+      "kubernetes" = {
+        "enableStaticTokenKubeconfig" = false
+        "version"                     = var.kubernetes_version
+      }
+      "maintenance" = {
+        "autoUpdate" = {
+          "kubernetesVersion"   = true
+          "machineImageVersion" = true
+        }
+        "timeWindow" = {
+          "begin" = "030000+0100"
+          "end"   = "040000+0100"
+        }
+      }
+      "networking" = {
+        "nodes" = "10.250.0.0/16"
+        "type"  = var.networking_type
+      }
+      "provider" = {
+        "controlPlaneConfig" = {
+          "apiVersion"           = "openstack.provider.extensions.gardener.cloud/v1alpha1"
+          "kind"                 = "ControlPlaneConfig"
+          "loadBalancerProvider" = "amphora"
+        }
+        "infrastructureConfig" = {
+          "apiVersion"       = "openstack.provider.extensions.gardener.cloud/v1alpha1"
+          "floatingPoolName" = "ext01"
+          "kind"             = "InfrastructureConfig"
+          "networks"         = {
+            "workers" = "10.250.0.0/16"
+          }
+        }
+        "type"    = "openstack"
+        "workers" = [
+          {
+            "cri" = {
+              "name" = "containerd"
+            }
+            "machine" = {
+              "architecture" = "amd64"
+              "image"        = {
+                "name"    = var.image_name
+                "version" = var.image_version
+              }
+              "type" = var.machine_type
+            }
+            "maxSurge" = 1
+            "maximum"  = var.node_max
+            "minimum"  = var.node_min
+            "name"     = "worker-smbnr"
+            "volume"   = {
+              "size" = var.node_size
+            }
+            "zones" = [
+              "az1",
+            ]
+          },
+        ]
+      }
+      "purpose"           = var.purpose
+      "region"            = var.region
+      "secretBindingName" = var.secret_binding_name
     }
   })
 }
+
+
+// This does not work correctly because you get always 401 return even on non existent values and
+// this might not be necessary because the api is not in the shoot cluster.
+#locals {
+#  clusterName="${var.shoot_name_prefix}${random_string.id.result}"
+#}
+#
+#resource "null_resource" "wait_for_shoot_api" {
+#  provisioner "local-exec" {
+#    command = "./waitForShootAPI.sh ${local.clusterName} ${var.project_id}"
+#  }
+#
+#  depends_on = [kubectl_manifest.cluster]
+#}

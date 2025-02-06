@@ -25,7 +25,7 @@ resource "google_cloud_scheduler_job" "scale_job" {
 
   http_target {
     http_method = "POST"
-    uri         = "https://container.googleapis.com/v1beta1/projects/${var.project_id}/zones/${var.zone}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}/setSize"
+    uri         = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}/nodePools/${var.node_pool_name}:setSize"
     body = base64encode("{\"nodeCount\":${each.value.node_count}}")
     headers = {
       "Content-Type" = "application/json"

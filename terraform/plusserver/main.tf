@@ -10,9 +10,9 @@ terraform {
   }
 }
 
-provider "kubectl" {
-  config_path = var.gardener_kube_config_path
-}
+#provider "kubectl" {
+#  config_path = var.gardener_kube_config_path
+#}
 
 resource "random_string" "id" {
   length  = 8
@@ -26,6 +26,7 @@ resource "kubectl_manifest" "cluster" {
     "kind"       = "Shoot"
     "metadata"   = {
       "name"      = "${var.shoot_name_prefix}${random_string.id.result}"
+      //"name"      = var.shoot_name != "" ? var.shoot_name : "${var.shoot_name_prefix}${random_string.id.result}"
       "namespace" = var.garden_namespace
       "annotations" : {
         "confirmation.gardener.cloud/deletion" : var.cluster_removable
@@ -49,6 +50,7 @@ resource "kubectl_manifest" "cluster" {
         }
       }
       "hibernation" = {
+        "enabled"   = var.hibernation
         "schedules" = var.hibernation_schedules
       }
       "kubernetes" = {
@@ -97,7 +99,7 @@ resource "kubectl_manifest" "cluster" {
               }
               "type" = var.machine_type
             }
-            "maxSurge" = 1
+            "maxSurge" = var.max_surge
             "maximum"  = var.node_max
             "minimum"  = var.node_min
             "name"     = "worker-smbnr"

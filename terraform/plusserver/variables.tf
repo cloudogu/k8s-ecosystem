@@ -4,6 +4,12 @@ variable "gardener_kube_config_path" {
   default = "./gardener_kubeconfig.yaml"
 }
 
+#variable shoot_name {
+#  description = "The name of the shoot cluster"
+#  type = string
+#  default = ""
+#}
+
 variable garden_namespace {
   description = "The namespace for the shoot resource. See kubeconfig."
   type = string
@@ -13,6 +19,12 @@ variable shoot_name_prefix {
   description = "The prefix name of the shoot resource. It will be concatenated with a uuid"
   type = string
   default = "ces-"
+}
+
+variable hibernation {
+  description= "Specifies if the cluster should be hibernated or not"
+  type = bool
+  default = false
 }
 
 variable hibernation_schedules {
@@ -84,12 +96,20 @@ variable "machine_type" {
   default = "SCS-4V-8"
 }
 
+variable "max_surge" {
+  description = "Maximum node surge"
+  type = number
+  default = 1
+}
+
 variable "node_min" {
+  description = "Minimum node count"
   type = number
   default = 3
 }
 
 variable "node_max" {
+  description = "Maximum node count"
   type = number
   default = 4
 }

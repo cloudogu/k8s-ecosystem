@@ -39,3 +39,4 @@ terraform.rc
 vars.tfvars
 
 **_kubeconfig.yaml
+bin

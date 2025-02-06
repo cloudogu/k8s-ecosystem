@@ -10,23 +10,54 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.35.1"
+    }
   }
 }
 
 provider "kubectl" {
-  alias       = "kubectl_garden"
+  alias       = "kubectl-garden"
   config_path = var.gardener_kube_config_path
 }
 
-locals {
-  shoot_kube_config_path = "${module.plusserver.shoot_name}_kubeconfig.yaml"
+provider "kubernetes" {
+  alias = "kubernetes_garden"
+
+  config_path = var.gardener_kube_config_path
+}
+
+provider "kubernetes" {
+  alias = "kubernetes_shoot"
+
+  host                   = "https://${local.shoot_api_host}"
+  cluster_ca_certificate = data.kubernetes_config_map.cluster-ca.data["ca.crt"]
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "./scripts/kubeConfigExec.sh"
+    args        = [
+      var.gardener_kube_config_path, module.plusserver.shoot_name, var.garden_namespace, var.gardener_identity
+    ]
+  }
 }
 
 provider "helm" {
   alias = "helm_shoot"
 
   kubernetes {
-    config_path = local.shoot_kube_config_path
+    host                   = "https://${local.shoot_api_host}"
+    cluster_ca_certificate = data.kubernetes_config_map.cluster-ca.data["ca.crt"]
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "./scripts/kubeConfigExec.sh"
+      args        = [
+        var.gardener_kube_config_path, module.plusserver.shoot_name, var.garden_namespace, var.gardener_identity
+      ]
+    }
   }
 
   registry {
@@ -36,43 +67,90 @@ provider "helm" {
   }
 }
 
+locals {
+  shootCaNameSuffix = ".ca-cluster"
+  // We only use this data source in order to use the generated name in the kubernetes provider config.
+  // If we would use the output variable module.plusserver.shoot_name the plan and apply phase would return an error.
+  shoot_api_host    = "api.${trimsuffix(data.kubernetes_config_map.cluster-ca.metadata[0].name, local.shootCaNameSuffix)}.${var.project_id}.projects.prod.gardener.get-cloud.io"
+}
+
+resource "null_resource" "binary_trigger" {
+  triggers = {
+    gardenctl = var.gardenctl_source
+    gardenlogin = var.gardenlogin_source
+  }
+}
+
+resource null_resource download_garden_bins {
+  depends_on = [null_resource.binary_trigger]
+
+  lifecycle {
+    replace_triggered_by = [null_resource.binary_trigger]
+  }
+
+  provisioner local-exec {
+    command = "./scripts/downloadBins.sh ${var.gardenctl_source} ${var.gardenctl_sha256} ${var.gardenlogin_source} ${var.gardenlogin_sha256}"
+  }
+
+  provisioner local-exec {
+    when    = destroy
+    command = "rm -f ./bin/gardenctl ./bin/gardenlogin"
+  }
+}
+
 module "plusserver" {
+  providers = {
+    kubectl = kubectl.kubectl-garden
+  }
+
+  depends_on = [null_resource.download_garden_bins]
+
   source                    = "../../plusserver"
   gardener_kube_config_path = var.gardener_kube_config_path
   garden_namespace          = var.garden_namespace
+  //shoot_name                = var.shoot_name
   project_id                = var.project_id
   secret_binding_name       = var.secret_binding_name
   networking_type           = var.networking_type
+  max_surge                 = var.max_surge
+  node_max                  = var.node_max
+  node_min                  = var.node_min
+  hibernation               = var.hibernation
 }
 
-provider "kubernetes" {
-  alias       = "kubernetes_shoot"
-  config_path = local.shoot_kube_config_path
+data "kubernetes_config_map" "cluster-ca" {
+  provider   = kubernetes.kubernetes_garden
+  depends_on = [null_resource.wait_for_shoot_ca]
+
+  metadata {
+    name      = "${module.plusserver.shoot_name}.ca-cluster"
+    namespace = var.garden_namespace
+  }
 }
 
-
-
-resource "null_resource" "getShootKubeConfig" {
-  provisioner "local-exec" {
-    command = "./getShootKubeConfig.sh ${var.garden_namespace} ${module.plusserver.shoot_name} ${var.gardener_kube_config_path} ${local.shoot_kube_config_path}"
-  }
-
-  // Always trigger this resource to ensure kube config is always valid.
-  triggers = {
-    timestamp = timestamp()
-  }
-
+// Wait for config map to be created
+resource "null_resource" "wait_for_shoot_ca" {
   depends_on = [module.plusserver]
+
+  provisioner "local-exec" {
+    command = "sleep 10"
+  }
 }
 
+resource null_resource get_api_url {
+  depends_on = [data.kubernetes_config_map.cluster-ca]
+  provisioner "local-exec" {
+    command = "./scripts/waitForShootAPI.sh ${module.plusserver.shoot_name} ${var.project_id}"
+  }
+}
 
 // Create namespace without putting it into terraform state because it would block terraform destroy due to finalizers.
 resource "null_resource" "create_namespace_ecosystem" {
   provisioner "local-exec" {
-    command = "./createNamespace.sh ${local.shoot_kube_config_path} ecosystem"
+    command = "./scripts/createNamespace.sh ${var.gardener_kube_config_path} ${var.garden_namespace} ${module.plusserver.shoot_name} ecosystem"
   }
 
-  depends_on = [null_resource.getShootKubeConfig]
+  depends_on = [null_resource.get_api_url]
 }
 
 
@@ -82,11 +160,16 @@ resource "kubernetes_service_v1" "ces-loadbalancer" {
   metadata {
     name        = "ces-loadbalancer"
     annotations = {
-      // TODO Change to true if it works. And on destroy we have to change this to false again to release the ip.
       "loadbalancer.openstack.org/keep-floatingip" : "false"
+      // We have to persist the cluster name to get the correct kubeconfig in the destroy provisioner because the provisioner
+      // can only access self attributes.
+      shoot-name : module.plusserver.shoot_name
+      gardener-kube-config-path-name : var.gardener_kube_config_path
+      gardener-namespace : var.garden_namespace
     }
     labels = {
-      "app" : "ces"
+      app : "ces"
+
     }
     namespace = "ecosystem"
   }
@@ -115,10 +198,15 @@ resource "kubernetes_service_v1" "ces-loadbalancer" {
   depends_on = [null_resource.create_namespace_ecosystem]
 
   provider = kubernetes.kubernetes_shoot
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "./scripts/releaseLoadBalancerIP.sh ${self.metadata[0].annotations.gardener-kube-config-path-name} ${self.metadata[0].annotations.gardener-namespace} ${self.metadata[0].annotations.shoot-name} ecosystem"
+  }
 }
 
 locals {
-  // Yep, this works...
+  // Don't worry, this works...
   externalIP = kubernetes_service_v1.ces-loadbalancer.status.0.load_balancer.0.ingress.0.ip
 }
 

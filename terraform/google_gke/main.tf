@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.3"
+      version = ">= 6.19"
     }
   }
 }
@@ -17,6 +17,13 @@ resource "google_container_cluster" "default" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
+  // activate Dataplane 2, so that cilium can be used for network policies
+  datapath_provider                        = "ADVANCED_DATAPATH"
+  enable_cilium_clusterwide_network_policy = true
+  cost_management_config {
+    enabled = true
+  }
+
   release_channel {
     channel = "REGULAR"
   }
@@ -27,7 +34,7 @@ resource "google_container_cluster" "default" {
     // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#recurring_window
     recurring_window {
       start_time = "2024-09-16T23:00:00Z"
-      end_time = "2024-09-17T03:00:00Z"
+      end_time   = "2024-09-17T03:00:00Z"
       recurrence = "FREQ=DAILY"
     }
   }

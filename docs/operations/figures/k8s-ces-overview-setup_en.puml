@@ -35,14 +35,23 @@ rectangle "Cluster" as cluster <<$k8s>> {
     file k8scesctlres as "<<deployment>>\nk8s-ces-control" SECONDARY_COLOR
     file doguratorres as "<<deployment>>\nk8s-dogu-operator" SECONDARY_COLOR
     file compOpres as "<<deployment>>\nk8s-component-operator" SECONDARY_COLOR
-    file k8setcdres as "<<deployment>>\nk8s-etcd" SECONDARY_COLOR
 
     rectangle servdisc as "k8s-service-discovery" <<$cloudogu>>
     rectangle k8scesctl as "k8s-ces-control" <<$cloudogu>>
     rectangle dogurator as "k8s-dogu-operator" <<$cloudogu>>
     rectangle setup as "k8s-ces-setup" <<$cloudogu>>
     rectangle compOp as "k8s-component-operator" <<$cloudogu>>
-    rectangle k8setcd as "k8s-etcd" <<$cloudogu>>
+
+    rectangle configuration  <<$k8s>> #white {
+      file configmaps
+      file secrets
+    }
+
+    note as confignote #ffffee
+      Contains Dogu-Config & Global-Config
+    end note
+
+    confignote .u. configuration
   }
 
   rectangle "longhorn" as namespacelonghorn <<$k8s>> #white {
@@ -55,33 +64,32 @@ actor admin
 'styling
 creds1 -[hidden]d- creds2
 
-github .. setupres 
+github .. setupres
 admin <-- github : fetches from Github
 admin --> setupres : patches with Namespaces\n for installation
 admin --> setupjson : installs
 admin --> credentials : installs
 setupjson -> setup
-servdisc -d-> cert : creates
-servdisc <-> k8setcd : reads/writes \nselected certificate
+servdisc --> cert : creates
+servdisc <--> configuration : reads/writes \nselected certificate
 setup -r-> compOpres : installs
 compOp --d-> doguratorres : installs
 compOp --d-> servdiscres : installs
 compOp --d-> k8scesctlres : installs
-compOp --d-> k8setcdres : installs
 
-setupres --> setup         : creates
-compOpres --> compOp       : creates
-doguratorres --> dogurator : creates
-servdiscres  --> servdisc  : creates
-k8scesctlres --> k8scesctl : creates
-k8setcdres --> k8setcd     : creates
+setupres --> setup           : creates
+setup --> configuration      : creates
+dogurator -d-> configuration : creates
+compOpres --> compOp         : creates
+doguratorres -d-> dogurator  : creates
+servdiscres  -d-> servdisc   : creates
+k8scesctlres -d-> k8scesctl  : creates
 
 setupres     <-.- publicimgs
 compOpres    <-.- publicimgs
 doguratorres <-.- publicimgs
 servdiscres  <-.- publicimgs
 k8scesctlres <-.- publicimgs
-k8setcdres   <-.- publicimgs
 
 
 legend right

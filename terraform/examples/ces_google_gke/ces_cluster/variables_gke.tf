@@ -1,5 +1,5 @@
 variable "kubernetes_version" {
-  default = "1.29"
+  default = "1.31"
 }
 
 variable "node_pool_name" {

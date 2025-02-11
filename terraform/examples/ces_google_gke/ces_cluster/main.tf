@@ -4,14 +4,14 @@ locals {
   gke_module_ca_certificate = base64decode(module.google_gke.ca_certificate)
 
   kubernetes_version = "1.31"
-  node_count           = 3
+  node_count         = 3
 
   dogu_registry_url_schema = "default"
-  dogu_registry_endpoint = "https://dogu.cloudogu.com/api/v2/dogus"
+  dogu_registry_endpoint   = "https://dogu.cloudogu.com/api/v2/dogus"
 
-  helm_registry_schema = "oci"
-  helm_registry_host   = "registry.cloudogu.com"
-  helm_registry_plain_http = false
+  helm_registry_schema       = "oci"
+  helm_registry_host         = "registry.cloudogu.com"
+  helm_registry_plain_http   = false
   helm_registry_insecure_tls = false
 
   setup_chart_namespace = "k8s"
@@ -33,6 +33,8 @@ module "kubeconfig_generator" {
 module "google_gke" {
   source             = "../../../google_gke"
   cluster_name       = var.cluster_name
+  source       = "../../../google_gke"
+  cluster_name = var.cluster_name
   kubernetes_version = local.kubernetes_version
   idp_enabled        = false
 

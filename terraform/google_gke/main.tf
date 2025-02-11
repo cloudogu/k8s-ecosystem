@@ -9,6 +9,7 @@ terraform {
 
 resource "google_container_cluster" "default" {
   name               = var.cluster_name
+  resource_labels    = var.cluster_labels
   min_master_version = var.kubernetes_version
 
   # We can't create a cluster with no node pool defined, but we want to only use
@@ -66,6 +67,8 @@ resource "google_container_node_pool" "default_node_pool" {
     machine_type = var.machine_type
     disk_type    = var.disk_type
     disk_size_gb = var.disk_size
+
+    resource_labels = var.node_pool_labels
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",

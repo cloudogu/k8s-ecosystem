@@ -4,20 +4,20 @@ variable "kubernetes_version" {
 
 variable "node_pool_name" {
   description = "The name of the node pool."
-  type = string
-  default = "default"
+  type        = string
+  default     = "default"
 }
 
 variable "preemptible" {
   description = "Decide if the cluster should use preemtible VMs which are cheaper but will be replaced within 24h."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "spot_vms" {
   description = "Decide if the cluster should provision spot VMs. This drastically reduces costs but gives no availability guarantees."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "machine_type" {
@@ -25,18 +25,30 @@ variable "machine_type" {
 }
 
 variable "disk_type" {
-  type = string
+  type    = string
   default = "pd-balanced" // (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced')
 }
 
 variable "disk_size" {
   description = "Disk size in GB"
-  type = string
-  default = 40
+  type        = string
+  default     = 40
 }
 
 variable "cluster_name" {
   type = string
+}
+
+variable "cluster_labels" {
+  description = "labels for the GKE cluster, which will be propagated to all underlying resources like GCE disks."
+  type = map(string)
+  default = {}
+}
+
+variable "node_pool_labels" {
+  description = "labels for the GKE node pool, which will be propagated to all underlying resources like GCE disks."
+  type = map(string)
+  default = {}
 }
 
 variable "idp_enabled" {
@@ -45,6 +57,6 @@ variable "idp_enabled" {
 }
 
 variable "node_count" {
-  type = number
+  type        = number
   description = "The amount of nodes."
 }

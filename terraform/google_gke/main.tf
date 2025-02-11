@@ -18,9 +18,11 @@ resource "google_container_cluster" "default" {
   initial_node_count       = 1
 
   // activate Dataplane 2, so that cilium can be used for network policies
-  datapath_provider                        = "ADVANCED_DATAPATH"
-  enable_cilium_clusterwide_network_policy = true
+  // FIXME: currently, mn-ces does not support cilium as network policies seem to be more restricitve there
+  //datapath_provider                        = "ADVANCED_DATAPATH"
+  //enable_cilium_clusterwide_network_policy = true
   cost_management_config {
+    // with this flag, we can see costs based on k8s-namespaces, labels etc.
     enabled = true
   }
 
@@ -49,6 +51,7 @@ resource "google_container_cluster" "default" {
     enabled = var.idp_enabled
   }
 
+  // needed since provider version 6 if terraform should also destroy the cluster later
   deletion_protection = false
 }
 

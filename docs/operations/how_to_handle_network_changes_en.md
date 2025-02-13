@@ -31,7 +31,9 @@ local registry and the associated SSL certificates.
 The configuration of the FQDN in the CES can be changed as follows:
 
 ```bash
-kubectl exec -it etcd-client -- etcdctl set /config/_global/fqdn your.new.fqdn
+kubectl get configmap global-config -n ecosystem -o yaml | \
+yq eval '.data["config.yaml"] |= (from_yaml | .fqdn = "your.new.fqdn" | to_yaml)' - | \
+kubectl apply -f -
 ```
 
 If necessary, own DNS or `/etc/hosts` entries must also be adjusted to the new FQDN.
@@ -44,14 +46,32 @@ self-generated or from an external certificate issuer.
 1. create [SSL template](https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
 2. generate certificate and key (
    see [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
-3. exchange certificates and all intermediate certificates in `etcd
-    1. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "YOUR CERTIFICATES HERE"`.
-    2. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "YOUR CERTIFICATE KEY"`
-4. restart all dogus
+3. exchange certificates and all intermediate certificates in `global-config` configmap
+   1.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
+   kubectl apply -f -
+   ```
+   2.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
+   kubectl apply -f -
+   ```4. restart all dogus
 
 ### Certificates from external issuers
 
-1. replace certificates and all intermediate certificates in `etcd
-    1. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "YOUR CERTIFICATES HERE"`
-    2. `kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "YOUR CERTIFICATE KEY"`
-2. restart all dogus
+1. replace certificates and all intermediate certificates in `global-config` configmap
+   1.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
+   kubectl apply -f -
+   ```
+   2.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
+   kubectl apply -f -
+   ```2. restart all dogus

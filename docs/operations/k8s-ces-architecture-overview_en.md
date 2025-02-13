@@ -26,8 +26,6 @@ The following Kubernetes components are used in the Kubernetes Cloudogu EcoSyste
   - manages TLS certificates of the Cloudogu EcoSystem
 - [k8s-component-operator](https://github.com/cloudogu/k8s-component-operator)
   - manages K8s CES components in terms of their installation, update and uninstallation.
-- [k8s-etcd](https://github.com/cloudogu/k8s-etcd)
-  - provides the local Cloudogu EcoSystem Registry
 - [k8s-ces-control](https://github.com/cloudogu/k8s-ces-control)
   - provides protected access to administration operations with the Admin-Dogu
 - [k8s-host-change](https://github.com/cloudogu/k8s-host-change)
@@ -54,7 +52,7 @@ Against the backdrop of Kubernetes, not only the setup process changes. Most of 
 
 The process to a Dogu installation with its involved components is illustrated in the following diagram:
 
-[](figures/k8s-dogu-operator-dogu-installation_en.png)
+
 ![PlantUML diagram: k8s-dogu-operator interprets the dogu.json and creates all necessary Kubernetes resources from it](figures/k8s-dogu-operator-dogu-installation_en.png
 "k8s-dogu-operator interprets dogu.json and creates all necessary Kubernetes resources from it.")
 

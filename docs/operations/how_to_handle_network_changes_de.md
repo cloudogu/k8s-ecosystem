@@ -34,7 +34,9 @@ den FQDN in der lokalen Registry und den zugehörigen SSL-Zertifikaten anzupasse
 Die Konfiguration des FQDN im CES kann wie folgt geändert werden:
 
 ```bash
-kubectl exec -it etcd-client -- etcdctl set /config/_global/fqdn your.new.fqdn
+kubectl get configmap global-config -n ecosystem -o yaml | \
+yq eval '.data["config.yaml"] |= (from_yaml | .fqdn = "your.new.fqdn" | to_yaml)' - | \
+kubectl apply -f -
 ```
 
 Gegebenenfalls müssen auch die eigenen DNS- oder `/etc/hosts`-Einträge an den neuen FQDN angepasst werden.
@@ -47,14 +49,34 @@ generiert oder von einem externen Zertifikatsaussteller stammen.
 1. [SSL-Vorlage] erstellen (https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
 2. Zertifikat und Schlüssel generieren (
    siehe [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
-3. Zertifikate und alle Zwischenzertifikate in `etcd` austauschen
-    1. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "IHRE ZERTIFIKATE HIER"`.
-    2. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "IHR ZERTIFIKATSSCHLÜSSEL"`
+3. Zertifikate und alle Zwischenzertifikate in `global-config` Configmap austauschen
+   1. 
+      ```
+      kubectl get configmap global-config -n ecosystem -o yaml | \
+      yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
+      kubectl apply -f -
+      ```
+   2.
+      ```
+      kubectl get configmap global-config -n ecosystem -o yaml | \
+      yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
+      kubectl apply -f -
+      ```
 4. Starten Sie alle Dogus neu.
 
 ### Zertifikate von externen Herausgebern
 
-1. Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `etcd
-    1. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.crt "IHRE ZERTIFIKATE"`
-    2. kubectl exec -it etcd-client -- etcdctl set /config/_global/certificate/server.key "IHR ZERTIFIKATSCHLÜSSEL"`
+1. Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `global-config` Configmap
+   1.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
+   kubectl apply -f -
+   ```
+   2.
+   ```
+   kubectl get configmap global-config -n ecosystem -o yaml | \
+   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
+   kubectl apply -f -
+   ```
 2. Starten Sie alle Dogus neu.

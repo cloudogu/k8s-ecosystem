@@ -4,6 +4,22 @@ variable "gardener_kube_config_path" {
   default     = "gardener_kubeconfig.yaml"
 }
 
+variable "gardener_cluster_ca_certificate" {
+  description = "Base64 encoded certificate of the gardener cluster"
+  type = string
+}
+
+variable "gardener_token" {
+  description = "Access token for the gardener cluster"
+  sensitive = true
+  type = string
+}
+
+variable "gardener_host" {
+  description = "Host of the gardener cluster"
+  type = string
+}
+
 #variable shoot_name {
 #  description = "The name of the shoot cluster"
 #  type = string

@@ -18,15 +18,30 @@ terraform {
   }
 }
 
+module "kubeconfig_generator" {
+  source                 = "../../kubeconfig_generator"
+  cluster_name           = var.garden_namespace
+  access_token           = var.gardener_token
+  cluster_ca_certificate = var.gardener_cluster_ca_certificate
+  cluster_endpoint       = "https://${var.gardener_host}"
+
+  kubeconfig_path = "${path.module}/${var.gardener_kube_config_path}"
+}
+
 provider "kubectl" {
-  alias       = "kubectl-garden"
-  config_path = var.gardener_kube_config_path
+  alias                  = "kubectl-garden"
+  config_path            = var.gardener_kube_config_path
+  cluster_ca_certificate = base64decode(var.gardener_cluster_ca_certificate)
+  token                  = var.gardener_token
+  host                   = "https://${var.gardener_host}"
+  load_config_file       = false
 }
 
 provider "kubernetes" {
-  alias = "kubernetes_garden"
-
-  config_path = var.gardener_kube_config_path
+  alias                  = "kubernetes_garden"
+  cluster_ca_certificate = base64decode(var.gardener_cluster_ca_certificate)
+  token                  = var.gardener_token
+  host                   = "https://${var.gardener_host}"
 }
 
 provider "kubernetes" {
@@ -76,7 +91,7 @@ locals {
 
 resource "null_resource" "binary_trigger" {
   triggers = {
-    gardenctl = var.gardenctl_source
+    gardenctl   = var.gardenctl_source
     gardenlogin = var.gardenlogin_source
   }
 }
@@ -103,7 +118,7 @@ module "plusserver" {
     kubectl = kubectl.kubectl-garden
   }
 
-  depends_on = [null_resource.download_garden_bins]
+  depends_on = [null_resource.download_garden_bins, module.kubeconfig_generator]
 
   source                    = "../../plusserver"
   gardener_kube_config_path = var.gardener_kube_config_path

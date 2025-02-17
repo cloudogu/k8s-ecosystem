@@ -20,9 +20,9 @@ getShootKubeConfig() {
 
   local server token gardenerCaCertFile
   server=$(grep server "${gardenKubeConfig}" | sed 's/server://g' | awk '{$1=$1};1')
-  token=$(grep -A 1 token "${gardenKubeConfig}" | tail -1 | awk '{$1=$1};1')
+  token=$(grep token "${gardenKubeConfig}" | sed 's/token://g' | awk '{$1=$1};1')
   gardenerCaCertFile="/tmp/gardenerCaCert"
-  grep -A 1 certificate-authority-data "${gardenKubeConfig}" | tail -1 | awk '{$1=$1};1' | base64 --decode > "${gardenerCaCertFile}"
+  grep certificate-authority-data "${gardenKubeConfig}" | sed 's/certificate-authority-data://g' | awk '{$1=$1};1' | base64 --decode > "${gardenerCaCertFile}"
 
   local response
   response=$(curl -s "${server}/apis/core.gardener.cloud/v1beta1/namespaces/${gardenNamespace}/shoots/${shootName}/adminkubeconfig" -H "Authorization: Bearer ${token}" --cacert "${gardenerCaCertFile}" -X POST -d '{"spec":{"expirationSeconds":600}}' -H "Content-Type: application/json")

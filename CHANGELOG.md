@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v5.0.0] - 2025-02-17
+
+- **Breaking:** remove `google_gke_http_cron` terraform module
+
 ### Added
 - [#105] Terraform module to create Keycloak-Clients for CES delegated authentication
 - [#105] Example for using the new `keycloak-client-module` with a CES in GKE
@@ -22,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#107] remove default bucket configuration in `ces_google_gke` example
 
 ### Removed
-- [#107] remove `google_gke_http_cron` terraform module
+- [#107] **Breaking:** remove `google_gke_http_cron` terraform module
   - use the new `google_gke_scaling_scheduler` module
 
 ## [v4.1.2] - 2024-12-19

@@ -51,35 +51,29 @@ rectangle "Cluster" as cluster <<$k8s>> {
         benötigte Komponenten
       end note
 
-      rectangle k8setcdpod as "k8s-etcd Pod" {
-        database k8setcd as "CES Registry" #white
+      rectangle configuration  <<$k8s>> #white {
+        file configmaps
+        file secrets
       }
 
-      note as k8setcdnote #ffffee
-        die reguläre CES-
-        Key-Value-Datenbank
-        (speichert nicht den
-        K8s-Cluster-State)
+      note as confignote #ffffee
+        Enthält Dogu-Config & Global-Config
       end note
 
       rectangle otherpod as "weitere Komponenten" <<$cloudogu>> {
       }
 
-      k8setcdnote .. k8setcd
+      confignote .. configuration
       setupnote .. setup
       doguratornote .. dogurator
       k8scesctlnote .. k8scesctl
       servdiscnote .. servdisc
     }
 
-'    setup    -[hidden]r-> k8setcd
-'    setup    -[hidden]r- dogurator
-'    setup    -[hidden]d- servdisc
-'    servdisc -[hidden]r- k8scesctl
-    setup -l-> k8setcd
-    dogurator -u-> k8setcd
-    servdisc -d-> k8setcd
-    k8scesctl -u-> k8setcd
+    setup -l-> configuration
+    dogurator -u-> configuration
+    servdisc -d-> configuration
+    k8scesctl -u-> configuration
 
     rectangle dogus #white {
 
@@ -120,7 +114,6 @@ rectangle kubectlces as "kubectl-ces-plugin" <<$cloudogu>>
 
 'styling
 dogus -[hidden]u- mgrComps
-'k8setcdpod -----[hidden]r-> mgrComps
 scm -[hidden]d-> redmine
 nginxingress -[hidden]d-> postgresql
 redmine -[hidden]-> scm

@@ -89,6 +89,32 @@ resource "kubectl_manifest" "cluster" {
         "workers" = [
           {
             "systemComponents" = {
+              "allow" = true
+            }
+            "cri" = {
+              "name" = "containerd"
+            }
+            "machine" = {
+              "architecture" = "amd64"
+              "image"        = {
+                "name"    = var.image_name
+                "version" = var.image_version
+              }
+              "type" = var.machine_type
+            }
+            "maxSurge" = 1
+            "maximum"  = 1
+            "minimum"  = 0
+            "name"     = "worker-system"
+            "volume"   = {
+              "size" = var.node_size
+            }
+            "zones" = [
+              "az1",
+            ]
+          },
+          {
+            "systemComponents" = {
               "allow" = false
             }
             "cri" = {

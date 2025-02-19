@@ -94,7 +94,8 @@ resource "kubectl_manifest" "cluster" {
             "taints" = [
               {
                 "effect" = "NoSchedule"
-                "key" = "node.gardener.cloud/critical-component=true"
+                "key" = "node.gardener.cloud/critical-component"
+                "value" = "true"
               }
             ]
             "cri" = {

@@ -96,6 +96,11 @@ variable "machine_type" {
   default = "SCS-4V-8"
 }
 
+variable "system_machine_type" {
+  type = string
+  default = "SCS-2V-4"
+}
+
 variable "max_surge" {
   description = "Maximum node surge"
   type = number
@@ -117,6 +122,11 @@ variable "node_max" {
 variable "node_size" {
   type = string
   default = "50Gi"
+}
+
+variable "system_node_size" {
+  type = string
+  default = "20Gi"
 }
 
 variable cluster_removable {

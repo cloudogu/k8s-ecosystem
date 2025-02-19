@@ -91,6 +91,12 @@ resource "kubectl_manifest" "cluster" {
             "systemComponents" = {
               "allow" = true
             }
+            "taints" = [
+              {
+                "effect" = "NoSchedule"
+                "key" = "node.gardener.cloud/critical-component=true"
+              }
+            ]
             "cri" = {
               "name" = "containerd"
             }
@@ -100,14 +106,14 @@ resource "kubectl_manifest" "cluster" {
                 "name"    = var.image_name
                 "version" = var.image_version
               }
-              "type" = var.machine_type
+              "type" = var.system_machine_type
             }
             "maxSurge" = 1
             "maximum"  = 1
-            "minimum"  = 0
+            "minimum"  = 1
             "name"     = "worker-system"
             "volume"   = {
-              "size" = var.node_size
+              "size" = var.system_node_size
             }
             "zones" = [
               "az1",
@@ -131,7 +137,7 @@ resource "kubectl_manifest" "cluster" {
             "maxSurge" = var.max_surge
             "maximum"  = var.node_max
             "minimum"  = var.node_min
-            "name"     = "worker-smbnr"
+            "name"     = "worker-ces"
             "volume"   = {
               "size" = var.node_size
             }

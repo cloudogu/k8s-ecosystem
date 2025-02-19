@@ -88,6 +88,9 @@ resource "kubectl_manifest" "cluster" {
         "type"    = "openstack"
         "workers" = [
           {
+            systemComponents = {
+              allow = false
+            }
             "cri" = {
               "name" = "containerd"
             }

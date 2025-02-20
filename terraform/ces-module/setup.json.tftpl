@@ -49,5 +49,17 @@
     "groupAttributeName": "",
     "groupAttributeDescription": "",
     "groupAttributeMember": ""
+  },
+  "registryConfig": {
+    "cas": {
+      "oidc": ${cas_oidc_config}
+    }
+  },
+  "registryConfigEncrypted": {
+    "cas": {
+      "oidc": {
+        "client_secret": "${cas_oidc_client_secret}"
+      }
+    }
   }
 }

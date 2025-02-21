@@ -1,8 +1,3 @@
-variable "gardener_host" {
-  description = "Host of the gardener cluster"
-  type = string
-}
-
 #variable shoot_name {
 #  description = "The name of the shoot cluster"
 #  type = string

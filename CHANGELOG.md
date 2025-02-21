@@ -7,12 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [#104] Terraform module to create a cluster in plusserver pske
+
+## [v5.0.0] - 2025-02-17
+
+- **Breaking:** remove `google_gke_http_cron` terraform module
+
+### Added
 - [#105] Terraform module to create Keycloak-Clients for CES delegated authentication
 - [#105] Example for using the new `keycloak-client-module` with a CES in GKE
-- [#104] Terraform module to create a cluster in plusserver pske
+- [#107] add `google_gke_scaling_scheduler` terraform module
+- [#107] add support for labels in `gke_cluster` module
+- [#107] set 1.31 as default k8s version in terraform `gke_cluster`
+- [#107] activate cost_control in terraform `gke_cluster`
 
 ### Changed
 - [#105] Extend Terraform CES module to configure CAS delegated authentication
+- [#107] simplify `ces_google_gke` example
+- [#107] use new `google_gke_scaling_scheduler` in `ces_google_gke` example
+- [#107] update providers in `ces_google_gke` example
+- [#107] remove default bucket configuration in `ces_google_gke` example
+
+### Removed
+- [#107] **Breaking:** remove `google_gke_http_cron` terraform module
+  - use the new `google_gke_scaling_scheduler` module
 
 ## [v4.1.2] - 2024-12-19
 ### Added

@@ -9,7 +9,7 @@ To test this scenario, the "split_dns" folder has been prepared for the followin
 - Make sure to create the files split_dns/certs/fullchain.pem and split_dns/certs/privkey.pem:
   - Get fullchain.pem from the cluster
     - `kubectl get secret ecosystem-certificate -n ecosystem -o json | jq -r '.data."tls.crt"' | base64 --decode`
-  - Get privkey.pem from the etcd in the cluster:
+  - Get privkey.pem from the cluster:
     - `kubectl get secret ecosystem-certificate -n ecosystem -o json | jq -r '.data."tls.key"' | base64 --decode`
 - Run the nginx reverse proxy for this test via `docker-compose up` inside the split_dns folder
 - Now you should be able to use the k8s-CES via the "splittest.local" FQDN

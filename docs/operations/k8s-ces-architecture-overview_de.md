@@ -26,8 +26,6 @@ Die folgenden Kubernetes-Komponenten kommen im Kubernetes Cloudogu EcoSystem zum
   - verwaltet TLS-Zertifikate des Cloudogu EcoSystem
 - [k8s-component-operator](https://github.com/cloudogu/k8s-component-operator)
   - verwaltet K8s-CES-Komponenten hinsichtlich ihrer Installation, Aktualisierung und Deinstallation
-- [k8s-etcd](https://github.com/cloudogu/k8s-etcd)
-  - stellt die lokale Cloudogu EcoSystem Registry zur Verfügung
 - [k8s-ces-control](https://github.com/cloudogu/k8s-ces-control)
   - ermöglicht geschützten Zugang zu Administrationsvorgängen mit dem Admin-Dogu
 - [k8s-host-change](https://github.com/cloudogu/k8s-host-change)

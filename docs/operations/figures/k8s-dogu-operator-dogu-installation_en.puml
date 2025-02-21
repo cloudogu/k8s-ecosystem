@@ -40,7 +40,16 @@ rectangle "Cluster" as cluster <<$k8s>> {
         file secretres as "<<secret>>\nprivate key" SECONDARY_COLOR
     }
 
-    rectangle k8setcd as "k8s-etcd" <<$cloudogu>>
+    rectangle configuration  <<$k8s>> #white {
+      file configmaps
+      file secrets
+    }
+
+    note as confignote #ffffee
+      Contains Dogu-Config & Global-Config
+    end note
+
+    confignote .u. configuration
   }
 }
 
@@ -59,8 +68,8 @@ installMgr -> resourceGen  : "provides dogu.json"
 dogurator <-.-d- credentials  : "uses Credentials to\naccess registry services"
 deploymentres <-.-d- credentials  : "uses credentials to\naccess registry services"
 resourceGen =====> doguResources : "creates resources \n according dogu.json \n(upsert)"
-installMgr ----> k8setcd    : "writes dogu.json and \n(if required) configuration \nvalues into registry"
-servdisc -> k8setcd        : "watches for changes"
+installMgr ----> configuration    : "writes dogu.json and \n(if required) configuration \nvalues into registry"
+servdisc --> configuration        : "watches for changes"
 deploymentres <----- doguimage : "pulls Container Image \n(Credentials used as Docker \nSecret in pod template)"
 servdisc --> svcres : "watches service changes"
 

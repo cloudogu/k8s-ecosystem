@@ -35,14 +35,23 @@ rectangle "Cluster" as cluster <<$k8s>> {
     file k8scesctlres as "<<deployment>>\nk8s-ces-control" SECONDARY_COLOR
     file doguratorres as "<<deployment>>\nk8s-dogu-operator" SECONDARY_COLOR
     file compOpres as "<<deployment>>\nk8s-component-operator" SECONDARY_COLOR
-    file k8setcdres as "<<deployment>>\nk8s-etcd" SECONDARY_COLOR
 
     rectangle servdisc as "k8s-service-discovery" <<$cloudogu>>
     rectangle k8scesctl as "k8s-ces-control" <<$cloudogu>>
     rectangle dogurator as "k8s-dogu-operator" <<$cloudogu>>
     rectangle setup as "k8s-ces-setup" <<$cloudogu>>
     rectangle compOp as "k8s-component-operator" <<$cloudogu>>
-    rectangle k8setcd as "k8s-etcd" <<$cloudogu>>
+
+    rectangle configuration  <<$k8s>> #white {
+      file configmaps
+      file secrets
+    }
+
+    note as confignote #ffffee
+      Enthält Dogu-Config & Global-Config
+    end note
+
+    confignote .u. configuration
   }
 
   rectangle "longhorn" as namespacelonghorn <<$k8s>> #white {
@@ -55,33 +64,32 @@ actor admin
 'styling
 creds1 -[hidden]d- creds2
 
-github .. setupres 
+github .. setupres
 admin <-- github : bezieht von Github
 admin --> setupres : patched mit Namespaces und installiert
 admin --> setupjson : installiert
 admin --> credentials : installiert
 setupjson -> setup
-servdisc -d-> cert : erzeugt
-servdisc <-> k8setcd : schreibt/liest \ngewähltes Zertifikat
+servdisc --> cert : erzeugt
+servdisc <--> configuration : schreibt/liest \ngewähltes Zertifikat
 setup -r-> compOpres : installiert
 compOp --d-> doguratorres : installiert
 compOp --d-> servdiscres : installiert
 compOp --d-> k8scesctlres : installiert
-compOp --d-> k8setcdres : installiert
 
-setupres --> setup         : erzeugt
-compOpres --> compOp       : erzeugt
-doguratorres --> dogurator : erzeugt
-servdiscres  --> servdisc  : erzeugt
-k8scesctlres --> k8scesctl : erzeugt
-k8setcdres --> k8setcd     : erzeugt
+setupres --> setup           : erzeugt
+setup --> configuration      : erzeugt
+dogurator -d-> configuration : erzeugt
+compOpres --> compOp         : erzeugt
+doguratorres -d-> dogurator  : erzeugt
+servdiscres  -d-> servdisc   : erzeugt
+k8scesctlres -d-> k8scesctl  : erzeugt
 
 setupres     <-.- publicimgs
 compOpres    <-.- publicimgs
 doguratorres <-.- publicimgs
 servdiscres  <-.- publicimgs
 k8scesctlres <-.- publicimgs
-k8setcdres   <-.- publicimgs
 
 
 legend right

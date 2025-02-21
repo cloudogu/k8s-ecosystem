@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#105] Terraform module to create Keycloak-Clients for CES delegated authentication
 - [#105] Example for using the new `keycloak-client-module` with a CES in GKE
+- [#104] Terraform module to create a cluster in plusserver pske
+
 ### Changed
 - [#105] Extend Terraform CES module to configure CAS delegated authentication
 

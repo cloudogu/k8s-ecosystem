@@ -1,4 +1,0 @@
-// For further configuration it is useful to use a separate variable file instead of the file for the secrets.
-garden_namespace = ""
-secret_binding_name = ""
-project_id= ""

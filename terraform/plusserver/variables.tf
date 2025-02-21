@@ -4,6 +4,22 @@ variable "gardener_kube_config_path" {
   default = "./gardener_kubeconfig.yaml"
 }
 
+variable "gardener_cluster_ca_certificate" {
+  description = "Base64 encoded certificate of the gardener cluster"
+  type = string
+}
+
+variable "gardener_token" {
+  description = "Access token for the gardener cluster"
+  sensitive = true
+  type = string
+}
+
+variable "gardener_host" {
+  description = "Host of the gardener cluster"
+  type = string
+}
+
 #variable shoot_name {
 #  description = "The name of the shoot cluster"
 #  type = string
@@ -45,7 +61,7 @@ variable hibernation_schedules {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.30.7"
+  default = "1.31.4"
 }
 
 variable "networking_type" {
@@ -56,7 +72,7 @@ variable "networking_type" {
 variable "purpose" {
   description = "Plusserver purpose. Valid values are evaluation, development, testing and production"
   type = string
-  default = "evaluation"
+  default = "development"
 }
 
 variable cloud_profile_name {

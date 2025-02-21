@@ -114,11 +114,17 @@ variable "machine_type" {
 
 variable "system_machine_type" {
   type = string
-  default = "SCS-2V-4"
+  default = "SCS-1V-2"
 }
 
 variable "max_surge" {
   description = "Maximum node surge"
+  type = number
+  default = 1
+}
+
+variable "system_max_surge" {
+  description = "Maximum node surge of the system pool"
   type = number
   default = 1
 }
@@ -131,6 +137,18 @@ variable "node_min" {
 
 variable "node_max" {
   description = "Maximum node count"
+  type = number
+  default = 4
+}
+
+variable "system_node_min" {
+  description = "Minimum node count of the system pool"
+  type = number
+  default = 3
+}
+
+variable "system_node_max" {
+  description = "Maximum node count of the system pool"
   type = number
   default = 4
 }

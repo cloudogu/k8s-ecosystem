@@ -109,9 +109,9 @@ resource "kubectl_manifest" "cluster" {
               }
               "type" = var.system_machine_type
             }
-            "maxSurge" = 1
-            "maximum"  = 1
-            "minimum"  = 1
+            "maxSurge" = var.system_max_surge
+            "maximum"  = var.system_node_max
+            "minimum"  = var.system_node_min
             "name"     = "worker-system"
             "volume"   = {
               "size" = var.system_node_size

@@ -10,10 +10,6 @@ terraform {
   }
 }
 
-#provider "kubectl" {
-#  config_path = var.gardener_kube_config_path
-#}
-
 resource "random_string" "id" {
   length  = 8
   special = false
@@ -154,18 +150,3 @@ resource "kubectl_manifest" "cluster" {
     }
   })
 }
-
-
-// This does not work correctly because you get always 401 return even on non existent values and
-// this might not be necessary because the api is not in the shoot cluster.
-#locals {
-#  clusterName="${var.shoot_name_prefix}${random_string.id.result}"
-#}
-#
-#resource "null_resource" "wait_for_shoot_api" {
-#  provisioner "local-exec" {
-#    command = "./waitForShootAPI.sh ${local.clusterName} ${var.project_id}"
-#  }
-#
-#  depends_on = [kubectl_manifest.cluster]
-#}

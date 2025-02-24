@@ -21,8 +21,7 @@ resource "kubectl_manifest" "cluster" {
     "apiVersion" = "core.gardener.cloud/v1beta1"
     "kind"       = "Shoot"
     "metadata"   = {
-      "name"      = "${var.shoot_name_prefix}${random_string.id.result}"
-      //"name"      = var.shoot_name != "" ? var.shoot_name : "${var.shoot_name_prefix}${random_string.id.result}"
+      "name"      = var.shoot_name != "" ? var.shoot_name : "${var.shoot_name_prefix}${random_string.id.result}"
       "namespace" = var.garden_namespace
       "annotations" : {
         "confirmation.gardener.cloud/deletion" : var.cluster_removable

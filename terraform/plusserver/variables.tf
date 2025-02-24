@@ -1,8 +1,8 @@
-#variable shoot_name {
-#  description = "The name of the shoot cluster"
-#  type = string
-#  default = ""
-#}
+variable shoot_name {
+  description = "The name of the shoot cluster"
+  type = string
+  default = ""
+}
 
 variable garden_namespace {
   description = "The namespace for the shoot resource. See kubeconfig."

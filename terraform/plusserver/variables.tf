@@ -146,3 +146,9 @@ variable cluster_removable {
   type = string
   default = "true"
 }
+
+variable shoot_labels {
+  description = "Labels added to the shoot resource in the gardener cluster"
+  type = map(string)
+  default = {}
+}

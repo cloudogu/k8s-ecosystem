@@ -26,6 +26,7 @@ resource "kubectl_manifest" "cluster" {
       "annotations" : {
         "confirmation.gardener.cloud/deletion" : var.cluster_removable
       }
+      labels = var.shoot_labels
     }
     "spec" = {
       "addons" = {

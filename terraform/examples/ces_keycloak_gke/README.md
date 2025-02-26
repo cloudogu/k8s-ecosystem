@@ -41,7 +41,7 @@ Use the `terraform.tfvars.template` file to create `terraform.tfvars` and set yo
 If you wish for example to create the cluster in another region you should template `terraform.tfvars.template`.
 See `variables.tf` for possibilities.
 
-Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
+Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensitive information like passwords in it.
 
 If you wish to know more about how to use the keycloak-module, have a look at its [Readme](../../keycloak-client-module).
 

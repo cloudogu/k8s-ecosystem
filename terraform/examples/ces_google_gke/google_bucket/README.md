@@ -7,7 +7,7 @@ Set terraform variable `create_bucket` and `bucket_name`. If you wish to encrypt
 If you wish for example to create the cluster in another region you should template `vars.tfvars.template`.
 See `variables.tf` for possibilities.
 
-Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensible information like passwords in it.
+Use the `secretVars.tfvars.template` file to create `secretVars.tfvars` and set sensitive information like passwords in it.
 
 Use the `var.gcs.tfbackend.template` file to create `var.gcs.tfbackend` and set information where to store your terraform state. For further information look [here](../google_bucket/README.md).
 This is needed when multiple people want to be able to modify the same terraform resources. If you wish to store your state locally, remove the line `backend "gcs" {}` from `main.tf`.

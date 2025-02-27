@@ -28,7 +28,3 @@ additionalValues.yaml
 **/.terraform
 /terraform/examples/ces_google_gke/ces_cluster/kubeconfig
 /terraform/examples/ces_google_gke/secretVars.tfvars
-
-terraform/examples/ces_plusserver/secrets/gardener_kubeconfig.yaml
-terraform/examples/ces_plusserver/secrets/secretVars.tfvars
-terraform/examples/ces_plusserver/secrets/access_token.json

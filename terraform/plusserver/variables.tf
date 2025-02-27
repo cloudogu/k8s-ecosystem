@@ -44,7 +44,7 @@ variable "kubernetes_version" {
 
 variable "networking_type" {
   type = string
-  default = "cilium"
+  default = "calico"
 }
 
 variable "purpose" {

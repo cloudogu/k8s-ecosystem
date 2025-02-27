@@ -133,7 +133,7 @@ variable "system_node_max" {
 
 variable "node_size" {
   type = string
-  default = "50Gi"
+  default = "40Gi"
 }
 
 variable "system_node_size" {

@@ -36,7 +36,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-vars.tfvars
-
 gardener_kubeconfig.yaml
 shoot_kubeconfig.yaml

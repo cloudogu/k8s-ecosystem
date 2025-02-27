@@ -126,9 +126,7 @@ resource "kubectl_manifest" "cluster" {
             "volume"   = {
               "size" = var.node_size
             }
-            "zones" = [
-              "az1",
-            ]
+            "zones" = var.zones
           },
         ]
       }

@@ -65,6 +65,12 @@ variable "region" {
   default = "prod1"
 }
 
+variable "zones" {
+  description = "Zone of the region"
+  type = list(string)
+  default = ["az1"]
+}
+
 variable "secret_binding_name" {
   description = "Secret binding. Depends on the selected cloud profile. See https://dashboard.prod.gardener.get-cloud.io/namespace/<your garden>/secrets"
   type = string

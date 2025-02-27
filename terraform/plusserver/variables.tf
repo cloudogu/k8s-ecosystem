@@ -122,13 +122,13 @@ variable "node_max" {
 variable "system_node_min" {
   description = "Minimum node count of the system pool"
   type = number
-  default = 3
+  default = 1
 }
 
 variable "system_node_max" {
   description = "Maximum node count of the system pool"
   type = number
-  default = 4
+  default = 1
 }
 
 variable "node_size" {

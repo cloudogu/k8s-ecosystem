@@ -1,5 +1,5 @@
 variable shoot_name {
-  description = "The name of the shoot cluster. If empty a name will be generated."
+  description = "The name of the shoot cluster. If empty, a name will be generated."
   type = string
   default = ""
 }

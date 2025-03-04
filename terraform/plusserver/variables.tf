@@ -102,25 +102,25 @@ variable "system_machine_type" {
 }
 
 variable "max_surge" {
-  description = "Maximum node surge"
+  description = "Maximum node surge. This is the maximum number of machines that are created during an update."
   type = number
   default = 1
 }
 
 variable "system_max_surge" {
-  description = "Maximum node surge of the system pool"
+  description = "Maximum node surge of the system pool. This is the maximum number of machines that are created during an update."
   type = number
   default = 1
 }
 
 variable "node_min" {
-  description = "Minimum node count"
+  description = "Minimum node count. Plusserver uses auto scaling. If you don't want to use this feature just set the same value for min and max."
   type = number
   default = 3
 }
 
 variable "node_max" {
-  description = "Maximum node count"
+  description = "Maximum node count. Plusserver uses auto scaling. If you don't want to use this feature just set the same value for min and max."
   type = number
   default = 4
 }

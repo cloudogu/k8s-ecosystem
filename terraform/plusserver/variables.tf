@@ -1,5 +1,5 @@
 variable shoot_name {
-  description = "The name of the shoot cluster"
+  description = "The name of the shoot cluster. If empty a name will be generated."
   type = string
   default = ""
 }
@@ -10,7 +10,7 @@ variable garden_namespace {
 }
 
 variable shoot_name_prefix {
-  description = "The prefix name of the shoot resource. It will be concatenated with a uuid"
+  description = "The prefix name of the shoot resource if shoot_name will be generated. It will be concatenated with a uuid"
   type = string
   default = "ces-"
 }

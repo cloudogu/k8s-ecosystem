@@ -4,12 +4,16 @@ resource "random_string" "id" {
   upper   = false
 }
 
+locals {
+  shoot_name = var.shoot_name != "" ? var.shoot_name : "${var.shoot_name_prefix}${random_string.id.result}"
+}
+
 resource "kubectl_manifest" "cluster" {
   yaml_body = yamlencode({
     "apiVersion" = "core.gardener.cloud/v1beta1"
     "kind"       = "Shoot"
     "metadata"   = {
-      "name"      = var.shoot_name != "" ? var.shoot_name : "${var.shoot_name_prefix}${random_string.id.result}"
+      "name"      = local.shoot_name
       "namespace" = var.garden_namespace
       "annotations" : {
         "confirmation.gardener.cloud/deletion" : var.cluster_removable

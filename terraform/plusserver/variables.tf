@@ -54,7 +54,7 @@ variable "purpose" {
 }
 
 variable cloud_profile_name {
-  description = "Use cloud profile"
+  description = "Used cloud profile"
   type = string
   default = "pluscloudopen"
 }

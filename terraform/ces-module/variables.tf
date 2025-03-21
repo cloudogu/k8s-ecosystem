@@ -11,7 +11,7 @@ variable "setup_chart_namespace" {
 }
 
 variable "setup_timeout" {
-  description = "The helm timout of the setup in seconds"
+  description = "The helm timeout of the setup in seconds"
   type        = number
   default     = 300
 }

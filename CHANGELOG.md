@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.2.0] - 2025-03-21
+### Added
+- [#112] Add Helm timeout to terraform setup
+
 ## [v5.1.0] - 2025-03-05
 
 ### Added

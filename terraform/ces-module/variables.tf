@@ -10,6 +10,12 @@ variable "setup_chart_namespace" {
   default     = "k8s"
 }
 
+variable "setup_timeout" {
+  description = "The helm timout of the setup in seconds"
+  type        = number
+  default     = 300
+}
+
 variable "ces_namespace" {
   description = "The namespace for the CES"
   type        = string
@@ -72,14 +78,14 @@ variable "dogus" {
 
 variable "component_operator_crd_chart" {
   description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
-  type = string
-  default = "k8s/k8s-component-operator-crd:latest"
+  type        = string
+  default     = "k8s/k8s-component-operator-crd:latest"
 }
 
 variable "component_operator_chart" {
   description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
-  type = string
-  default = "k8s/k8s-component-operator:latest"
+  type        = string
+  default     = "k8s/k8s-component-operator:latest"
 }
 
 variable "components" {
@@ -179,34 +185,34 @@ variable "is_setup_applied_matching_resource" {
 variable "cas_oidc_config" {
   description = "Configuration of an external cas oidc authenticator. For more information [see here](https://docs.cloudogu.com/en/docs/dogus/cas/operations/Configure_OIDC_Provider/)"
   type = object({
-    enabled                 = string
-    discovery_uri           = string
-    client_id               = string
-    display_name            = string
-    optional                = string
-    scopes                  = list(string)
-    attribute_mapping       = string
-    principal_attribute     = string
-    allowed_groups          = list(string)
+    enabled             = string
+    discovery_uri       = string
+    client_id           = string
+    display_name        = string
+    optional            = string
+    scopes = list(string)
+    attribute_mapping   = string
+    principal_attribute = string
+    allowed_groups = list(string)
     initial_admin_usernames = list(string)
   })
   default = {
-    enabled                 = false
-    discovery_uri           = ""
-    client_id               = ""
-    display_name            = "CAS oidc provider"
-    optional                = false
-    scopes                  = ["openid", "email", "profile", "groups"]
-    attribute_mapping       = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
-    principal_attribute     = "preferred_username"
-    allowed_groups          = []
+    enabled             = false
+    discovery_uri       = ""
+    client_id           = ""
+    display_name        = "CAS oidc provider"
+    optional            = false
+    scopes = ["openid", "email", "profile", "groups"]
+    attribute_mapping   = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
+    principal_attribute = "preferred_username"
+    allowed_groups = []
     initial_admin_usernames = []
   }
 }
 
 variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
-  type = string
-  sensitive = true
-  default = ""
+  type        = string
+  sensitive   = true
+  default     = ""
 }

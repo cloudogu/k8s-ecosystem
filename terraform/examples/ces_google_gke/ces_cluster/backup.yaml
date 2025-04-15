@@ -1,0 +1,6 @@
+apiVersion: k8s.cloudogu.com/v1
+kind: Backup
+metadata:
+  name: backup-eu-west
+spec:
+  provider: velero

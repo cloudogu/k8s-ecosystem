@@ -82,3 +82,9 @@ variable "ces_fqdn" {
   type        = string
   default     = ""
 }
+
+variable "mn-migration-backup-sa" {
+  description = "Service account for creating a velero backup"
+  type        = string
+  default     = ""
+}

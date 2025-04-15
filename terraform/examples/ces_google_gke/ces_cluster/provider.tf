@@ -23,6 +23,10 @@ provider "kubernetes" {
   host                   = local.gke_module_host
   token                  = local.gke_module_token
   cluster_ca_certificate = local.gke_module_ca_certificate
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "gke-gcloud-auth-plugin"
+  }
 }
 
 provider "helm" {

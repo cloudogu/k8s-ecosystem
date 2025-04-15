@@ -30,7 +30,7 @@ And assign the necessary Roles (only one role can be added each time with this c
 
 Get that service account and save it to `secrets/gcp_sa.json`:
 
-`gcloud iam service-accounts keys create secrets/gcp_sa.json --iam-account=$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com`
+`gcloud iam service-accounts keys create secrets/gcp_sa.json --iam-account=@548426901697-compute@developer.gserviceaccount.com`
 
 # General configuration
 Use the `terraform.tfvars.template` file to create `terraform.tfvars` and set your GCP project, cluster name and credentials in it.
@@ -53,15 +53,15 @@ Init with `terraform init -backend-config=var.gcs.template` (backend-config is n
 > The cluster itself has to be created firstly to determine if the setup deployment is necessary.
 
 Check plan
-`terraform plan -var-file=secretVars.tfvars -target=module.google_gke`
+`terraform plan -var-file=terraform.tfvars -target=module.google_gke`
 
 Apply with
-`terraform apply -var-file=secretVars.tfvars -target=module.google_gke`
+`terraform apply -var-file=terraform.tfvars -target=module.google_gke`
 
 This takes up to 15 minutes.
 
 Create the remaining resources, including the CES setup
-`terraform apply -var-file=secretVars.tfvars -var-file=vars.tfvars`
+`terraform apply -var-file=terraform.tfvars`
 
 # Get kubeconfig
 

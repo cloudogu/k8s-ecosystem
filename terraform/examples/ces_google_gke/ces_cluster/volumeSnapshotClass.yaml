@@ -1,0 +1,17 @@
+apiVersion: snapshot.storage.k8s.io/v1
+deletionPolicy: Delete
+driver: pd.csi.storage.gke.io
+kind: VolumeSnapshotClass
+metadata:
+  labels:
+    app: ces
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: k8s-velero
+    k8s.cloudogu.com/component.name: k8s-velero
+    k8s.cloudogu.com/component.version: 5.0.2-9
+    k8s.cloudogu.com/part-of: backup
+    velero.io/csi-volumesnapshot-class: "true"
+  name: default-snapshot-vsc
+parameters:
+  labels: team=ces,purpose=mn-migration-backup,backup=mn-migration-backup
+  storage-locations: europe-west3

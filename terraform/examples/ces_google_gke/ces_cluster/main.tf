@@ -15,9 +15,21 @@ locals {
   helm_registry_insecure_tls = false
 
   setup_chart_namespace = "k8s"
-  setup_chart_version   = "3.3.1"
+  setup_chart_version   = "3.4.1"
 
   resource_patches_file = "resource_patches.yaml"
+}
+
+resource "kubernetes_secret" "velero_backup_target_secret" {
+  metadata {
+    name      = "velero-backup-target"
+    namespace = "ecosystem"
+  }
+  data = {
+    cloud = file(var.mn-migration-backup-sa)
+  }
+
+  type = "Opaque"
 }
 
 module "kubeconfig_generator" {
@@ -33,8 +45,6 @@ module "kubeconfig_generator" {
 module "google_gke" {
   source             = "../../../google_gke"
   cluster_name       = var.cluster_name
-  source       = "../../../google_gke"
-  cluster_name = var.cluster_name
   kubernetes_version = local.kubernetes_version
   idp_enabled        = false
 

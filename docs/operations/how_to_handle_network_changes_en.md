@@ -46,17 +46,16 @@ self-generated or from an external certificate issuer.
 If a self-generated certificate is used (`global-config` -> `certificate/type` : `selfsigned`), the `k8s-service-discovery` generates a new certificate as soon as the FQDN is adjusted.
 The `k8s-service-discovery` writes the self-generated certificate to the `ecosystem-certificate` secret.
 This secret is reconciled by `k8s-service-discovery` and the certificate is written to the `global-config`.
-1. restart all Dogus.
+After adjusting the FQDN and the certificate, all Dogus must be restarted.
 
 ### Certificates from external issuers
 
 Replace certificates and all intermediate certificates in `ecosystem-certificate` Secret
 1. delete the secret `k delete secret ecosystem-certificate -n ecosystem`.
 2. create the secret with a new certificate
-```
-k create secret generic ecosystem-certificate \
---from-literal=tls.crt="YOUR CERTIFICATES HERE’ \
---from-literal=tls.key="YOUR CERTIFICATE KEY’
-```
-
+    ```bash
+    kubectl create secret generic ecosystem-certificate \
+    --from-literal=tls.crt="YOUR CERTIFICATES HERE" \
+    --from-literal=tls.key="YOUR CERTIFICATE KEY"
+    ```
 3. restart all Dogus.

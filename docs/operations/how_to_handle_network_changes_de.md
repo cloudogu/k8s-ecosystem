@@ -49,17 +49,16 @@ generiert oder von einem externen Zertifikatsaussteller stammen.
 Falls ein selbst erstelltes Zertifikat verwendet wird (`global-config` -> `certificate/type` : `selfsigned`), generiert die `k8s-service-discovery` ein neues Zertifikat, sobald der FQDN angepasst wird.
 Die `k8s-service-discovery` schreibt das selbst generierte Zertifikat in das Secret `ecosystem-certificate`.
 Dieses Secret wird von `k8s-service-discovery` reconciled und das Zertifikat in die `global-config` geschrieben.
-1. Starten Sie alle Dogus neu.
+Nach der Anpassung der FQDN und des Zertifikats müssen alle Dogus neu gestartet werden.
 
 ### Zertifikate von externen Herausgebern
 
 Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `ecosystem-certificate` Secret
 1. Löschen des Secrets `k delete secret ecosystem-certificate -n ecosystem`
-2. Erstellen des Secrets mit neuem Zertifikat 
-```
-k create secret generic ecosystem-certificate \
---from-literal=tls.crt="IHRE ZERTIFIKATE HIER" \
---from-literal=tls.key="IHR ZERTIFIKATSSCHLÜSSEL"
-```
-
+2. Erstellen des Secrets mit neuem Zertifikat
+    ```bash
+    kubectl create secret generic ecosystem-certificate \
+    --from-literal=tls.crt="IHRE ZERTIFIKATE HIER" \
+    --from-literal=tls.key="IHR ZERTIFIKATSSCHLÜSSEL"
+    ```
 3. Starten Sie alle Dogus neu.

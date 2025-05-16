@@ -43,35 +43,22 @@ self-generated or from an external certificate issuer.
 
 ### Self-generated SSL certificates
 
-1. create [SSL template](https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
-2. generate certificate and key (
-   see [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
-3. exchange certificates and all intermediate certificates in `global-config` configmap
-   1.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
-   kubectl apply -f -
-   ```
-   2.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
-   kubectl apply -f -
-   ```4. restart all dogus
+If a self-generated certificate is used (`global-config` -> `certificate/type` : `selfsigned`), the `k8s-service-discovery` generates a new certificate as soon as the FQDN is adjusted.
+The `k8s-service-discovery` writes the self-generated certificate to the `ecosystem-certificate` secret.
+This secret is reconciled by `k8s-service-discovery` and the certificate is written to the `global-config`.
+1. restart all Dogus.
 
 ### Certificates from external issuers
 
-1. replace certificates and all intermediate certificates in `global-config` configmap
-   1.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
-   kubectl apply -f -
-   ```
-   2.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
-   kubectl apply -f -
-   ```2. restart all dogus
+Replace certificates and all intermediate certificates in `ecosystem-certificate` Secret
+1. delete the secret `k delete secret ecosystem-certificate -n ecosystem`.
+2. create the secret with a new certificate
+```
+k create secret generic ecosystem-certificate \
+--from-literal=tls.crt="YOUR CERTIFICATES HERE’ \
+--from-literal=tls.key="YOUR CERTIFICATE KEY’
+```
+
+3. restart all Dogus.
+
+Translated with DeepL.com (free version)

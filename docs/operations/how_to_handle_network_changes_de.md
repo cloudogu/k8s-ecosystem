@@ -46,37 +46,20 @@ generiert oder von einem externen Zertifikatsaussteller stammen.
 
 ### Selbst erstellte SSL-Zertifikate
 
-1. [SSL-Vorlage] erstellen (https://github.com/cloudogu/ces-commons/blob/develop/deb/etc/ces/ssl.conf.tpl)
-2. Zertifikat und Schlüssel generieren (
-   siehe [`ces-commons`](https://github.com/cloudogu/ces-commons/blob/develop/deb/usr/local/bin/ssl.sh))
-3. Zertifikate und alle Zwischenzertifikate in `global-config` Configmap austauschen
-   1. 
-      ```
-      kubectl get configmap global-config -n ecosystem -o yaml | \
-      yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
-      kubectl apply -f -
-      ```
-   2.
-      ```
-      kubectl get configmap global-config -n ecosystem -o yaml | \
-      yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
-      kubectl apply -f -
-      ```
-4. Starten Sie alle Dogus neu.
+Falls ein selbst erstelltes Zertifikat verwendet wird (`global-config` -> `certificate/type` : `selfsigned`), generiert die `k8s-service-discovery` ein neues Zertifikat, sobald der FQDN angepasst wird.
+Die `k8s-service-discovery` schreibt das selbst generierte Zertifikat in das Secret `ecosystem-certificate`.
+Dieses Secret wird von `k8s-service-discovery` reconciled und das Zertifikat in die `global-config` geschrieben.
+1. Starten Sie alle Dogus neu.
 
 ### Zertifikate von externen Herausgebern
 
-1. Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `global-config` Configmap
-   1.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.crt"] = "IHRE ZERTIFIKATE HIER" | to_yaml)' - | \
-   kubectl apply -f -
-   ```
-   2.
-   ```
-   kubectl get configmap global-config -n ecosystem -o yaml | \
-   yq eval '.data["config.yaml"] |= (from_yaml | .certificate["server.key"] = "IHR ZERTIFIKATSSCHLÜSSEL" | to_yaml)' - | \
-   kubectl apply -f -
-   ```
-2. Starten Sie alle Dogus neu.
+Ersetzen Sie Zertifikate und alle Zwischenzertifikate in `ecosystem-certificate` Secret
+1. Löschen des Secrets `k delete secret ecosystem-certificate -n ecosystem`
+2. Erstellen des Secrets mit neuem Zertifikat 
+```
+k create secret generic ecosystem-certificate \
+--from-literal=tls.crt="IHRE ZERTIFIKATE HIER" \
+--from-literal=tls.key="IHR ZERTIFIKATSSCHLÜSSEL"
+```
+
+3. Starten Sie alle Dogus neu.

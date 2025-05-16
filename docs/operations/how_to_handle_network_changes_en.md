@@ -60,5 +60,3 @@ k create secret generic ecosystem-certificate \
 ```
 
 3. restart all Dogus.
-
-Translated with DeepL.com (free version)

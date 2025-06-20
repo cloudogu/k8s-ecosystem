@@ -30,3 +30,4 @@ additionalValues.yaml
 /terraform/examples/ces_google_gke/secretVars.tfvars
 
 /terraform/plusserver/gardener_kubeconfig.yaml
+/terraform/examples/ces_sys11/.kubeconfig

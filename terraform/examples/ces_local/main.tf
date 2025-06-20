@@ -2,11 +2,11 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = ">=2.13.2"
+      version = "~> 3"
     }
   }
 
-  required_version = ">= 1.7.0"
+  required_version = ">= 1.10.0"
 }
 
 provider kubernetes {
@@ -14,15 +14,15 @@ provider kubernetes {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = var.local_kube_config_path
   }
 
-  registry {
+  registries = [{
     url      = "${var.helm_registry_schema}://${var.helm_registry_host}"
     username = var.helm_registry_username
     password = base64decode(var.helm_registry_password)
-  }
+  }]
 }
 
 module "ces" {

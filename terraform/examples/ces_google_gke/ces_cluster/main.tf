@@ -33,8 +33,6 @@ module "kubeconfig_generator" {
 module "google_gke" {
   source             = "../../../google_gke"
   cluster_name       = var.cluster_name
-  source       = "../../../google_gke"
-  cluster_name = var.cluster_name
   kubernetes_version = local.kubernetes_version
   idp_enabled        = false
 

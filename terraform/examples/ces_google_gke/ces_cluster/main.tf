@@ -15,7 +15,7 @@ locals {
   helm_registry_insecure_tls = false
 
   setup_chart_namespace = "k8s"
-  setup_chart_version   = "3.3.1"
+  setup_chart_version   = "4.1.1"
 
   resource_patches_file = "resource_patches.yaml"
 }
@@ -33,8 +33,6 @@ module "kubeconfig_generator" {
 module "google_gke" {
   source             = "../../../google_gke"
   cluster_name       = var.cluster_name
-  source       = "../../../google_gke"
-  cluster_name = var.cluster_name
   kubernetes_version = local.kubernetes_version
   idp_enabled        = false
 

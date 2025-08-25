@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- [116] update setup version to latest to avoid no longer available bitnami images
+- [#116] Update setup version to latest to avoid no longer available bitnami images
+- [#115] Updated documentation for ecosystem certificate
 
 ## [v5.2.0] - 2025-03-21
 ### Added

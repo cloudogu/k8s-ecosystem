@@ -52,7 +52,7 @@ module "ces" {
   source = "../../ces-module"
 
   # Configure CES installation options
-  setup_chart_version   = "3.3.1"
+  setup_chart_version   = "4.1.1"
   setup_chart_namespace = "k8s"
   ces_fqdn              = google_compute_address.ip_address.address
   ces_admin_username    = var.ces_admin_username

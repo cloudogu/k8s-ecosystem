@@ -20,7 +20,7 @@ module "ces" {
   kubernetes_cluster_ca_certificate = base64decode(my_cluster.kube_config.cluster_ca_certificate)
 
   # Configure CES installation options
-  setup_chart_version   = "1.0.1"
+  setup_chart_version   = "4.1.1"
   setup_chart_namespace = "k8s"
   ces_fqdn              = "ces.local"
   ces_admin_password    = "test123"

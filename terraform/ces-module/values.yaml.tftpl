@@ -1,3 +1,9 @@
+setup:
+  env:
+    fqdnFromLoadBalancerWaitTimeoutMins: "${setup_fqdn_from_loadbalancer_wait_timeout_mins}"
+    doguWaitTimeoutSecs: "${setup_dogu_wait_timeout_secs}"
+    componentWaitTimeoutSecs: "${setup_component_wait_timeout_secs}"
+
 # Chart of the component operator
 # Format: <namespace>/<name>:<version>
 component_operator_crd_chart: "${component_operator_crd_chart}"

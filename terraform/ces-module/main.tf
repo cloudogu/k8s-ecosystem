@@ -16,7 +16,7 @@ terraform {
 locals {
   split_fqdn = split(".", var.ces_fqdn)
   # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
-  topLevelDomain = var.ces_fqdn != "" ? "${element( split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}": "k3ces.local"
+  topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
   splitComponentNamespaces = [
     for componentStr in var.components :
     {
@@ -35,15 +35,15 @@ locals {
     }
   ]
   cas_oidc_config_formatted = {
-    enabled = var.cas_oidc_config.enabled
-    discovery_uri = var.cas_oidc_config.discovery_uri
-    client_id = var.cas_oidc_config.client_id
-    display_name = var.cas_oidc_config.display_name
-    optional = var.cas_oidc_config.optional
-    scopes = join(" ", var.cas_oidc_config.scopes)
-    principal_attribute = var.cas_oidc_config.principal_attribute
-    attribute_mapping = var.cas_oidc_config.attribute_mapping
-    allowed_groups = join(", ", var.cas_oidc_config.allowed_groups)
+    enabled                 = var.cas_oidc_config.enabled
+    discovery_uri           = var.cas_oidc_config.discovery_uri
+    client_id               = var.cas_oidc_config.client_id
+    display_name            = var.cas_oidc_config.display_name
+    optional                = var.cas_oidc_config.optional
+    scopes                  = join(" ", var.cas_oidc_config.scopes)
+    principal_attribute     = var.cas_oidc_config.principal_attribute
+    attribute_mapping       = var.cas_oidc_config.attribute_mapping
+    allowed_groups          = join(", ", var.cas_oidc_config.allowed_groups)
     initial_admin_usernames = join(", ", var.cas_oidc_config.initial_admin_usernames)
   }
 }
@@ -61,20 +61,23 @@ resource "helm_release" "k8s-ces-setup" {
   values = [
     templatefile("${path.module}/values.yaml.tftpl",
       {
-        "dogu_registry_endpoint"       = var.dogu_registry_endpoint
-        "dogu_registry_username"       = var.dogu_registry_username
-        "dogu_registry_password"       = var.dogu_registry_password
-        "dogu_registry_url_schema"     = var.dogu_registry_url_schema
-        "container_registry_secrets"   = var.container_registry_secrets
-        "helm_registry_host"           = var.helm_registry_host
-        "helm_registry_schema"         = var.helm_registry_schema
-        "helm_registry_plain_http"     = var.helm_registry_plain_http
-        "helm_registry_insecure_tls"   = var.helm_registry_insecure_tls
-        "helm_registry_username"       = var.helm_registry_username
-        "helm_registry_password"       = var.helm_registry_password
-        "component_operator_chart"     = var.component_operator_chart
-        "component_operator_crd_chart" = var.component_operator_crd_chart
-        "components"                   = local.parsedComponents
+        "setup_fqdn_from_loadbalancer_wait_timeout_mins" = var.setup_fqdn_from_loadbalancer_wait_timeout_mins
+        "setup_dogu_wait_timeout_secs"                   = var.setup_dogu_wait_timeout_secs
+        "setup_component_wait_timeout_secs"              = var.setup_component_wait_timeout_secs
+        "dogu_registry_endpoint"                         = var.dogu_registry_endpoint
+        "dogu_registry_username"                         = var.dogu_registry_username
+        "dogu_registry_password"                         = var.dogu_registry_password
+        "dogu_registry_url_schema"                       = var.dogu_registry_url_schema
+        "container_registry_secrets"                     = var.container_registry_secrets
+        "helm_registry_host"                             = var.helm_registry_host
+        "helm_registry_schema"                           = var.helm_registry_schema
+        "helm_registry_plain_http"                       = var.helm_registry_plain_http
+        "helm_registry_insecure_tls"                     = var.helm_registry_insecure_tls
+        "helm_registry_username"                         = var.helm_registry_username
+        "helm_registry_password"                         = var.helm_registry_password
+        "component_operator_chart"                       = var.component_operator_chart
+        "component_operator_crd_chart"                   = var.component_operator_crd_chart
+        "components"                                     = local.parsedComponents
         "setup_json" = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {
@@ -88,13 +91,13 @@ resource "helm_release" "k8s-ces-setup" {
             "domain"          = local.topLevelDomain
             "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
             "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
-            "certificateKey" = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
+            "certificateKey"  = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
 
-            "cas_oidc_config" = jsonencode(local.cas_oidc_config_formatted)
+            "cas_oidc_config"        = jsonencode(local.cas_oidc_config_formatted)
             "cas_oidc_client_secret" = var.cas_oidc_client_secret
           }
         ))
         "resource_patches" = var.resource_patches
-      })
+    })
   ]
 }

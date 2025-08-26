@@ -16,6 +16,24 @@ variable "setup_timeout" {
   default     = 300
 }
 
+variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
+  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
+  type        = number
+  default     = 15
+}
+
+variable "setup_dogu_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each dogu in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "setup_component_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each component in seconds"
+  type        = number
+  default     = 1800
+}
+
 variable "ces_namespace" {
   description = "The namespace for the CES"
   type        = string

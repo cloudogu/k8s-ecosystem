@@ -1,7 +1,7 @@
 variable "setup_chart_version" {
   description = "The version of the k8s-ces-setup chart"
   type        = string
-  default     = "3.0.4"
+  default     = "4.1.1"
 }
 
 variable "setup_chart_namespace" {
@@ -14,6 +14,24 @@ variable "setup_timeout" {
   description = "The helm timeout of the setup in seconds"
   type        = number
   default     = 300
+}
+
+variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
+  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
+  type        = number
+  default     = 15
+}
+
+variable "setup_dogu_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each dogu in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "setup_component_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each component in seconds"
+  type        = number
+  default     = 1800
 }
 
 variable "ces_namespace" {

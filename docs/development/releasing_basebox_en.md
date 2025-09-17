@@ -15,6 +15,6 @@
     - Add an entry "Public/allUsers" and grant it "Reader" permissions
 6. Adapt the Vagrantfile to match the newly released box
     - Adapt the basebox_version (to `vX.Y.Z`)
-    - Adapt the basebox_checksum (get it via `sha256sum image/build/basebox-mn-v1.0.0.box`)
+    - Adapt the basebox_checksum (get it via `sha256sum image/dev/build/basebox-mn-v1.0.0.box`)
     - Test it via `vagrant up`
     - Commit and push

@@ -33,12 +33,12 @@ variable "fqdn" {
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:8762f7e74e4d64d72fceb5f70682e6b069932deedb4949c6975d0f0fe0a91be3"
+  default = "sha256:c3514bf0056180d09376462a7a1b4f213c1d6e8ea67fae5c25099c6fd3d8274b"
 }
 
 variable "iso_url" {
   type    = string
-  default = "https://releases.ubuntu.com/noble/ubuntu-24.04-live-server-amd64.iso"
+  default = "https://releases.ubuntu.com/noble/ubuntu-24.04.3-live-server-amd64.iso"
 }
 
 variable "main_k3s_port" {

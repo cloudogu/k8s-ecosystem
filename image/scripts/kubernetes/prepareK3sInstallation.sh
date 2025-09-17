@@ -3,9 +3,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-k3sVersion=v1.30.1+k3s1
-k3sBinarySHA256SUM=39a5057fb49bf576a45c32ef3ef63bff448252d4d25c6c41b8dcc5e48e278bf5
-k3sImagesTarSHA256SUM=ac278be0ae99f496f8c561b84698a53fc51567bb882fab1357b0a0eb741c006d
+k3sVersion=v1.33.4+k3s1
+k3sBinarySHA256SUM=10da34c350ab8a02e4513a6021046db9e9afecc31bae77419bc6444cbd7b1400
+k3sImagesTarSHA256SUM=3d694301e8534783990b41d6a6ef251cd72348af7219473d08f676e2689200ac
 
 echo "Downloading k3s binary..."
 wget -q "https://github.com/k3s-io/k3s/releases/download/${k3sVersion}/k3s"

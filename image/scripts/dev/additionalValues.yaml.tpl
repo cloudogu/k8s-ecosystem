@@ -1,31 +1,25 @@
-container_registry_secrets:
-  - url: CONTAINER_REGISTRY_SECRET_URL
-    username: "CONTAINER_REGISTRY_SECRET_USERNAME"
-    password: "CONTAINER_REGISTRY_SECRET_PASSWORD" # Base64 encoded password
-dogu_registry_secret:
-  url: DOGU_REGISTRY_SECRET_URL
-  urlschema: "DOGU_REGISTRY_SECRET_URL_SCHEMA"
-  username: "DOGU_REGISTRY_SECRET_USERNAME"
-  password: "DOGU_REGISTRY_SECRET_PASSWORD" # Base64 encoded password
-helm_registry_secret:
-  host: HELM_REGISTRY_SECRET_HOST
-  schema: HELM_REGISTRY_SECRET_SCHEMA
-  plainHttp: "HELM_REGISTRY_SECRET_PLAIN_HTTP"
-  username: "HELM_REGISTRY_SECRET_USERNAME"
-  password: "HELM_REGISTRY_SECRET_PASSWORD" # Base64 encoded password
+skipPreconditionValidation: false
 components:
-  k8s-longhorn:
-    version: latest
-    helmRepositoryNamespace: k8s
-    deployNamespace: longhorn-system
+  k8s-blueprint-operator-crd:
+    version: "1.3.0-dev.1757922891"
+    helmNamespace: "testing/k8s"
+  k8s-blueprint-operator:
+    version: "2.8.0-dev.1758811397"
+    helmNamespace: "testing/k8s"
     valuesYamlOverwrite: |
-      longhorn:
-        defaultSettings:
-          storageOverProvisioningPercentage: 1000
-        persistence:
-          defaultClassReplicaCount: DEFAULTCLASSREPLICACOUNT
-        csi:
-          attacherReplicaCount: DEFAULTCLASSREPLICACOUNT
-          provisionerReplicaCount: DEFAULTCLASSREPLICACOUNT
-          resizerReplicaCount: DEFAULTCLASSREPLICACOUNT
-          snapshotterReplicaCount: DEFAULTCLASSREPLICACOUNT
+      healthConfig:
+        components:
+          required:
+            - name: k8s-dogu-operator
+            - name: k8s-service-discovery
+  k8s-service-discovery:
+    version: "3.0.0"
+    helmNamespace: "k8s"
+    valuesYamlOverwrite: |
+      loadBalancerService:
+        internalTrafficPolicy: Cluster
+        externalTrafficPolicy: Cluster
+backup:
+  enabled: false
+monitoring:
+  enabled: false

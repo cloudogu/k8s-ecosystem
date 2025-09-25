@@ -102,17 +102,18 @@ Vagrant.configure("2") do |config|
         end
 
         # create a copy of the setup.json file and replace the certificate settings
-        require 'json'
-        setup = JSON.parse(File.read("image/scripts/dev/setup.json"))
-        setup["naming"]["certificateType"] = "external"
-        setup["naming"]["certificate"] = File.read(".vagrant/certs/k3ces.local.crt")
-        setup["naming"]["certificateKey"] = File.read(".vagrant/certs/k3ces.local.key")
-        File.write("image/scripts/dev/.setup.json", JSON.pretty_generate(setup))
+        # TODO certificate-settings
+#         require 'json'
+#         setup = JSON.parse(File.read("image/scripts/dev/setup.json"))
+#         setup["naming"]["certificateType"] = "external"
+#         setup["naming"]["certificate"] = File.read(".vagrant/certs/k3ces.local.crt")
+#         setup["naming"]["certificateKey"] = File.read(".vagrant/certs/k3ces.local.key")
+#         File.write("image/scripts/dev/.setup.json", JSON.pretty_generate(setup))
       else
         # remove geneated .setup.json file, if an old version exists
-        if File.file?("image/scripts/dev/.setup.json")
-          File.delete("image/scripts/dev/.setup.json")
-        end
+#         if File.file?("image/scripts/dev/.setup.json")
+#           File.delete("image/scripts/dev/.setup.json")
+#         end
       end
     end
 
@@ -196,8 +197,8 @@ Vagrant.configure("2") do |config|
       else
         trigger.only_on = "main"
       end
-      trigger.info = "Install ces-setup"
-      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh",
+      trigger.info = "Install ecosystem"
+      trigger.run = { path: "image/scripts/dev/installEcosystem.sh",
                       args: [ces_namespace,
                             helm_repository_namespace,
                             dogu_registry_username,

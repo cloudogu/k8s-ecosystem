@@ -24,6 +24,9 @@ default_class_replica_count="${16:-2}"
 BLUEPRINT_YAML_TEMPLATE="image/scripts/dev/blueprint.yaml.tpl"
 BLUEPRINT_YAML="image/scripts/dev/.blueprint.yaml"
 
+CERTIFICATE_CRT_FILE=".vagrant/certs/k3ces.local.crt"
+CERTIFICATE_KEY_FILE=".vagrant/certs/k3ces.local.key"
+
 # --- Helpers (clean-code / duplication reduction) ---
 
 # decode_if_b64 VAR -> echoes decoded value if input is base64, otherwise original
@@ -151,6 +154,21 @@ ensure_initial_admin_password_secret() {
     --from-literal=admin-password="adminpw"
 }
 
+# ensure_certificate_secret <namespace>
+ensure_certificate_secret() {
+  local namespace="$1"
+
+  if [ ! -f "$CERTIFICATE_CRT_FILE" ] || [ ! -f "$CERTIFICATE_KEY_FILE" ]; then
+    echo "no certificate file found. certificate will be self-signed"
+    return 0
+  fi
+
+  ensure_secret "ecosystem-certificate" generic "$namespace" \
+    --from-file=tls.crt="$CERTIFICATE_CRT_FILE" \
+    --from-file=tls.key="$CERTIFICATE_KEY_FILE"
+}
+
+
 # Build and apply a .blueprint.yaml with latest dogu versions based on blueprint.yaml.tpl
 # Requires: jq, yq (v4+), curl
 patch_and_apply_blueprint_with_latest_versions() {
@@ -179,6 +197,15 @@ patch_and_apply_blueprint_with_latest_versions() {
     idx=$((idx+1))
   done
 
+  # If both certificate files exist, patch certificate/type to external
+  if [ -f "$CERTIFICATE_CRT_FILE" ] || [ -f "$CERTIFICATE_KEY_FILE" ]; then
+    echo "certificate found. setting certificate/type to external"
+    if [ -n "$yq_expr" ]; then
+      yq_expr+=" | "
+    fi
+    yq_expr+="(.spec.blueprint.config.global[] | select(.key == \"certificate/type\") | .value) = \"external\""
+  fi
+
   # If we have updates, apply them; otherwise copy template
   if [ -n "$yq_expr" ]; then
     yq eval "$yq_expr" "$BLUEPRINT_YAML_TEMPLATE" > "$BLUEPRINT_YAML"
@@ -194,6 +221,7 @@ patch_and_apply_blueprint_with_latest_versions() {
 # Apply the setup resources to the current namespace.
 applyResources() {
   echo "Applying resources for setup..."
+
   # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
   login_registry_helm "registry.cloudogu.com" "${helm_registry_username}" "${helm_registry_password}"
 
@@ -221,6 +249,9 @@ applyResources() {
     "${CES_NAMESPACE}"
 
   ensure_initial_admin_password_secret \
+    "${CES_NAMESPACE}"
+
+  ensure_certificate_secret \
     "${CES_NAMESPACE}"
 
   # Install Longhorn

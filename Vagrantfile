@@ -101,19 +101,14 @@ Vagrant.configure("2") do |config|
           `mkcert -cert-file .vagrant/certs/k3ces.local.crt -key-file .vagrant/certs/k3ces.local.key #{fqdn} #{main_k3s_ip_address}`
         end
 
-        # create a copy of the setup.json file and replace the certificate settings
-        # TODO certificate-settings
-#         require 'json'
-#         setup = JSON.parse(File.read("image/scripts/dev/setup.json"))
-#         setup["naming"]["certificateType"] = "external"
-#         setup["naming"]["certificate"] = File.read(".vagrant/certs/k3ces.local.crt")
-#         setup["naming"]["certificateKey"] = File.read(".vagrant/certs/k3ces.local.key")
-#         File.write("image/scripts/dev/.setup.json", JSON.pretty_generate(setup))
       else
-        # remove geneated .setup.json file, if an old version exists
-#         if File.file?("image/scripts/dev/.setup.json")
-#           File.delete("image/scripts/dev/.setup.json")
-#         end
+        # remove geneated certificate files
+        if File.file?(".vagrant/certs/k3ces.local.crt")
+          File.delete(".vagrant/certs/k3ces.local.crt")
+        end
+        if File.file?(".vagrant/certs/k3ces.local.key")
+          File.delete(".vagrant/certs/k3ces.local.key")
+        end
       end
     end
 

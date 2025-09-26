@@ -25,6 +25,8 @@ spec:
               name: initial-admin-password
             sensitive: true
       global:
+        - key: "certificate/type"
+          value: "selfsigned"
         - key: "domain"
           value: "k3ces.local"
         - key: "password-policy/min_length"

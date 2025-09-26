@@ -1,4 +1,7 @@
 skipPreconditionValidation: false
+loadbalancer-annotations:
+  foo: "bar"
+  test: hellooo
 components:
   k8s-blueprint-operator-crd:
     version: "1.3.0-dev.1757922891"
@@ -6,19 +9,28 @@ components:
   k8s-blueprint-operator:
     version: "2.8.0-dev.1758811397"
     helmNamespace: "testing/k8s"
-    valuesYamlOverwrite: |
+    valuesObject:
       healthConfig:
         components:
           required:
             - name: k8s-dogu-operator
             - name: k8s-service-discovery
   k8s-service-discovery:
-    version: "3.0.0"
-    helmNamespace: "k8s"
-    valuesYamlOverwrite: |
+    valuesObject:
       loadBalancerService:
         internalTrafficPolicy: Cluster
         externalTrafficPolicy: Cluster
+  k8s-ces-assets:
+    version: "1.0.0-dev.1758872534"
+    helmNamespace: "testing/k8s"
+  k8s-ces-gateway:
+    version: "1.0.0-dev.1758872440"
+    helmNamespace: "testing/k8s"
+    valuesObject:
+      ingress-nginx:
+        controller:
+          networkPolicy:
+            enabled: true
 backup:
   enabled: false
 monitoring:

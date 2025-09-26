@@ -144,6 +144,13 @@ ensure_helm_registry_config() {
   echo "Helm registry config ensured (ConfigMap + Secret)."
 }
 
+# ensure_initial_admin_password_secret <namespace>
+ensure_initial_admin_password_secret() {
+  local namespace="$1"
+  ensure_secret "initial-admin-password" generic "$namespace" \
+    --from-literal=admin-password="adminpw"
+}
+
 # Build and apply a .blueprint.yaml with latest dogu versions based on blueprint.yaml.tpl
 # Requires: jq, yq (v4+), curl
 patch_and_apply_blueprint_with_latest_versions() {
@@ -213,6 +220,9 @@ applyResources() {
     "${helm_registry_password}" \
     "${CES_NAMESPACE}"
 
+  ensure_initial_admin_password_secret \
+    "${CES_NAMESPACE}"
+
   # Install Longhorn
   helm repo add longhorn https://charts.longhorn.io
   helm repo update
@@ -242,7 +252,7 @@ applyResources() {
   ADDITIONAL_VALUES_YAML=image/scripts/dev/.additionalValues.yaml
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
   helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/testing/k8s/ecosystem-core" \
-    --version 0.1.0-dev.1758116730 \
+    --version 0.1.0-dev.1758874643 \
     --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}"
 

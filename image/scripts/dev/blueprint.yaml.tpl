@@ -14,3 +14,27 @@ spec:
         version: "2.6.8-4"
       - name: "official/postfix"
         version: "3.10.2-2"
+      - name: "official/usermgt"
+        version: "1.20.0-5"
+    config:
+      dogus:
+        ldap:
+          - key: admin_password
+            secretRef:
+              key: admin-password
+              name: initial-admin-password
+            sensitive: true
+      global:
+        - key: "domain"
+          value: "k3ces.local"
+        - key: "password-policy/min_length"
+          value: "1"
+        - key: "password-policy/must_contain_capital_letter"
+          value: "false"
+        - key: "password-policy/must_contain_digit"
+          value: "false"
+        - key: "password-policy/must_contain_lower_case_letter"
+          value: "false"
+        - key: "password-policy/must_contain_special_character"
+          value: "false"
+

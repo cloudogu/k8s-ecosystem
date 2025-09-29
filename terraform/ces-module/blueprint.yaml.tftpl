@@ -1,26 +1,21 @@
-apiVersion: k8s.cloudogu.com/v2
-kind: Blueprint
-metadata:
-  labels:
-    app: ces
-    app.kubernetes.io/name: k8s-blueprint-lib
-  name: blueprint-ces-module
-spec:
-  displayName: "Blueprint Sample CES-Module"
-  blueprint:
-    dogus:
-      %{ for dogu in dogus ~}
-      - name: "${dogu.name}"
-        version: "${dogu.version}"
-      %{ endfor ~}
-    config:
-      dogus:
-        %{ for name, cfg in doguConfigs ~}
-          ${name}:
-             ${cfg}
-        %{ endfor ~}
-      global:
-%{ for item in globalConfig ~}
-        - key: ${item.key}
-          value: ${item.value}
-%{ endfor ~}
+${yamlencode({
+  apiVersion = "k8s.cloudogu.com/v2"
+  kind       = "Blueprint"
+  metadata   = {
+    labels = {
+      app                         = "ces"
+      "app.kubernetes.io/name"    = "k8s-blueprint-lib"
+    }
+    name = "blueprint-ces-module"
+  }
+  spec = {
+    displayName = "Blueprint Sample CES-Module"
+    blueprint   = {
+      dogus  = dogus
+      config = {
+        dogus  = doguConfigs
+        global = globalConfig
+      }
+    }
+  }
+})}

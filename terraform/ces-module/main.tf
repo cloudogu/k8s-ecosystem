@@ -23,13 +23,13 @@ locals {
   component_operator_crd_chart = {
     repository = split("/", var.component_operator_crd_chart)[0]
     name = split(":", split("/", var.component_operator_crd_chart)[1])[0]
-    version = length(split(":", split("/", var.component_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.component_operator_crd_chart)[1])[1] : "latest"
+    version = length(split(":", split("/", var.component_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.component_operator_crd_chart)[1])[1] : "1.10.1"
   }
 
   blueprint_operator_crd_chart = {
     repository = split("/", var.blueprint_operator_crd_chart)[0]
     name = split(":", split("/", var.blueprint_operator_crd_chart)[1])[0]
-    version = length(split(":", split("/", var.blueprint_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.blueprint_operator_crd_chart)[1])[1] : "latest"
+    version = length(split(":", split("/", var.blueprint_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.blueprint_operator_crd_chart)[1])[1] : "2.8.0"
   }
 
   component_operator_image = {
@@ -103,38 +103,6 @@ locals {
     # Admin
     { key = "admin_group", value = "cesAdmin"},
   ]
-
-
-
-
-
-
-
-
-
-  splitComponentNamespaces = [
-    for componentStr in var.components :
-    {
-      namespace = split("/", componentStr)[0]
-      rest      = split("/", componentStr)[1]
-      //provoke error here, so that the build fails if no namespace or name is given
-    }
-  ]
-
-
-
-  parsedComponents = [
-    for namespaceAndRest in local.splitComponentNamespaces :
-    {
-      namespace       = namespaceAndRest.namespace
-      name            = split(":", namespaceAndRest.rest)[0]
-      version         = length(split(":", namespaceAndRest.rest)) == 2 ? split(":", namespaceAndRest.rest)[1] : "latest"
-      deployNamespace = split(":", namespaceAndRest.rest)[0] != "k8s-longhorn" ? var.ces_namespace : "longhorn-system"
-    }
-  ]
-
-
-
 
 }
 
@@ -258,47 +226,15 @@ resource "helm_release" "ecosystem-core" {
   version    = var.ecosystem_core_chart_version
   timeout    = var.ecosystem_core_timeout
 
-  namespace        = var.ecosystem_core_chart_namespace
+  namespace        = var.ces_namespace
   create_namespace = true
 
   values = [
     templatefile("${path.module}/values_ecosystem.yaml.tftpl",
       {
         "component_operator_image"                       = local.component_operator_image
-        "components"                                     = local.parsedComponents
+        "components"                                     = var.components
         "ecosystem_core_default_config_image"            = local.ecosystem_core_default_config_image
-
-
-        /*
-
-
-
-        "setup_fqdn_from_loadbalancer_wait_timeout_mins" = var.setup_fqdn_from_loadbalancer_wait_timeout_mins
-        "setup_dogu_wait_timeout_secs"                   = var.setup_dogu_wait_timeout_secs
-        "setup_component_wait_timeout_secs"              = var.setup_component_wait_timeout_secs
-
-
-        "setup_json" = yamlencode(templatefile(
-          "${path.module}/setup.json.tftpl",
-          {
-            # https://docs.cloudogu.com/en/docs/system-components/ces-setup/operations/setup-json/
-            "admin_username"  = var.ces_admin_username
-            "admin_password"  = var.ces_admin_password
-            "admin_email"     = var.ces_admin_email
-            "default_dogu"    = var.default_dogu
-            "dogus"           = var.dogus
-            "fqdn"            = var.ces_fqdn
-            "domain"          = local.topLevelDomain
-            "certificateType" = var.ces_certificate_path == null ? "selfsigned" : "external"
-            "certificate"     = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""
-            "certificateKey"  = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""
-
-            "cas_oidc_config"        = jsonencode(local.cas_oidc_config_formatted)
-            "cas_oidc_client_secret" = var.cas_oidc_client_secret
-          }
-        ))
-
-        "resource_patches" = var.resource_patches*/
       })
   ]
   depends_on = [
@@ -314,12 +250,12 @@ resource "helm_release" "ecosystem-core" {
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
 resource "kubectl_manifest" "blueprint" {
-  yaml_body = yamlencode(templatefile(
+  yaml_body = templatefile(
     "${path.module}/blueprint.yaml.tftpl",
     {
       "dogus"        = local.parsedDogus
       "doguConfigs"  = local.doguConfigs
       "globalConfig" = local.globalConfig
-    }))
+    })
   depends_on = [helm_release.ecosystem-core]
 }

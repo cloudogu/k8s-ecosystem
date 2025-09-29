@@ -8,7 +8,7 @@ k8s-component-operator:
     image:
       registry: docker.io
       repository: "${component_operator_image.repository}"
-      tag: "${component_crd_image.version}"
+      tag: "${component_operator_image.version}"
     env:
       logLevel: info
     resourceLimits:
@@ -19,7 +19,7 @@ k8s-component-operator:
     networkPolicies:
       enabled: true
 components:
-%{ for component in components ~}
+%{ for component in components.components ~}
   ${component.name}:
     version: ${component.version}
 %{ if component.disabled }
@@ -37,7 +37,7 @@ backup:
 %{ endif ~}
 %{ endfor ~}
 monitoring:
-  enabled: "${components.monitoring.components}"
+  enabled: "${components.monitoring.enabled}"
   components:
 %{ for component in components.monitoring.components ~}
   ${component.name}:

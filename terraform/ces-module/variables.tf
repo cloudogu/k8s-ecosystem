@@ -33,6 +33,24 @@ variable "ecosystem_core_chart_version" {
   default     = "0.2.0"
 }
 
+variable "ecosystem_core_chart_namespace" {
+  description = "The namespace of ecosystem-core chart"
+  type        = string
+  default     = "k8s"
+}
+
+variable "ecosystem_core_defaultconfig_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each component in minutes"
+  type        = number
+  default     = 5
+}
+
+variable "ecosystem_core_timeout" {
+  description = "The helm timeout of ecosystem-core to complete the installation in seconds"
+  type        = number
+  default     = 300
+}
+
 # namespace of ces
 variable "ces_namespace" {
   description = "The namespace for the CES"
@@ -49,6 +67,7 @@ variable "components" {
       name = string
       version = string
       disabled = bool
+      valueObject = object({})
     }))
     backup = object ({
       enabled = bool
@@ -71,18 +90,18 @@ variable "components" {
   })
   default = {
     components = [
-      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled  = true },
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0", disabled  = false },
-      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", disabled  = true },
-      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", disabled  = true },
+      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", valueObject=null, disabled  = true },
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0", valueObject=null, disabled  = false },
+      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", valueObject=null, disabled  = true },
+      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", valueObject=null, disabled  = true },
     ]
     backup = {
       enabled = true
@@ -211,49 +230,10 @@ variable "dogus" {
   ]
 }
 
-# ----------------------------------------------------------
-
-variable "ecosystem_core_chart_namespace" {
-  description = "The namespace of ecosystem-core chart"
-  type        = string
-  default     = "k8s"
-}
-
-variable "ecosystem_core_timeout" {
-  description = "The helm timeout of ecosystem-core to complete the installation in seconds"
-  type        = number
-  default     = 300
-}
-
-variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
-  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
-  type        = number
-  default     = 15
-}
-
-variable "setup_dogu_wait_timeout_secs" {
-  description = "The timeout of the setup to wait for each dogu in seconds"
-  type        = number
-  default     = 300
-}
-
-variable "setup_component_wait_timeout_secs" {
-  description = "The timeout of the setup to wait for each component in seconds"
-  type        = number
-  default     = 1800
-}
-
-
 variable "default_dogu" {
   description = "The default Dogu of the EcoSystem"
   type        = string
   default     = "cas"
-}
-
-variable "resource_patches" {
-  description = "The content of the resource-patches for the CES installation."
-  type        = string
-  default     = ""
 }
 
 variable "cas_oidc_config" {
@@ -282,6 +262,26 @@ variable "cas_oidc_config" {
     allowed_groups = []
     initial_admin_usernames = []
   }
+}
+
+# ----------------------------------------------------------
+
+variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
+  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
+  type        = number
+  default     = 15
+}
+
+variable "setup_dogu_wait_timeout_secs" {
+  description = "The timeout of the setup to wait for each dogu in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "resource_patches" {
+  description = "The content of the resource-patches for the CES installation."
+  type        = string
+  default     = ""
 }
 
 variable "cas_oidc_client_secret" {

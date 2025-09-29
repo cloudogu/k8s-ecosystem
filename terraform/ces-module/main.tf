@@ -50,39 +50,32 @@ locals {
     }
   ]
 
-  cas_oidc_config_formatted = {
-    enabled                 = var.cas_oidc_config.enabled
-    discovery_uri           = var.cas_oidc_config.discovery_uri
-    client_id               = var.cas_oidc_config.client_id
-    display_name            = var.cas_oidc_config.display_name
-    optional                = var.cas_oidc_config.optional
-    scopes                  = join(" ", var.cas_oidc_config.scopes)
-    principal_attribute     = var.cas_oidc_config.principal_attribute
-    attribute_mapping       = var.cas_oidc_config.attribute_mapping
-    allowed_groups          = join(", ", var.cas_oidc_config.allowed_groups)
-    initial_admin_usernames = join(", ", var.cas_oidc_config.initial_admin_usernames)
-  }
-
   doguConfigs = {
-    for name, cfg in {
-      ldap = [
-        { key = "admin_username", value = var.ces_admin_username },
-        { key = "admin_mail", value = var.ces_admin_email },
-        { key = "admin_member", value = true },
-      ],
-      postifx = [
-        {
-          key       = "relayhost"
-          value     = "foobar"
-        }
-      ],
-      cas = [
-        {
-          key = "oidc", value = jsonencode(local.cas_oidc_config_formatted)
-        }
-      ]
-    } :
-    name => replace(yamlencode(cfg), "\n", "\n        ") # Einrückung
+    ldap = [
+      { key = "admin_username", value = var.ces_admin_username },
+      { key = "admin_mail", value = var.ces_admin_email },
+      { key = "admin_member", value = true },
+    ],
+    postifx = [
+      {
+        key       = "relayhost"
+        value     = "foobar"
+      }
+    ],
+    cas = [
+      { key = "oidc/enabled", value = var.cas_oidc_config.enabled },
+      { key = "oidc/discovery_uri", value = var.cas_oidc_config.discovery_uri },
+      { key = "oidc/client_id", value = var.cas_oidc_config.client_id },
+      { key = "oidc/display_name", value = var.cas_oidc_config.display_name },
+      { key = "oidc/optional", value = var.cas_oidc_config.optional },
+      { key = "oidc/scopes", value = var.cas_oidc_config.scopes },
+      { key = "oidc/principal_attribute", value = var.cas_oidc_config.principal_attribute },
+      { key = "oidc/attribute_mapping", value = var.cas_oidc_config.attribute_mapping },
+      { key = "oidc/allowed_groups", value = var.cas_oidc_config.allowed_groups },
+      { key = "oidc/initial_admin_usernames", value = var.cas_oidc_config.initial_admin_usernames },
+
+      { key: "oidc/client_secret", secretRef:  {key: "password", name: "cas_oidc_client_secret" }, sensitive: true}
+    ]
   }
 
   split_fqdn = split(".", var.ces_fqdn)
@@ -104,6 +97,25 @@ locals {
     { key = "admin_group", value = "cesAdmin"},
   ]
 
+  compcomponents = [
+    for comp in var.components.components : merge(
+      comp,
+        comp.name == "k8s-ces-assets" ? { valueObject = {
+        nginx = {
+          manager = {
+            config = {
+              defaultDogu = var.default_dogu
+            }
+          }
+        } } } : {}
+    )
+  ]
+
+  components = {
+    components = local.compcomponents
+    backup = var.components.backup
+    monitoring = var.components.monitoring
+  }
 }
 
 # In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
@@ -217,6 +229,20 @@ resource "kubernetes_secret" "component_operator_helm_registry" {
   }
 }
 
+# This secret contains the access data for the **Dogu Registry**.
+resource "kubernetes_secret" "cas_oidc_client_secret" {
+  metadata {
+    name      = "cas-oidc-client-secret"
+    namespace = var.ces_namespace
+  }
+
+  type = "Opaque"
+
+  data = {
+    client-secret  = var.cas_oidc_client_secret
+  }
+}
+
 # This installs the ecosystem-core component, the values are defined by templating the values.yaml file.
 # This resource depends on the CRD's, Secrets and the Configmap defined in this file above.
 resource "helm_release" "ecosystem-core" {
@@ -233,8 +259,9 @@ resource "helm_release" "ecosystem-core" {
     templatefile("${path.module}/values_ecosystem.yaml.tftpl",
       {
         "component_operator_image"                       = local.component_operator_image
-        "components"                                     = var.components
+        "components"                                     = local.components
         "ecosystem_core_default_config_image"            = local.ecosystem_core_default_config_image
+        "ecosystem_core_defaultconfig_wait_timeout_secs" = var.ecosystem_core_defaultconfig_wait_timeout_secs
       })
   ]
   depends_on = [
@@ -257,5 +284,8 @@ resource "kubectl_manifest" "blueprint" {
       "doguConfigs"  = local.doguConfigs
       "globalConfig" = local.globalConfig
     })
-  depends_on = [helm_release.ecosystem-core]
+  depends_on = [
+    helm_release.ecosystem-core,
+    kubernetes_secret.cas_oidc_client_secret
+  ]
 }

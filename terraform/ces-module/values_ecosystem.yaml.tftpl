@@ -22,7 +22,11 @@ components:
 %{ for component in components.components ~}
   ${component.name}:
     version: ${component.version}
-%{ if component.disabled }
+%{ if component.valueObject != null ~}
+    valueObject:
+      ${indent(6, yamlencode(component.valueObject)) }
+%{ endif ~}
+%{ if component.disabled ~}
     disabled: true
 %{ endif ~}
 %{ endfor ~}
@@ -60,4 +64,4 @@ defaultConfig:
   imagePullPolicy: IfNotPresent
   env:
     logLevel: info
-    waitTimeoutMinutes: 5
+    waitTimeoutMinutes: ${ecosystem_core_defaultconfig_wait_timeout_secs}

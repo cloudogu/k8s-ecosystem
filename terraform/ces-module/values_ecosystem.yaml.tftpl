@@ -1,0 +1,63 @@
+# Default values for ecosystem-core.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+skipPreconditionValidation: false
+k8s-component-operator:
+  manager:
+    image:
+      registry: docker.io
+      repository: "${component_operator_image.repository}"
+      tag: "${component_crd_image.version}"
+    env:
+      logLevel: info
+    resourceLimits:
+      memory: 105M
+    resourceRequests:
+      cpu: 15m
+      memory: 105M
+    networkPolicies:
+      enabled: true
+components:
+%{ for component in components ~}
+  ${component.name}:
+    version: ${component.version}
+%{ if component.disabled }
+    disabled: true
+%{ endif ~}
+%{ endfor ~}
+backup:
+  enabled: "${components.backup.enabled}"
+  components:
+%{ for component in components.backup.components ~}
+  ${component.name}:
+    version: ${component.version}
+%{ if component.disabled }
+    disabled: true
+%{ endif ~}
+%{ endfor ~}
+monitoring:
+  enabled: "${components.monitoring.components}"
+  components:
+%{ for component in components.monitoring.components ~}
+  ${component.name}:
+    version: ${component.version}
+%{ if component.disabled }
+    disabled: true
+%{ endif ~}
+%{ endfor ~}
+cleanup:
+  timeoutSeconds: 900
+  image:
+    registry: docker.io
+    repository: alpine/kubectl
+    tag: 1.34.0
+defaultConfig:
+  image:
+    registry: docker.io
+    repository: "${ecosystem_core_default_config_image.repository}"
+    tag: "${ecosystem_core_default_config_image.version}"
+  imagePullPolicy: IfNotPresent
+  env:
+    logLevel: info
+    waitTimeoutMinutes: 5

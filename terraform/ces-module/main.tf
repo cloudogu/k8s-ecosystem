@@ -10,30 +10,46 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.30"
     }
+    kubectl = {
+      // The official kubectl provider from hashicorp can't be used because it requires crd read permissions on generic cr apply.
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
+    }
   }
 }
 
+# The local Closure converts input Parameter to usable template parameters
 locals {
-  split_fqdn = split(".", var.ces_fqdn)
-  # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
-  topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
-  splitComponentNamespaces = [
-    for componentStr in var.components :
+  component_operator_crd_chart = {
+    repository = split("/", var.component_operator_crd_chart)[0]
+    name = split(":", split("/", var.component_operator_crd_chart)[1])[0]
+    version = length(split(":", split("/", var.component_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.component_operator_crd_chart)[1])[1] : "latest"
+  }
+
+  blueprint_operator_crd_chart = {
+    repository = split("/", var.blueprint_operator_crd_chart)[0]
+    name = split(":", split("/", var.blueprint_operator_crd_chart)[1])[0]
+    version = length(split(":", split("/", var.blueprint_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.blueprint_operator_crd_chart)[1])[1] : "latest"
+  }
+
+  component_operator_image = {
+    repository = split(":", var.component_operator_image)[0]
+    version = length(split(":", var.component_operator_image)[0]) == 2 ? split(":", var.component_operator_image)[1] : "latest"
+  }
+
+  ecosystem_core_default_config_image = {
+    repository = split(":", var.ecosystem_core_default_config_image)[0]
+    version = length(split(":", var.ecosystem_core_default_config_image)[0]) == 2 ? split(":", var.ecosystem_core_default_config_image)[1] : "latest"
+  }
+
+  parsedDogus = [
+    for dogu in var.dogus :
     {
-      namespace = split("/", componentStr)[0]
-      rest      = split("/", componentStr)[1]
-      //provoke error here, so that the build fails if no namespace or name is given
+      name            = split(":", dogu)[0]
+      version         = length(split(":", dogu)) == 2 ? split(":", dogu)[1] : "latest"
     }
   ]
-  parsedComponents = [
-    for namespaceAndRest in local.splitComponentNamespaces :
-    {
-      namespace       = namespaceAndRest.namespace
-      name            = split(":", namespaceAndRest.rest)[0]
-      version         = length(split(":", namespaceAndRest.rest)) == 2 ? split(":", namespaceAndRest.rest)[1] : "latest"
-      deployNamespace = split(":", namespaceAndRest.rest)[0] != "k8s-longhorn" ? var.ces_namespace : "longhorn-system"
-    }
-  ]
+
   cas_oidc_config_formatted = {
     enabled                 = var.cas_oidc_config.enabled
     discovery_uri           = var.cas_oidc_config.discovery_uri
@@ -46,38 +62,222 @@ locals {
     allowed_groups          = join(", ", var.cas_oidc_config.allowed_groups)
     initial_admin_usernames = join(", ", var.cas_oidc_config.initial_admin_usernames)
   }
+
+  doguConfigs = {
+    for name, cfg in {
+      ldap = [
+        { key = "admin_username", value = var.ces_admin_username },
+        { key = "admin_mail", value = var.ces_admin_email },
+        { key = "admin_member", value = true },
+      ],
+      postifx = [
+        {
+          key       = "relayhost"
+          value     = "foobar"
+        }
+      ],
+      cas = [
+        {
+          key = "oidc", value = jsonencode(local.cas_oidc_config_formatted)
+        }
+      ]
+    } :
+    name => replace(yamlencode(cfg), "\n", "\n        ") # Einrückung
+  }
+
+  split_fqdn = split(".", var.ces_fqdn)
+  # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
+  topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
+
+
+  globalConfig = [
+    # Naming
+    { key = "fqdn", value = var.ces_fqdn },
+    { key = "domain", value = local.topLevelDomain },
+    { key = "certificate/type", value = var.ces_certificate_path == null ? "selfsigned" : "external" },
+    { key = "certificate", value = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""},
+    { key = "certificateKey", value = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""},
+    { key = "k8s/use_internal_ip", value = false},
+    { key = "internalIp", value = ""},
+
+    # Admin
+    { key = "admin_group", value = "cesAdmin"},
+  ]
+
+
+
+
+
+
+
+
+
+  splitComponentNamespaces = [
+    for componentStr in var.components :
+    {
+      namespace = split("/", componentStr)[0]
+      rest      = split("/", componentStr)[1]
+      //provoke error here, so that the build fails if no namespace or name is given
+    }
+  ]
+
+
+
+  parsedComponents = [
+    for namespaceAndRest in local.splitComponentNamespaces :
+    {
+      namespace       = namespaceAndRest.namespace
+      name            = split(":", namespaceAndRest.rest)[0]
+      version         = length(split(":", namespaceAndRest.rest)) == 2 ? split(":", namespaceAndRest.rest)[1] : "latest"
+      deployNamespace = split(":", namespaceAndRest.rest)[0] != "k8s-longhorn" ? var.ces_namespace : "longhorn-system"
+    }
+  ]
+
+
+
+
 }
 
-resource "helm_release" "k8s-ces-setup" {
-  name       = "k8s-ces-setup"
-  repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.setup_chart_namespace}"
-  chart      = "k8s-ces-setup"
-  version    = var.setup_chart_version
-  timeout    = var.setup_timeout
+# In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
+# Install the CRD using the published Helm chart from the OCI repository.
+resource "helm_release" "k8s_component_operator_crd" {
+  name             = local.component_operator_crd_chart.name
+  repository       = "oci://registry.cloudogu.com/${local.component_operator_crd_chart.repository}"
+  chart            = local.component_operator_crd_chart.name
+  version          = local.component_operator_crd_chart.version
 
-  namespace        = var.ces_namespace
+  namespace        = var.ecosystem_core_chart_namespace
+  create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
+
+  # Helm-Flags analog zum CLI-Aufruf
+  atomic           = true      # rollt bei Fehlern zurück
+  cleanup_on_fail  = true
+  timeout          = 300
+}
+
+# This is needed due to terraform pre-flight checks.
+# The Blueprint-CRD must be available before the ecosystem-core can install it.
+# In production the ecosystem-core would install the blueprint crd
+resource "helm_release" "k8s_blueprint_operator_crd" {
+  name             = local.blueprint_operator_crd_chart.name
+  repository       = "oci://registry.cloudogu.com/${local.blueprint_operator_crd_chart.repository}"
+  chart            = local.blueprint_operator_crd_chart.name
+  version          = local.blueprint_operator_crd_chart.version
+
+  namespace        = var.ecosystem_core_chart_namespace
+  create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
+
+  # Helm-Flags analog zum CLI-Aufruf
+  atomic           = true      # rollt bei Fehlern zurück
+  cleanup_on_fail  = true
+  timeout          = 300
+}
+
+# This secret contains the access data for the **Dogu Registry**.
+resource "kubernetes_secret" "dogu_registry" {
+  metadata {
+    name      = "k8s-dogu-operator-dogu-registry"
+    namespace = var.ces_namespace
+  }
+
+  type = "Opaque"
+
+  data = {
+    endpoint  = "https://dogu.cloudogu.com/api/v2/dogus"
+    urlschema = "default"
+    username  = var.dogu_registry_username
+    password  = var.dogu_registry_password
+  }
+}
+
+# This secret contains the access data for the **container registry** in Docker registry format.
+resource "kubernetes_secret" "ces_container_registries" {
+  metadata {
+    name      = "ces-container-registries"
+    namespace = var.ces_namespace
+  }
+
+  # Entspricht: kubectl create secret docker-registry
+  type = "kubernetes.io/dockerconfigjson"
+
+  data = {
+    ".dockerconfigjson" = jsonencode({
+      auths = {
+        (var.docker_registry_host) = {
+          username = var.docker_registry_username
+          password = var.docker_registry_password
+          email    = var.docker_registry_email
+          auth     = base64encode("${var.docker_registry_username}:${var.docker_registry_password}")
+        }
+      }
+    })
+  }
+}
+
+# In addition to authentication, a ConfigMap and a secret must be created for the **Helm registry**.
+resource "kubernetes_config_map" "component_operator_helm_repository" {
+  metadata {
+    name      = "component-operator-helm-repository"
+    namespace = var.ces_namespace
+  }
+
+  data = {
+    endpoint    = "registry.cloudogu.com"
+    schema      = "oci"
+    plainHttp   = "false"
+    insecureTls = "false"
+  }
+}
+resource "kubernetes_secret" "component_operator_helm_registry" {
+  metadata {
+    name      = "component-operator-helm-registry"
+    namespace = var.ces_namespace
+  }
+
+  # entspricht: kubectl create secret generic … --from-literal=config.json='…'
+  type = "Opaque"
+
+  data = {
+    "config.json" = jsonencode({
+      auths = {
+        "registry.cloudogu.com" = {
+          # entspricht: echo -n "${USER}:${PASS}" | base64
+          auth = base64encode("${var.helm_registry_username}:${var.helm_registry_password}")
+        }
+      }
+    })
+  }
+}
+
+# This installs the ecosystem-core component, the values are defined by templating the values.yaml file.
+# This resource depends on the CRD's, Secrets and the Configmap defined in this file above.
+resource "helm_release" "ecosystem-core" {
+  name       = "ecosystem-core"
+  repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.ecosystem_core_chart_namespace}"
+  chart      = "ecosystem-core"
+  version    = var.ecosystem_core_chart_version
+  timeout    = var.ecosystem_core_timeout
+
+  namespace        = var.ecosystem_core_chart_namespace
   create_namespace = true
 
   values = [
-    templatefile("${path.module}/values.yaml.tftpl",
+    templatefile("${path.module}/values_ecosystem.yaml.tftpl",
       {
+        "component_operator_image"                       = local.component_operator_image
+        "components"                                     = local.parsedComponents
+        "ecosystem_core_default_config_image"            = local.ecosystem_core_default_config_image
+
+
+        /*
+
+
+
         "setup_fqdn_from_loadbalancer_wait_timeout_mins" = var.setup_fqdn_from_loadbalancer_wait_timeout_mins
         "setup_dogu_wait_timeout_secs"                   = var.setup_dogu_wait_timeout_secs
         "setup_component_wait_timeout_secs"              = var.setup_component_wait_timeout_secs
-        "dogu_registry_endpoint"                         = var.dogu_registry_endpoint
-        "dogu_registry_username"                         = var.dogu_registry_username
-        "dogu_registry_password"                         = var.dogu_registry_password
-        "dogu_registry_url_schema"                       = var.dogu_registry_url_schema
-        "container_registry_secrets"                     = var.container_registry_secrets
-        "helm_registry_host"                             = var.helm_registry_host
-        "helm_registry_schema"                           = var.helm_registry_schema
-        "helm_registry_plain_http"                       = var.helm_registry_plain_http
-        "helm_registry_insecure_tls"                     = var.helm_registry_insecure_tls
-        "helm_registry_username"                         = var.helm_registry_username
-        "helm_registry_password"                         = var.helm_registry_password
-        "component_operator_chart"                       = var.component_operator_chart
-        "component_operator_crd_chart"                   = var.component_operator_crd_chart
-        "components"                                     = local.parsedComponents
+
+
         "setup_json" = yamlencode(templatefile(
           "${path.module}/setup.json.tftpl",
           {
@@ -97,7 +297,29 @@ resource "helm_release" "k8s-ces-setup" {
             "cas_oidc_client_secret" = var.cas_oidc_client_secret
           }
         ))
-        "resource_patches" = var.resource_patches
-    })
+
+        "resource_patches" = var.resource_patches*/
+      })
   ]
+  depends_on = [
+    helm_release.k8s_component_operator_crd,
+    helm_release.k8s_blueprint_operator_crd,
+    kubernetes_secret.dogu_registry,
+    kubernetes_secret.ces_container_registries,
+    kubernetes_secret.component_operator_helm_registry,
+    kubernetes_config_map.component_operator_helm_repository
+  ]
+}
+
+# The Blueprint is used to configure the system after the ecosystem-core has installed all
+# necessary components, therefor it depends on the resource "ecosystem-core"
+resource "kubectl_manifest" "blueprint" {
+  yaml_body = yamlencode(templatefile(
+    "${path.module}/blueprint.yaml.tftpl",
+    {
+      "dogus"        = local.parsedDogus
+      "doguConfigs"  = local.doguConfigs
+      "globalConfig" = local.globalConfig
+    }))
+  depends_on = [helm_release.ecosystem-core]
 }

@@ -116,6 +116,14 @@ locals {
   }
 }
 
+resource "kubernetes_namespace" "ecosystem_core_chart_namespace" {
+  metadata { name = var.ecosystem_core_chart_namespace } # "ecosystem"
+}
+
+resource "kubernetes_namespace" "ces_namespace" {
+  metadata { name = var.ces_namespace } # "ecosystem"
+}
+
 # In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
 # Install the CRD using the published Helm chart from the OCI repository.
 resource "helm_release" "k8s_component_operator_crd" {
@@ -131,6 +139,7 @@ resource "helm_release" "k8s_component_operator_crd" {
   atomic           = true      # rollt bei Fehlern zurück
   cleanup_on_fail  = true
   timeout          = 300
+  depends_on = [kubernetes_namespace.ecosystem_core_chart_namespace]
 }
 
 # This is needed due to terraform pre-flight checks.
@@ -149,6 +158,7 @@ resource "helm_release" "k8s_blueprint_operator_crd" {
   atomic           = true      # rollt bei Fehlern zurück
   cleanup_on_fail  = true
   timeout          = 300
+  depends_on = [kubernetes_namespace.ecosystem_core_chart_namespace]
 }
 
 # This secret contains the access data for the **Dogu Registry**.
@@ -166,6 +176,7 @@ resource "kubernetes_secret" "dogu_registry" {
     username  = var.dogu_registry_username
     password  = var.dogu_registry_password
   }
+  depends_on = [kubernetes_namespace.ces_namespace]
 }
 
 # This secret contains the access data for the **container registry** in Docker registry format.
@@ -190,6 +201,7 @@ resource "kubernetes_secret" "ces_container_registries" {
       }
     })
   }
+  depends_on = [kubernetes_namespace.ces_namespace]
 }
 
 # In addition to authentication, a ConfigMap and a secret must be created for the **Helm registry**.
@@ -205,6 +217,7 @@ resource "kubernetes_config_map" "component_operator_helm_repository" {
     plainHttp   = "false"
     insecureTls = "false"
   }
+  depends_on = [kubernetes_namespace.ces_namespace]
 }
 resource "kubernetes_secret" "component_operator_helm_registry" {
   metadata {
@@ -225,6 +238,7 @@ resource "kubernetes_secret" "component_operator_helm_registry" {
       }
     })
   }
+  depends_on = [kubernetes_namespace.ces_namespace]
 }
 
 # This secret contains the access data for the **Dogu Registry**.
@@ -240,6 +254,7 @@ resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
     cas_oidc_client_secret  = var.cas_oidc_client_secret,
     ldap_admin_password = var.ces_admin_password
   }
+  depends_on = [kubernetes_namespace.ces_namespace]
 }
 
 # This installs the ecosystem-core component, the values are defined by templating the values.yaml file.

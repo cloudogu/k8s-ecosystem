@@ -66,8 +66,8 @@ variable "components" {
       namespace = string
       name = string
       version = string
-      disabled = bool
-      valueObject = object({})
+      disabled = optional(bool, false)
+      valueObject = optional(object({}), null)
     }))
     backup = object ({
       enabled = bool
@@ -75,7 +75,8 @@ variable "components" {
         namespace = string
         name = string
         version = string
-        disabled = bool
+        disabled = optional(bool, false)
+        valueObject = optional(object({}), null)
       }))
     })
     monitoring = object ({
@@ -84,41 +85,42 @@ variable "components" {
         namespace = string
         name = string
         version = string
-        disabled = bool
+        disabled = optional(bool, false)
+        valueObject = optional(object({}), null)
       }))
     })
   })
   default = {
     components = [
-      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", valueObject=null, disabled  = true },
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0", valueObject=null, disabled  = false },
-      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", valueObject=null, disabled  = true },
-      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", valueObject=null, disabled  = true },
+      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0" },
+      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
+      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0" },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0" },
+      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
+      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1" },
+      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled  = true },
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3"},
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0"},
+      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", disabled  = true },
+      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", disabled  = true },
     ]
     backup = {
       enabled = true
       components = [
-        { namespace = "ecosystem", name = "k8s-backup-operator-crd", version = "1.6.0", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-backup-operator", version = "1.6.0", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-velero", version = "10.0.1-5", disabled  = false },
+        { namespace = "ecosystem", name = "k8s-backup-operator-crd", version = "1.6.0" },
+        { namespace = "ecosystem", name = "k8s-backup-operator", version = "1.6.0" },
+        { namespace = "ecosystem", name = "k8s-velero", version = "10.0.1-5" },
       ]
     }
     monitoring = {
       enabled = true
       components = [
-        { namespace = "ecosystem", name = "k8s-prometheus", version = "75.3.5-3", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-minio", version = "2025.6.13-2", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-loki", version = "3.3.2-4", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-promtail", version = "2.9.1-9", disabled  = false },
-        { namespace = "ecosystem", name = "k8s-alloy", version = "1.1.2-1", disabled  = false },
+        { namespace = "ecosystem", name = "k8s-prometheus", version = "75.3.5-3" },
+        { namespace = "ecosystem", name = "k8s-minio", version = "2025.6.13-2" },
+        { namespace = "ecosystem", name = "k8s-loki", version = "3.3.2-4" },
+        { namespace = "ecosystem", name = "k8s-promtail", version = "2.9.1-9" },
+        { namespace = "ecosystem", name = "k8s-alloy", version = "1.1.2-1" },
       ]
     }
   }

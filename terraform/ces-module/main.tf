@@ -34,12 +34,12 @@ locals {
 
   component_operator_image = {
     repository = split(":", var.component_operator_image)[0]
-    version = length(split(":", var.component_operator_image)[0]) == 2 ? split(":", var.component_operator_image)[1] : "latest"
+    version = length(split(":", var.component_operator_image)) == 2 ? split(":", var.component_operator_image)[1] : "latest"
   }
 
   ecosystem_core_default_config_image = {
     repository = split(":", var.ecosystem_core_default_config_image)[0]
-    version = length(split(":", var.ecosystem_core_default_config_image)[0]) == 2 ? split(":", var.ecosystem_core_default_config_image)[1] : "latest"
+    version = length(split(":", var.ecosystem_core_default_config_image)) == 2 ? split(":", var.ecosystem_core_default_config_image)[1] : "latest"
   }
 
   parsedDogus = [

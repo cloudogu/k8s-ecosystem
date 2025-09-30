@@ -23,7 +23,7 @@ components:
   ${component.name}:
     version: ${component.version}
 %{ if component.valueObject != null ~}
-    valueObject:
+    valuesObject:
       ${indent(6, yamlencode(component.valueObject)) }
 %{ endif ~}
 %{ if component.disabled ~}
@@ -31,7 +31,7 @@ components:
 %{ endif ~}
 %{ endfor ~}
 backup:
-  enabled: "${components.backup.enabled}"
+  enabled: ${components.backup.enabled}
   components:
 %{ for component in components.backup.components ~}
   ${component.name}:
@@ -39,15 +39,23 @@ backup:
 %{ if component.disabled }
     disabled: true
 %{ endif ~}
+%{ if component.valueObject != null ~}
+    valuesObject:
+      ${indent(8, yamlencode(component.valueObject)) }
+%{ endif ~}
 %{ endfor ~}
 monitoring:
-  enabled: "${components.monitoring.enabled}"
+  enabled: ${components.monitoring.enabled}
   components:
 %{ for component in components.monitoring.components ~}
   ${component.name}:
     version: ${component.version}
 %{ if component.disabled }
     disabled: true
+%{ endif ~}
+%{ if component.valueObject != null ~}
+    valuesObject:
+      ${indent(8, yamlencode(component.valueObject)) }
 %{ endif ~}
 %{ endfor ~}
 cleanup:

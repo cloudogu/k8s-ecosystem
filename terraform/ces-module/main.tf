@@ -55,12 +55,11 @@ locals {
       { key = "admin_username", value = var.ces_admin_username },
       { key = "admin_mail", value = var.ces_admin_email },
       { key = "admin_member", value = true },
+
+      { key: "admin_password", secretRef:  { key: "ldap_admin_password", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ],
     postifx = [
-      {
-        key       = "relayhost"
-        value     = "foobar"
-      }
+      { key = "relayhost", value = "foobar" }
     ],
     cas = [
       { key = "oidc/enabled", value = var.cas_oidc_config.enabled },
@@ -74,14 +73,13 @@ locals {
       { key = "oidc/allowed_groups", value = var.cas_oidc_config.allowed_groups },
       { key = "oidc/initial_admin_usernames", value = var.cas_oidc_config.initial_admin_usernames },
 
-      { key: "oidc/client_secret", secretRef:  {key: "password", name: "cas_oidc_client_secret" }, sensitive: true}
+      { key: "oidc/client_secret", secretRef:  { key: "cas_oidc_client_secret", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ]
   }
 
   split_fqdn = split(".", var.ces_fqdn)
   # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
   topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
-
 
   globalConfig = [
     # Naming
@@ -230,16 +228,17 @@ resource "kubernetes_secret" "component_operator_helm_registry" {
 }
 
 # This secret contains the access data for the **Dogu Registry**.
-resource "kubernetes_secret" "cas_oidc_client_secret" {
+resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
   metadata {
-    name      = "cas-oidc-client-secret"
+    name      = "ecosystem-core-setup-credentials"
     namespace = var.ces_namespace
   }
 
   type = "Opaque"
 
   data = {
-    client-secret  = var.cas_oidc_client_secret
+    cas_oidc_client_secret  = var.cas_oidc_client_secret,
+    ldap_admin_password = var.ces_admin_password
   }
 }
 
@@ -286,6 +285,6 @@ resource "kubectl_manifest" "blueprint" {
     })
   depends_on = [
     helm_release.ecosystem-core,
-    kubernetes_secret.cas_oidc_client_secret
+    kubernetes_secret.ecosystem_core_setup_credentials
   ]
 }

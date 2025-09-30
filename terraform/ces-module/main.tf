@@ -29,7 +29,7 @@ locals {
   blueprint_operator_crd_chart = {
     repository = split("/", var.blueprint_operator_crd_chart)[0]
     name = split(":", split("/", var.blueprint_operator_crd_chart)[1])[0]
-    version = length(split(":", split("/", var.blueprint_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.blueprint_operator_crd_chart)[1])[1] : "2.8.0"
+    version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "2.8.0"
   }
 
   component_operator_image = {

@@ -13,6 +13,7 @@ kube_ctx_name= "k3ces.local"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
 install_setup = true
+forceUpgradeEcosystem = false
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
@@ -208,7 +209,9 @@ Vagrant.configure("2") do |config|
                             helm_registry_schema,
                             helm_registry_plain_http,
                             kube_ctx_name,
-                            longhorn_replicas
+                            longhorn_replicas,
+                            fqdn,
+                            forceUpgradeEcosystem.to_s
                       ]
       }
     end

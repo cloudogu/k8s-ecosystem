@@ -25,10 +25,12 @@ spec:
               name: initial-admin-password
             sensitive: true
       global:
-        - key: "certificate/type"
-          value: "selfsigned"
+        - key: "fqdn"
+          value: "k3ces.local"
         - key: "domain"
           value: "k3ces.local"
+        - key: "certificate/type"
+          value: "selfsigned"
         - key: "password-policy/min_length"
           value: "1"
         - key: "password-policy/must_contain_capital_letter"

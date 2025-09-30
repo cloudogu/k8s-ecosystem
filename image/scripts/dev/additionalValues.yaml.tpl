@@ -1,7 +1,4 @@
 skipPreconditionValidation: false
-loadbalancer-annotations:
-  foo: "bar"
-  test: hellooo
 components:
   k8s-blueprint-operator-crd:
     version: "1.3.0-dev.1757922891"
@@ -20,17 +17,6 @@ components:
       loadBalancerService:
         internalTrafficPolicy: Cluster
         externalTrafficPolicy: Cluster
-  k8s-ces-assets:
-    version: "1.0.0-dev.1758872534"
-    helmNamespace: "testing/k8s"
-  k8s-ces-gateway:
-    version: "1.0.0-dev.1758872440"
-    helmNamespace: "testing/k8s"
-    valuesObject:
-      ingress-nginx:
-        controller:
-          networkPolicy:
-            enabled: true
 backup:
   enabled: false
 monitoring:

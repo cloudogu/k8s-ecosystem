@@ -38,25 +38,26 @@ geben Sie bitte Ihre Passwörter in der Base64-Kodierung an. Bitte nutzen Sie da
 
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 
-| Wert                     | Beschreibung                                                  |
-|--------------------------|---------------------------------------------------------------|
-| dogu_registry_url        | Die URL der Dogu-Registry                                     |
-| dogu_registry_username   | Der Benutzername zu Login in die Dogu-Registry                |
-| dogu_registry_password   | Das Passwort zu Login in die Dogu-Registry                    |
-| image_registry_url       | Die URL der Image-Registry                                    |
-| image_registry_username  | Der Benutzername zu Login in die Image-Registry               |
-| image_registry_password  | Das Passwort zu Login in die Image-Registry                   |
-| image_registry_email     | Die E-Mail-Adresse des Benutzers der Image-Registry           |
-| helm_registry_host       | Der Host der Helm-Registry                                    |
-| helm_registry_schema     | Das Schema der Helm-Registry                                  |
-| helm_registry_plain_http | Wird die Helm-Registry über HTTP oder HTTPS erreicht?         |
-| helm_registry_username   | Der Benutzername zu Login in die Helm-Registry                |
-| helm_registry_password   | Das Passwort zu Login in die Helm-Registry                    |
-| vm_memory                | Der Arbeitsspeicher der VMs                                   |
-| vm_cpus                  | Die Anzahl der CPUs der VMs                                   |
-| worker_count             | Die Anzahl der Worker-Nodes des Cluster                       |
-| main_k3s_ip_address      | Die IP-Adresse des Main-Nodes des Cluster                     |
-| certificate_type         | `selfsigned` oder `mkcert`; siehe [Zertifikate](#zertifikate) |
+| Wert                     | Beschreibung                                                                                                                                                                                          |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| dogu_registry_url        | Die URL der Dogu-Registry                                                                                                                                                                             |
+| dogu_registry_username   | Der Benutzername zu Login in die Dogu-Registry                                                                                                                                                        |
+| dogu_registry_password   | Das Passwort zu Login in die Dogu-Registry                                                                                                                                                            |
+| image_registry_url       | Die URL der Image-Registry                                                                                                                                                                            |
+| image_registry_username  | Der Benutzername zu Login in die Image-Registry                                                                                                                                                       |
+| image_registry_password  | Das Passwort zu Login in die Image-Registry                                                                                                                                                           |
+| image_registry_email     | Die E-Mail-Adresse des Benutzers der Image-Registry                                                                                                                                                   |
+| helm_registry_host       | Der Host der Helm-Registry                                                                                                                                                                            |
+| helm_registry_schema     | Das Schema der Helm-Registry                                                                                                                                                                          |
+| helm_registry_plain_http | Wird die Helm-Registry über HTTP oder HTTPS erreicht?                                                                                                                                                 |
+| helm_registry_username   | Der Benutzername zu Login in die Helm-Registry                                                                                                                                                        |
+| helm_registry_password   | Das Passwort zu Login in die Helm-Registry                                                                                                                                                            |
+| vm_memory                | Der Arbeitsspeicher der VMs                                                                                                                                                                           |
+| vm_cpus                  | Die Anzahl der CPUs der VMs                                                                                                                                                                           |
+| worker_count             | Die Anzahl der Worker-Nodes des Cluster                                                                                                                                                               |
+| main_k3s_ip_address      | Die IP-Adresse des Main-Nodes des Cluster                                                                                                                                                             |
+| certificate_type         | `selfsigned` oder `mkcert`; siehe [Zertifikate](#zertifikate)                                                                                                                                         |
+| forceUpgradeEcosystem    | default: `false`; wenn `true` wird bei jedem `vagrant up` das ecosystem-core Helm-release und das Blueprint aktualisiert ; siehe [Blueprint & Update des Ecosystem](#blueprint--update-des-ecosystem) |
 
 #### Verschlüsselung der Konfiguration
 
@@ -95,3 +96,22 @@ mkcert -install
 
 Anschließend kann in der [Konfiguration](#konfiguration) der Wert für `certificate_type` auf `mkcert` gesetzt werden.
 Wenn noch kein Zertifikat existiert, erstellt das `Vagrantfile` dann mit `mkcert` ein neues Zertifikat, das im CES verwendet wird.
+
+### Blueprint & Update des Ecosystem
+
+Beim initialen Starten der DEV-Box mit `vagrant up` wird das "ecosystem-core" Helm-Chart und ein Blueprint mit folgenden Dogus installiert:
+* ldap
+* postfix
+* cas
+* usermgt
+
+Die Dogus werden mit ihrer jeweils aktuellsten Version im Blueprint eingetragen.
+
+Wenn das Blueprint erfolgreich angewendet wurde (Condition `Completed: True`), wird es auf `stopped: true` gesetzt.
+Das hat zur Folge, dass das Blueprint nicht mehr automatisch angewendet wird und somit auf weitere Dogus manuell installiert werden können, ohne dass der Blueprint-Operator diese löscht oder verändert.
+
+#### Update erzwingen
+Nach dem initialen Starten der DEV-Box wird bei folgenden Starts mit `vagrant up` überprüft ob das Helm-Release `ecosystem-core` bereits installiert ist. 
+Wenn das der Fall ist, werden keine weiteren Schritte ausgeführt.
+Über die Konfiguration `forceUpgradeEcosystem` in der `.vagrant.rb`-Datei, kann dieses Verhalten deaktiviert werden.
+Dann wird das Helm-Release `ecosystem-core` und das Blueprint bei jedem `vagrant up` aktualisiert.

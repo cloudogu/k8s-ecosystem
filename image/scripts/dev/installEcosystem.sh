@@ -4,6 +4,12 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# load blueprint helpers
+. "image/scripts/dev/blueprintHandling.sh"
+
+# load configMap / secret helpers
+. "image/scripts/dev/configHandling.sh"
+
 CES_NAMESPACE=${1}
 helm_repository_namespace=${2}
 dogu_registry_username=${3}
@@ -20,202 +26,24 @@ helm_registry_schema=${13}
 helm_registry_plain_http=${14}
 kube_ctx_name=${15}
 default_class_replica_count="${16:-2}"
+fqdn=${17}
+forceUpgradeEcosystem=${18}
 
-BLUEPRINT_YAML_TEMPLATE="image/scripts/dev/blueprint.yaml.tpl"
-BLUEPRINT_YAML="image/scripts/dev/.blueprint.yaml"
-
-CERTIFICATE_CRT_FILE=".vagrant/certs/k3ces.local.crt"
-CERTIFICATE_KEY_FILE=".vagrant/certs/k3ces.local.key"
-
-# --- Helpers (clean-code / duplication reduction) ---
-
-# decode_if_b64 VAR -> echoes decoded value if input is base64, otherwise original
-decode_if_b64() {
-  local input="$1"
-  if printf '%s' "$input" | base64 -d >/dev/null 2>&1; then
-    printf '%s' "$input" | base64 -d
-  else
-    printf '%s' "$input"
-  fi
-}
-
-# ensure_secret <name> <type> <namespace> --from-literal=key1=val1 [--from-literal=...]
-# Usage example:
-#   ensure_secret my-secret generic my-ns --from-literal=foo=bar --from-literal=baz=qux
-ensure_secret() {
-  local name="$1"; shift
-  local type="$1"; shift
-  local namespace="$1"; shift
-  kubectl create secret "$type" "$name" \
-    --namespace="$namespace" \
-    "$@" \
-    --dry-run=client -o yaml \
-  | kubectl apply -f -
-  echo "Secret \"$name\" ensured in namespace \"$namespace\"."
-}
-
-# ensure_configmap <name> <namespace> --from-literal=key=val ...
-ensure_configmap() {
-  local name="$1"; shift
-  local namespace="$1"; shift
-  kubectl create configmap "$name" \
-    --namespace="$namespace" \
-    "$@" \
-    --dry-run=client -o yaml \
-  | kubectl apply -f -
-  echo "ConfigMap \"$name\" ensured in namespace \"$namespace\"."
-}
-
-# login_registry_helm <host> <username> <password>
-login_registry_helm() {
-  local host="$1"
-  local user="$2"
-  local pass_decoded
-  pass_decoded="$(decode_if_b64 "$3")"
-  printf '%s' "$pass_decoded" | helm registry login "$host" --username "$user" --password-stdin
-}
-
-# Fetch latest version string for a given dogu via the registry API
-# Prints the version (e.g., 1.2.3-4) to stdout
-get_latest_dogu_version() {
-  local dogu="$1"
-  local username="$2"
-  local password_decoded
-  password_decoded="$(decode_if_b64 "$3")"
-
-  local auth_b64
-  auth_b64="$(printf '%s:%s' "$username" "$password_decoded" | base64 | tr -d '\n')"
-  # Expected API returns a list of versions ordered by recency;
-  curl -fsSL -H "Authorization: Basic ${auth_b64}" \
-    "https://dogu.cloudogu.com/api/v2/dogus/${dogu}/_versions" \
-  | jq -r '.[0]'
-}
-
-# --- Functions ---
-
-# Create or update the k8s-dogu-operator-dogu-registry Secret in the given namespace.
-# Args: <url> <urlschema> <username> <password> <namespace>
-ensure_dogu_registry_secret() {
-  local url="$1"
-  local urlschema="$2"
-  local username="$3"
-  local password_decoded
-  password_decoded="$(decode_if_b64 "$4")"
-  local namespace="$5"
-  ensure_secret "k8s-dogu-operator-dogu-registry" generic "$namespace" \
-    --from-literal=endpoint="$url" \
-    --from-literal=urlschema="$urlschema" \
-    --from-literal=username="$username" \
-    --from-literal=password="$password_decoded"
-}
-
-# ensure_container_registry_secret <docker_server> <username> <password> <namespace>
-ensure_container_registry_secret() {
-  local server="$1"
-  local username="$2"
-  local password_decoded
-  password_decoded="$(decode_if_b64 "$3")"
-  local namespace="$4"
-  ensure_secret "ces-container-registries" docker-registry "$namespace" \
-    --docker-server="$server" \
-    --docker-username="$username" \
-    --docker-password="$password_decoded"
-}
-
-# ensure_helm_registry_config <host> <schema> <plain_http> <insecure_tls> <username> <password> <namespace>
-ensure_helm_registry_config() {
-  local host="$1"
-  local schema="$2"
-  local plain_http="$3"
-  local insecure_tls="$4"
-  local username="$5"
-  local password_decoded
-  password_decoded="$(decode_if_b64 "$6")"
-  local namespace="$7"
-
-  local auth_b64
-  auth_b64="$(printf '%s:%s' "$username" "$password_decoded" | base64 | tr -d '\n')"
-
-  ensure_configmap "component-operator-helm-repository" "$namespace" \
-    --from-literal=endpoint="$host" \
-    --from-literal=schema="$schema" \
-    --from-literal=plainHttp="$plain_http" \
-    --from-literal=insecureTls="$insecure_tls"
-
-  ensure_secret "component-operator-helm-registry" generic "$namespace" \
-    --from-literal=config.json="{\"auths\": {\"$host\": {\"auth\": \"$auth_b64\"}}}"
-  echo "Helm registry config ensured (ConfigMap + Secret)."
-}
-
-# ensure_initial_admin_password_secret <namespace>
-ensure_initial_admin_password_secret() {
-  local namespace="$1"
-  ensure_secret "initial-admin-password" generic "$namespace" \
-    --from-literal=admin-password="adminpw"
-}
-
-# ensure_certificate_secret <namespace>
-ensure_certificate_secret() {
-  local namespace="$1"
-
-  if [ ! -f "$CERTIFICATE_CRT_FILE" ] || [ ! -f "$CERTIFICATE_KEY_FILE" ]; then
-    echo "no certificate file found. certificate will be self-signed"
+# shouldApplyResources checks whether ecosystem-core is already installed and if an upgrade should be applied
+shouldApplyResources() {
+  # Return true if forced via flag
+  if [ "${forceUpgradeEcosystem}" = "true" ]; then
     return 0
   fi
 
-  ensure_secret "ecosystem-certificate" generic "$namespace" \
-    --from-file=tls.crt="$CERTIFICATE_CRT_FILE" \
-    --from-file=tls.key="$CERTIFICATE_KEY_FILE"
-}
-
-
-# Build and apply a .blueprint.yaml with latest dogu versions based on blueprint.yaml.tpl
-# Requires: jq, yq (v4+), curl
-patch_and_apply_blueprint_with_latest_versions() {
-  local username="${dogu_registry_username}"
-  local password="${dogu_registry_password}"
-
-  # Extract dogu names from template
-  mapfile -t dogus < <(yq -r '.spec.blueprint.dogus[].name' "$BLUEPRINT_YAML_TEMPLATE")
-
-  # Prepare a temporary yq expression to update versions
-  local yq_expr=""
-  local idx=0
-  for dogu in "${dogus[@]}"; do
-    # Fetch latest version for each dogu
-    local ver
-    if ! ver="$(get_latest_dogu_version "$dogu" "$username" "$password")" || [ -z "$ver" ] || [ "$ver" = "null" ]; then
-      echo "Warning: Could not resolve latest version for $dogu; keeping template version."
-      idx=$((idx+1))
-      continue
-    fi
-    # Build yq update expression
-    if [ -n "$yq_expr" ]; then
-      yq_expr+=" | "
-    fi
-    yq_expr+=".spec.blueprint.dogus[$idx].version = \"$ver\""
-    idx=$((idx+1))
-  done
-
-  # If both certificate files exist, patch certificate/type to external
-  if [ -f "$CERTIFICATE_CRT_FILE" ] || [ -f "$CERTIFICATE_KEY_FILE" ]; then
-    echo "certificate found. setting certificate/type to external"
-    if [ -n "$yq_expr" ]; then
-      yq_expr+=" | "
-    fi
-    yq_expr+="(.spec.blueprint.config.global[] | select(.key == \"certificate/type\") | .value) = \"external\""
-  fi
-
-  # If we have updates, apply them; otherwise copy template
-  if [ -n "$yq_expr" ]; then
-    yq eval "$yq_expr" "$BLUEPRINT_YAML_TEMPLATE" > "$BLUEPRINT_YAML"
+  # Check if helm release ecosystem-core exists in the target namespace
+  if helm status ecosystem-core --namespace "${CES_NAMESPACE}" >/dev/null 2>&1; then
+    # Release exists -> do not apply
+    return 1
   else
-    cp "$BLUEPRINT_YAML_TEMPLATE" "$BLUEPRINT_YAML"
+    # Release not found -> apply
+    return 0
   fi
-
-  kubectl apply -f "$BLUEPRINT_YAML"
-
-  echo "Applies $BLUEPRINT_YAML with latest dogu versions."
 }
 
 # Apply the setup resources to the current namespace.
@@ -282,13 +110,15 @@ applyResources() {
   ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
   ADDITIONAL_VALUES_YAML=image/scripts/dev/.additionalValues.yaml
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
-  helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/testing/k8s/ecosystem-core" \
-    --version 0.1.0-dev.1758874643 \
+  helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/ecosystem-core" \
     --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}"
 
   # Apply blueprint with latest dogu versions
-  patch_and_apply_blueprint_with_latest_versions
+  patch_and_apply_blueprint_with_latest_versions "${dogu_registry_username}" "${dogu_registry_password}" "${fqdn}"
+
+  # wait until blueprint is completed, then stop the blueprint
+  wait_and_stop_blueprint "blueprint" "${CES_NAMESPACE}" 600
 }
 
 # --- Main ---
@@ -299,8 +129,10 @@ export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
 echo "set default k8s namespace"
 kubectl config set-context --current --namespace "${CES_NAMESPACE}"
 
-echo "**** Executing installEcosystem.sh..."
-
-applyResources
-
-echo "**** Finished installEcosystem.sh"
+if shouldApplyResources; then
+  echo "**** Executing installEcosystem.sh..."
+  applyResources
+  echo "**** Finished installEcosystem.sh"
+else
+  echo "**** ecosystem is already installed; not applying resources"
+fi

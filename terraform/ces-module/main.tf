@@ -260,7 +260,7 @@ resource "helm_release" "ecosystem-core" {
         "component_operator_image"                       = local.component_operator_image
         "components"                                     = local.components
         "ecosystem_core_default_config_image"            = local.ecosystem_core_default_config_image
-        "ecosystem_core_defaultconfig_wait_timeout_secs" = var.ecosystem_core_defaultconfig_wait_timeout_secs
+        "ecosystem_core_defaultconfig_wait_timeout_secs" = var.ecosystem_core_defaultconfig_wait_timeout_minutes
       })
   ]
   depends_on = [

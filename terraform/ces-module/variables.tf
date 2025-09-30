@@ -39,7 +39,7 @@ variable "ecosystem_core_chart_namespace" {
   default     = "k8s"
 }
 
-variable "ecosystem_core_defaultconfig_wait_timeout_secs" {
+variable "ecosystem_core_defaultconfig_wait_timeout_minutes" {
   description = "The timeout of the setup to wait for each component in minutes"
   type        = number
   default     = 5

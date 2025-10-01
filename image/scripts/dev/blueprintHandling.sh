@@ -5,6 +5,7 @@ set -o pipefail
 
 BLUEPRINT_YAML_TEMPLATE="image/scripts/dev/blueprint.yaml.tpl"
 BLUEPRINT_YAML="image/scripts/dev/.blueprint.yaml"
+BLUEPRINT_OVERRIDE_YAML=".blueprint-override.yaml"
 
 # Build and apply a .blueprint.yaml with latest dogu versions based on blueprint.yaml.tpl
 # Requires: jq, yq (v4+), curl
@@ -59,6 +60,13 @@ patch_and_apply_blueprint_with_latest_versions() {
     cp "$BLUEPRINT_YAML_TEMPLATE" "$BLUEPRINT_YAML"
   fi
 
+  # Merge .blueprint-override.yaml
+  if [ -f "$BLUEPRINT_YAML" ] && [ -f "$BLUEPRINT_OVERRIDE_YAML" ]; then
+      echo "merging $BLUEPRINT_OVERRIDE_YAML into $BLUEPRINT_YAML"
+      yq ea '. as $doc ireduce ({}; . *+ $doc )' "$BLUEPRINT_YAML" "$BLUEPRINT_OVERRIDE_YAML" > "${BLUEPRINT_YAML}.merged"
+      mv "${BLUEPRINT_YAML}.merged" "$BLUEPRINT_YAML"
+    fi
+
   kubectl apply -f "$BLUEPRINT_YAML"
 
   echo "applying $BLUEPRINT_YAML with latest dogu versions."
@@ -69,7 +77,7 @@ patch_and_apply_blueprint_with_latest_versions() {
 wait_for_blueprint_completed() {
   local name="${1:-blueprint}"
   local namespace="${2:-${CES_NAMESPACE}}"
-  local timeout="${3:-600}" # default 10 minutes
+  local timeout="${3:-900}" # default 15 minutes
   local interval=5
   local elapsed=0
 

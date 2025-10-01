@@ -119,3 +119,19 @@ After the initial start of the DEV-box, subsequent starts with `vagrant up` chec
 If this is the case, no further steps are taken.
 This behavior can be disabled via the `forceUpgradeEcosystem` configuration in the `.vagrant.rb` file.
 Then the Helm release `ecosystem-core` and the blueprint will be updated with every `vagrant up`.
+
+#### Blueprint override
+
+To install additional dogus or overwrite versions, a `.blueprint-override.yaml` file can be stored in the root directory.
+This file is merged with the generated blueprint file when the blueprint is created.
+
+Procedure:
+1. Copy the template:
+   `cp .blueprint-override.yaml.template .blueprint-override.yaml`
+2. Customize the content (e.g., define additional Dogus or specific versions).
+3. Run `vagrant up`. The file is automatically merged into the blueprint and applied.
+
+Notes:
+- The file must be named exactly `.blueprint-override.yaml` and located in the root directory.
+- Values from the override file overwrite entries of the same name in the generated blueprint file.
+- Syntax and structure must correspond to the blueprint schema.

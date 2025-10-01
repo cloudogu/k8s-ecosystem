@@ -12,7 +12,7 @@ fqdn = "k3ces.local"
 kube_ctx_name= "k3ces.local"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
-install_setup = true
+install_ecosystem = true
 forceUpgradeEcosystem = false
 dogu_registry_username = ""
 dogu_registry_password = ""
@@ -185,7 +185,7 @@ Vagrant.configure("2") do |config|
                     args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
-  if install_setup
+  if install_ecosystem
     config.trigger.after :up do |trigger|
       longhorn_replicas = [worker_count + 1, 3].min
       if worker_count > 0

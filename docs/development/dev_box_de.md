@@ -10,12 +10,14 @@ finden.
 
 Folgende Applikationen müssen installiert sein:
 
-- [kubectl](https://kubernetes.io/de/docs/tasks/tools/install-kubectl/) - Kommandozeilen-Tool zur Verwaltung des Kubernetes-Clusters
+- [kubectl](https://kubernetes.io/de/docs/tasks/tools/install-kubectl/) - Kommandozeilen-Tool zur Verwaltung des
+  Kubernetes-Clusters
 - [Helm](https://helm.sh/docs/intro/quickstart/) - Paketmanager für Kubernetes
 
 Folgende Applikationen werden zur leichteren Handhabung empfohlen:
 
-- [kubectx + kubens](https://github.com/ahmetb/kubectx) - Einfacheres Wechseln zwischen Kubernetes-Kontexten und -Namespaces
+- [kubectx + kubens](https://github.com/ahmetb/kubectx) - Einfacheres Wechseln zwischen Kubernetes-Kontexten und
+  -Namespaces
 - [k9s](https://k9scli.io/topics/install/) - UI (im Terminal) zur einfacheren Verwaltung des Clusters
 
 #### Dateisystem
@@ -23,17 +25,19 @@ Folgende Applikationen werden zur leichteren Handhabung empfohlen:
 - Gegebenenfalls muss der Ordner `~/.kube` angelegt werden
 - in `/etc/hosts` folgenden Eintrag ergänzen: `192.168.56.2     k3ces.local`
 - Umgebungsvariable setzen: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local`
-- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.local:30099"] }` 
+- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.local:30099"] }`
   (wird benötigt, um beim Entwickeln eigene Images in die Helm-Registry zu pushen)
 
 ### Konfiguration
 
-Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Es existiert eine Template-Datei `.vagrant.rb.template`, 
+Die Konfiguration für die Dev-Box erfolgt über eine `.vagrant.rb`-Datei. Es existiert eine Template-Datei
+`.vagrant.rb.template`,
 die als guter Startpunkt dienen kann. Die `.vagrant.rb`-Datei wird vom `Vagrantfile` eingelesen und
 kann die Konfigurationswerte aus dem `Vagrantfile` überschreiben.
 
-**Um sicherzustellen, dass Sonderzeichen von der Vagrantdatei oder nachfolgenden Shell-Skripten wörtlich behandelt werden, 
-geben Sie bitte Ihre Passwörter in der Base64-Kodierung an. Bitte nutzen Sie dafür folgenden Befehl: 
+**Um sicherzustellen, dass Sonderzeichen von der Vagrantdatei oder nachfolgenden Shell-Skripten wörtlich behandelt
+werden,
+geben Sie bitte Ihre Passwörter in der Base64-Kodierung an. Bitte nutzen Sie dafür folgenden Befehl:
 `printf '%s' 'password' | base64 -w0`**
 
 Folgende Konfigurationswerte können (unter anderem) angegeben werden:
@@ -41,17 +45,17 @@ Folgende Konfigurationswerte können (unter anderem) angegeben werden:
 | Wert                     | Beschreibung                                                                                                                                                                                          |
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | dogu_registry_url        | Die URL der Dogu-Registry                                                                                                                                                                             |
-| dogu_registry_username   | Der Benutzername zum Login in die Dogu-Registry                                                                                                                                                        |
-| dogu_registry_password   | Das Passwort zum Login in die Dogu-Registry                                                                                                                                                            |
+| dogu_registry_username   | Der Benutzername zum Login in die Dogu-Registry                                                                                                                                                       |
+| dogu_registry_password   | Das Passwort zum Login in die Dogu-Registry                                                                                                                                                           |
 | image_registry_url       | Die URL der Image-Registry                                                                                                                                                                            |
-| image_registry_username  | Der Benutzername zum Login in die Image-Registry                                                                                                                                                       |
-| image_registry_password  | Das Passwort zum Login in die Image-Registry                                                                                                                                                           |
+| image_registry_username  | Der Benutzername zum Login in die Image-Registry                                                                                                                                                      |
+| image_registry_password  | Das Passwort zum Login in die Image-Registry                                                                                                                                                          |
 | image_registry_email     | Die E-Mail-Adresse des Benutzers der Image-Registry                                                                                                                                                   |
 | helm_registry_host       | Der Host der Helm-Registry                                                                                                                                                                            |
 | helm_registry_schema     | Das Schema der Helm-Registry                                                                                                                                                                          |
 | helm_registry_plain_http | Wird die Helm-Registry über HTTP oder HTTPS erreicht?                                                                                                                                                 |
-| helm_registry_username   | Der Benutzername zum Login in die Helm-Registry                                                                                                                                                        |
-| helm_registry_password   | Das Passwort zum Login in die Helm-Registry                                                                                                                                                            |
+| helm_registry_username   | Der Benutzername zum Login in die Helm-Registry                                                                                                                                                       |
+| helm_registry_password   | Das Passwort zum Login in die Helm-Registry                                                                                                                                                           |
 | vm_memory                | Der Arbeitsspeicher der VMs                                                                                                                                                                           |
 | vm_cpus                  | Die Anzahl der CPUs der VMs                                                                                                                                                                           |
 | worker_count             | Die Anzahl der Worker-Nodes des Cluster                                                                                                                                                               |
@@ -115,3 +119,19 @@ Nach dem initialen Starten der DEV-Box wird bei folgenden Starts mit `vagrant up
 Wenn das der Fall ist, werden keine weiteren Schritte ausgeführt.
 Über die Konfiguration `forceUpgradeEcosystem` in der `.vagrant.rb`-Datei, kann dieses Verhalten deaktiviert werden.
 Dann wird das Helm-Release `ecosystem-core` und das Blueprint bei jedem `vagrant up` aktualisiert.
+
+#### Blueprint-Override
+
+Um zusätzliche Dogus mitzuinstallieren oder Versionen zu überschreiben, kann eine Datei `.blueprint-override.yaml` im Root-Verzeichnis abgelegt werden. 
+Diese Datei wird beim Erstellen des Blueprints mit der generierten Blueprint-Datei zusammengeführt.
+
+Vorgehen:
+1. Template kopieren:
+   `cp .blueprint-override.yaml.template .blueprint-override.yaml`
+2. Inhalte anpassen (z. B. zusätzliche Dogus oder spezifische Versionen definieren).
+3. `vagrant up` ausführen. Die Datei wird automatisch in den Blueprint gemergt und angewendet.
+
+Hinweise:
+- Die Datei muss exakt `.blueprint-override.yaml` heißen und im Root-Verzeichnis liegen.
+- Werte aus der Override-Datei überschreiben gleichnamige Einträge der generierten Blueprint-Datei.
+- Syntax und Struktur müssen dem Blueprint-Schema entsprechen.

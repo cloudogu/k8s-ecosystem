@@ -118,7 +118,7 @@ applyResources() {
   patch_and_apply_blueprint_with_latest_versions "${dogu_registry_username}" "${dogu_registry_password}" "${fqdn}"
 
   # wait until blueprint is completed, then stop the blueprint
-  wait_and_stop_blueprint "blueprint" "${CES_NAMESPACE}" 600
+  wait_and_stop_blueprint "blueprint" "${CES_NAMESPACE}" 900
 }
 
 # --- Main ---

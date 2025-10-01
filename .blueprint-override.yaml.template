@@ -1,0 +1,8 @@
+apiVersion: k8s.cloudogu.com/v2
+kind: Blueprint
+spec:
+  blueprint:
+    # add other dogus or specific dogus-versions here
+    dogus:
+      - name: "official/swaggerui"
+        version: "5.29.1-1"

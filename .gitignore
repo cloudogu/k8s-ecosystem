@@ -25,6 +25,7 @@ terraform.tfvars
 .additionalValues.yaml
 # generated blueprint file
 .blueprint.yaml
+.blueprint-override.yaml
 
 **/gcp_sa.json
 **/.terraform

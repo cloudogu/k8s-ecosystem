@@ -20,15 +20,16 @@ terraform {
 
 # The local Closure converts input Parameter to usable template parameters
 locals {
+
   component_operator_crd_chart = {
     repository = split("/", var.component_operator_crd_chart)[0]
-    name = split(":", split("/", var.component_operator_crd_chart)[1])[0]
+    name = split(":", join("/", slice(split("/", var.component_operator_crd_chart), 1, length(split("/", var.component_operator_crd_chart)))))[0]
     version = length(split(":", split("/", var.component_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.component_operator_crd_chart)[1])[1] : "1.10.1"
   }
 
   blueprint_operator_crd_chart = {
     repository = split("/", var.blueprint_operator_crd_chart)[0]
-    name = split(":", split("/", var.blueprint_operator_crd_chart)[1])[0]
+    name = split(":", join("/", slice(split("/", var.blueprint_operator_crd_chart), 1, length(split("/", var.blueprint_operator_crd_chart)))))[0]
     version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "2.8.0"
   }
 

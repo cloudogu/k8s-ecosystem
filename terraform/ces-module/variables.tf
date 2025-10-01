@@ -23,7 +23,7 @@ variable "component_operator_image" {
 variable "ecosystem_core_default_config_image" {
   description = "The Image:Version of the ecosystem_core default config. Optional with version like cloudogu/ecosystem-core-default-config:0.1.0"
   type        = string
-  default     = "cloudogu/ecosystem-core-default-config:latest"
+  default     = "cloudogu/ecosystem-core-default-config:0.2.2"
 }
 
 # resource ecosystem itself

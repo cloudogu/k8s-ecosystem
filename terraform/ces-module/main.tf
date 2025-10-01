@@ -24,14 +24,14 @@ locals {
   component_operator_crd_chart = {
     repository = join("/", slice(local._component_operator_crd_chart_parts, 0, length(local._component_operator_crd_chart_parts) - 1))
     name = split(":", local._component_operator_crd_chart_parts[length(local._component_operator_crd_chart_parts) - 1])[0]
-    version = length(split(":", split("/", var.component_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.component_operator_crd_chart)[1])[1] : "1.10.1"
+    version = length(split(":", var.component_operator_crd_chart)) == 2 ? split(":", var.component_operator_crd_chart)[1] : "1.10.1"
   }
 
   _blueprint_operator_crd_chart_parts = split("/", var.blueprint_operator_crd_chart)
   blueprint_operator_crd_chart = {
     repository = join("/", slice(local._blueprint_operator_crd_chart_parts, 0, length(local._blueprint_operator_crd_chart_parts) - 1))
     name = split(":", local._blueprint_operator_crd_chart_parts[length(local._blueprint_operator_crd_chart_parts) - 1])[0]
-    version = length(split(":", split("/", var.blueprint_operator_crd_chart)[1])) == 2 ? split(":", split("/", var.blueprint_operator_crd_chart)[1])[1] : "1.3.0"
+    version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "1.3.0"
   }
 
   component_operator_image = {

@@ -56,7 +56,7 @@ locals {
     ldap = [
       { key = "admin_username", value = var.ces_admin_username },
       { key = "admin_mail", value = var.ces_admin_email },
-      { key = "admin_member", value = true },
+      { key = "admin_member", value = "true" },
 
       { key: "admin_password", secretRef:  { key: "ldap_admin_password", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ],
@@ -90,7 +90,7 @@ locals {
     { key = "certificate/type", value = var.ces_certificate_path == null ? "selfsigned" : "external" },
     { key = "certificate", value = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""},
     { key = "certificateKey", value = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""},
-    { key = "k8s/use_internal_ip", value = false},
+    { key = "k8s/use_internal_ip", value = "false"},
     { key = "internalIp", value = ""},
 
     # Admin

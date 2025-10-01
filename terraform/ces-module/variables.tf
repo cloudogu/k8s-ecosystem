@@ -95,7 +95,7 @@ variable "components" {
       { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0" },
       { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
       { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0" },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true },
       { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0" },
       { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
       { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1" },
@@ -246,23 +246,23 @@ variable "cas_oidc_config" {
     client_id           = string
     display_name        = string
     optional            = string
-    scopes = list(string)
+    scopes = string
     attribute_mapping   = string
     principal_attribute = string
-    allowed_groups = list(string)
-    initial_admin_usernames = list(string)
+    allowed_groups = string
+    initial_admin_usernames = string
   })
   default = {
     enabled             = false
     discovery_uri       = ""
     client_id           = ""
     display_name        = "CAS oidc provider"
-    optional            = false
-    scopes = ["openid", "email", "profile", "groups"]
+    optional            = "false"
+    scopes = "openid, email, profile, groups"
     attribute_mapping   = "email:mail,family_name:surname,given_name:givenName,preferred_username:username,name:displayName,groups:externalGroups"
     principal_attribute = "preferred_username"
-    allowed_groups = []
-    initial_admin_usernames = []
+    allowed_groups = ""
+    initial_admin_usernames = ""
   }
 }
 

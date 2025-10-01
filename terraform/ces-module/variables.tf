@@ -48,7 +48,7 @@ variable "ecosystem_core_defaultconfig_wait_timeout_minutes" {
 variable "ecosystem_core_timeout" {
   description = "The helm timeout of ecosystem-core to complete the installation in seconds"
   type        = number
-  default     = 300
+  default     = 600
 }
 
 # namespace of ces

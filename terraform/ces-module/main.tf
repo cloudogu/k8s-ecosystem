@@ -132,7 +132,7 @@ resource "helm_release" "k8s_component_operator_crd" {
   chart            = local.component_operator_crd_chart.name
   version          = local.component_operator_crd_chart.version
 
-  namespace        = var.ecosystem_core_chart_namespace
+  namespace        = var.ces_namespace
   create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
 
   # Helm-Flags analog zum CLI-Aufruf
@@ -151,7 +151,7 @@ resource "helm_release" "k8s_blueprint_operator_crd" {
   chart            = local.blueprint_operator_crd_chart.name
   version          = local.blueprint_operator_crd_chart.version
 
-  namespace        = var.ecosystem_core_chart_namespace
+  namespace        = var.ces_namespace
   create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
 
   # Helm-Flags analog zum CLI-Aufruf

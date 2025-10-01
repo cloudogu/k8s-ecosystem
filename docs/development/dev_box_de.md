@@ -108,7 +108,7 @@ Beim initialen Starten der DEV-Box mit `vagrant up` wird das "ecosystem-core" He
 Die Dogus werden mit ihrer jeweils aktuellsten Version im Blueprint eingetragen.
 
 Wenn das Blueprint erfolgreich angewendet wurde (Condition `Completed: True`), wird es auf `stopped: true` gesetzt.
-Das hat zur Folge, dass das Blueprint nicht mehr automatisch angewendet wird und somit auf weitere Dogus manuell installiert werden können, ohne dass der Blueprint-Operator diese löscht oder verändert.
+Das hat zur Folge, dass das Blueprint nicht mehr automatisch angewendet wird und somit auch weitere Dogus manuell installiert werden können, ohne dass der Blueprint-Operator diese löscht oder verändert.
 
 #### Update erzwingen
 Nach dem initialen Starten der DEV-Box wird bei folgenden Starts mit `vagrant up` überprüft ob das Helm-Release `ecosystem-core` bereits installiert ist. 

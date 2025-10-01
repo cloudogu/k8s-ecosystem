@@ -68,12 +68,12 @@ locals {
       { key = "oidc/discovery_uri", value = var.cas_oidc_config.discovery_uri },
       { key = "oidc/client_id", value = var.cas_oidc_config.client_id },
       { key = "oidc/display_name", value = var.cas_oidc_config.display_name },
-      { key = "oidc/optional", value = var.cas_oidc_config.optional },
-      { key = "oidc/scopes", value = var.cas_oidc_config.scopes },
+      { key = "oidc/optional", value = tostring(var.cas_oidc_config.optional) },
+      { key = "oidc/scopes", value = join(",", var.cas_oidc_config.scopes) },
       { key = "oidc/principal_attribute", value = var.cas_oidc_config.principal_attribute },
       { key = "oidc/attribute_mapping", value = var.cas_oidc_config.attribute_mapping },
-      { key = "oidc/allowed_groups", value = var.cas_oidc_config.allowed_groups },
-      { key = "oidc/initial_admin_usernames", value = var.cas_oidc_config.initial_admin_usernames },
+      { key = "oidc/allowed_groups", value = join(",", var.cas_oidc_config.allowed_groups) },
+      { key = "oidc/initial_admin_usernames", value = join(",", var.cas_oidc_config.initial_admin_usernames) },
 
       { key: "oidc/client_secret", secretRef:  { key: "cas_oidc_client_secret", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ]

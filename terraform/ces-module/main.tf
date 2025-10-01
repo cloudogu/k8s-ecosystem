@@ -31,7 +31,7 @@ locals {
   blueprint_operator_crd_chart = {
     repository = join("/", slice(local._blueprint_operator_crd_chart_parts, 0, length(local._blueprint_operator_crd_chart_parts) - 1))
     name = split(":", local._blueprint_operator_crd_chart_parts[length(local._blueprint_operator_crd_chart_parts) - 1])[0]
-    version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "1.3.0"
+    version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "1.4.0"
   }
 
   component_operator_image = {

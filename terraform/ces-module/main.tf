@@ -114,6 +114,8 @@ locals {
     backup = var.components.backup
     monitoring = var.components.monitoring
   }
+
+  decoded_helm_password = base64decode("${var.helm_registry_password}")
 }
 
 resource "kubernetes_namespace" "ecosystem_core_chart_namespace" {
@@ -233,7 +235,7 @@ resource "kubernetes_secret" "component_operator_helm_registry" {
       auths = {
         "registry.cloudogu.com" = {
           # entspricht: echo -n "${USER}:${PASS}" | base64
-          auth = base64encode("${var.helm_registry_username}:${var.helm_registry_password}")
+          auth = base64encode("${var.helm_registry_username}:${local.decoded_helm_password}")
         }
       }
     })

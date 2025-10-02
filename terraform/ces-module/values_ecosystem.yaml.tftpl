@@ -22,6 +22,9 @@ components:
 %{ for component in components.components ~}
   ${component.name}:
     version: ${component.version}
+%{ if component.helmNamespace != null ~}
+    helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
 %{ if component.valueObject != null ~}
     valuesObject:
       ${indent(6, yamlencode(component.valueObject)) }
@@ -34,28 +37,34 @@ backup:
   enabled: ${components.backup.enabled}
   components:
 %{ for component in components.backup.components ~}
-  ${component.name}:
-    version: ${component.version}
+    ${component.name}:
+      version: ${component.version}
+%{ if component.helmNamespace != null ~}
+      helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
 %{ if component.disabled }
-    disabled: true
+      disabled: true
 %{ endif ~}
 %{ if component.valueObject != null ~}
-    valuesObject:
-      ${indent(8, yamlencode(component.valueObject)) }
+      valuesObject:
+        ${indent(8, yamlencode(component.valueObject)) }
 %{ endif ~}
 %{ endfor ~}
 monitoring:
   enabled: ${components.monitoring.enabled}
   components:
 %{ for component in components.monitoring.components ~}
-  ${component.name}:
-    version: ${component.version}
+    ${component.name}:
+      version: ${component.version}
+%{ if component.helmNamespace != null ~}
+      helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
 %{ if component.disabled }
-    disabled: true
+      disabled: true
 %{ endif ~}
 %{ if component.valueObject != null ~}
-    valuesObject:
-      ${indent(8, yamlencode(component.valueObject)) }
+      valuesObject:
+        ${indent(8, yamlencode(component.valueObject)) }
 %{ endif ~}
 %{ endfor ~}
 cleanup:

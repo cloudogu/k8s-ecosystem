@@ -66,6 +66,7 @@ variable "components" {
       namespace = string
       name = string
       version = string
+      helmNamespace = optional(string)
       disabled = optional(bool, false)
       valueObject = optional(object({}), null)
     }))
@@ -75,6 +76,7 @@ variable "components" {
         namespace = string
         name = string
         version = string
+        helmNamespace = optional(string)
         disabled = optional(bool, false)
         valueObject = optional(object({}), null)
       }))
@@ -85,6 +87,7 @@ variable "components" {
         namespace = string
         name = string
         version = string
+        helmNamespace = optional(string)
         disabled = optional(bool, false)
         valueObject = optional(object({}), null)
       }))

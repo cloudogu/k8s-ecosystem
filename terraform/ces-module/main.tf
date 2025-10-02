@@ -292,6 +292,16 @@ resource "helm_release" "ecosystem-core" {
   ]
 }
 
+# optionaler Debug-Output
+resource "local_file" "rendered_blueprint" {
+  content  = templatefile("${path.module}/blueprint.yaml.tftpl", {
+    dogus        = local.parsedDogus
+    doguConfigs  = local.doguConfigs
+    globalConfig = local.globalConfig
+  })
+  filename = "${path.module}/_rendered_blueprint.yaml"
+}
+
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
 resource "kubectl_manifest" "blueprint" {

@@ -97,17 +97,21 @@ locals {
     { key = "admin_group", value = "cesAdmin"},
   ]
 
+  _component_defaults = {
+    disabled      = false
+    helmNamespace = null
+    valuesObject  = null
+  }
+
+  components_norm = [
+    for c in var.components.components :
+    merge(local._component_defaults, c)
+  ]
+
   compcomponents = [
     for comp in var.components.components : merge(
       comp,
-        comp.name == "k8s-ces-assets" ? { valueObject = {
-        nginx = {
-          manager = {
-            config = {
-              defaultDogu = var.default_dogu
-            }
-          }
-        } } } : {}
+        comp.name == "k8s-ces-assets" ? { valuesObject = "      nginx:\n        manager:\n          config:\n            defaultDogu: \"${var.default_dogu}\"" } : {}
     )
   ]
 

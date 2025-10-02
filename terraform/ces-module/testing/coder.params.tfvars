@@ -12,11 +12,21 @@
 
   components = {
     components = [
-      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0" },
+      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0"},
       { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
       { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
       { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.8.0" },
+      {
+        namespace     = "ecosystem", name = "k8s-blueprint-operator", version = "2.8.0-dev.1758811397",
+        helmNamespace = "testing/k8s",
+        valuesObject = <<YAML
+      healthConfig:
+        components:
+          required:
+            - name: "k8s-dogu-operator"
+            - name: "k8s-dogu-discovery"
+YAML
+      },
       { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
       { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1" },
       { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled  = true },

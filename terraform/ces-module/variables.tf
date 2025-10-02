@@ -68,7 +68,7 @@ variable "components" {
       version = string
       helmNamespace = optional(string)
       disabled = optional(bool, false)
-      valueObject = optional(object({}), null)
+      valuesObject = optional(any, null)
     }))
     backup = object ({
       enabled = bool
@@ -78,7 +78,7 @@ variable "components" {
         version = string
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valueObject = optional(object({}), null)
+        valuesObject = optional(any, null)
       }))
     })
     monitoring = object ({
@@ -89,7 +89,7 @@ variable "components" {
         version = string
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valueObject = optional(object({}), null)
+        valuesObject = optional(any, null)
       }))
     })
   })

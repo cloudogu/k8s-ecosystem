@@ -25,9 +25,9 @@ components:
 %{ if component.helmNamespace != null ~}
     helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
-%{ if component.valueObject != null ~}
+%{ if try(component.valuesObject, null) != null ~}
     valuesObject:
-      ${indent(6, yamlencode(component.valueObject)) }
+${component.valuesObject}
 %{ endif ~}
 %{ if component.disabled ~}
     disabled: true
@@ -45,9 +45,9 @@ backup:
 %{ if component.disabled }
       disabled: true
 %{ endif ~}
-%{ if component.valueObject != null ~}
+%{ if try(length(keys(component.valuesObject)), 0) > 0 ~}
       valuesObject:
-        ${indent(8, yamlencode(component.valueObject)) }
+        ${indent(8, yamlencode(component.valuesObject)) }
 %{ endif ~}
 %{ endfor ~}
 monitoring:
@@ -62,9 +62,9 @@ monitoring:
 %{ if component.disabled }
       disabled: true
 %{ endif ~}
-%{ if component.valueObject != null ~}
+%{ if try(length(keys(component.valuesObject)), 0) > 0 ~}
       valuesObject:
-        ${indent(8, yamlencode(component.valueObject)) }
+        ${indent(8, yamlencode(component.valuesObject)) }
 %{ endif ~}
 %{ endfor ~}
 cleanup:

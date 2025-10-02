@@ -122,8 +122,8 @@ Dann wird das Helm-Release `ecosystem-core` und das Blueprint bei jedem `vagrant
 
 #### Blueprint-Override
 
-Um zusätzliche Dogus mitzuinstallieren oder Versionen zu überschreiben, kann eine Datei `.blueprint-override.yaml` im Root-Verzeichnis abgelegt werden. 
-Diese Datei wird beim Erstellen des Blueprints mit der generierten Blueprint-Datei zusammengeführt.
+Um weitere Dogus, oder spezielle Config zu installieren kann eine Datei `.blueprint-override.yaml` im Root-Verzeichnis abgelegt werden. 
+Ist diese Datei vorhanden, wird sie statt des generierten Blueprints verwendet.
 
 Vorgehen:
 1. Template kopieren:
@@ -133,5 +133,4 @@ Vorgehen:
 
 Hinweise:
 - Die Datei muss exakt `.blueprint-override.yaml` heißen und im Root-Verzeichnis liegen.
-- Werte aus der Override-Datei überschreiben gleichnamige Einträge der generierten Blueprint-Datei.
 - Syntax und Struktur müssen dem Blueprint-Schema entsprechen.

@@ -122,8 +122,8 @@ Then the Helm release `ecosystem-core` and the blueprint will be updated with ev
 
 #### Blueprint override
 
-To install additional dogus or overwrite versions, a `.blueprint-override.yaml` file can be stored in the root directory.
-This file is merged with the generated blueprint file when the blueprint is created.
+To install additional Dogus or special configurations, a file named `.blueprint-override.yaml` can be stored in the root directory.
+If this file exists, it will be used instead of the generated blueprint.
 
 Procedure:
 1. Copy the template:
@@ -133,5 +133,4 @@ Procedure:
 
 Notes:
 - The file must be named exactly `.blueprint-override.yaml` and located in the root directory.
-- Values from the override file overwrite entries of the same name in the generated blueprint file.
 - Syntax and structure must correspond to the blueprint schema.

@@ -15,6 +15,15 @@ patch_and_apply_blueprint_with_latest_versions() {
   local password="$2"
   local fqdn="$3"
 
+  # Ig .blueprint-override.yaml exists, use this
+  if [ -f "$BLUEPRINT_OVERRIDE_YAML" ]; then
+    echo "applying $BLUEPRINT_OVERRIDE_YAML..."
+    kubectl apply -f "$BLUEPRINT_YAML"
+    return 0
+  fi
+
+
+
   # Extract dogu names from template
   mapfile -t dogus < <(yq -r '.spec.blueprint.dogus[].name' "$BLUEPRINT_YAML_TEMPLATE")
 
@@ -59,13 +68,6 @@ patch_and_apply_blueprint_with_latest_versions() {
   else
     cp "$BLUEPRINT_YAML_TEMPLATE" "$BLUEPRINT_YAML"
   fi
-
-  # Merge .blueprint-override.yaml
-  if [ -f "$BLUEPRINT_YAML" ] && [ -f "$BLUEPRINT_OVERRIDE_YAML" ]; then
-      echo "merging $BLUEPRINT_OVERRIDE_YAML into $BLUEPRINT_YAML"
-      yq ea '. as $doc ireduce ({}; . *+ $doc )' "$BLUEPRINT_YAML" "$BLUEPRINT_OVERRIDE_YAML" > "${BLUEPRINT_YAML}.merged"
-      mv "${BLUEPRINT_YAML}.merged" "$BLUEPRINT_YAML"
-    fi
 
   kubectl apply -f "$BLUEPRINT_YAML"
 

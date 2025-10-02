@@ -316,15 +316,14 @@ resource "kubernetes_config_map" "blueprint_config_map" {
 
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
-resource "kubernetes_manifest" "blueprint" {
-  manifest = yamldecode(
-    templatefile("${path.module}/blueprint.yaml.tftpl", {
-      dogus        = local.parsedDogus
-      doguConfigs  = local.doguConfigs
-      globalConfig = local.globalConfig
+resource "kubectl_manifest" "blueprint" {
+  yaml_body = templatefile(
+    "${path.module}/blueprint.yaml.tftpl",
+    {
+      "dogus"        = local.parsedDogus
+      "doguConfigs"  = local.doguConfigs
+      "globalConfig" = local.globalConfig
     })
-  )
-
   depends_on = [
     helm_release.ecosystem-core,
     kubernetes_secret.ecosystem_core_setup_credentials

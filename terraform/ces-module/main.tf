@@ -118,6 +118,13 @@ locals {
   }
 
   decoded_helm_password = base64decode("${var.helm_registry_password}")
+
+
+  blueprint_yaml = templatefile("${path.module}/blueprint.yaml.tftpl", {
+    dogus        = local.parsedDogus
+    doguConfigs  = local.doguConfigs
+    globalConfig = local.globalConfig
+  })
 }
 
 resource "kubernetes_namespace" "ecosystem_core_chart_namespace" {
@@ -292,14 +299,19 @@ resource "helm_release" "ecosystem-core" {
   ]
 }
 
-# optionaler Debug-Output
-resource "local_file" "rendered_blueprint" {
-  content  = templatefile("${path.module}/blueprint.yaml.tftpl", {
-    dogus        = local.parsedDogus
-    doguConfigs  = local.doguConfigs
-    globalConfig = local.globalConfig
-  })
-  filename = "${path.module}/_rendered_blueprint.yaml"
+resource "kubernetes_config_map" "blueprint_config_map" {
+  metadata {
+    name      = "blueprint-rendered"
+    namespace = var.ces_namespace
+    labels = {
+      app = "ces"
+    }
+  }
+
+  # Schlüssel = Dateiname innerhalb der CM, Wert = Dateiinhalt
+  data = {
+    "blueprint.yaml" = local.blueprint_yaml
+  }
 }
 
 # The Blueprint is used to configure the system after the ecosystem-core has installed all

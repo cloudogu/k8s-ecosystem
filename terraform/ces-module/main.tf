@@ -324,6 +324,7 @@ resource "kubectl_manifest" "blueprint" {
       "doguConfigs"  = local.doguConfigs
       "globalConfig" = local.globalConfig
     })
+  namespace = var.ces_namespace
   depends_on = [
     helm_release.ecosystem-core,
     kubernetes_secret.ecosystem_core_setup_credentials

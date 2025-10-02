@@ -120,10 +120,11 @@ locals {
   decoded_helm_password = base64decode("${var.helm_registry_password}")
 
 
-  blueprint_yaml = templatefile("${path.module}/blueprint.yaml.tftpl", {
-    dogus        = local.parsedDogus
-    doguConfigs  = local.doguConfigs
-    globalConfig = local.globalConfig
+  blueprint_yaml  = templatefile("${path.module}/blueprint.yaml.tftpl", {
+    dogus         = local.parsedDogus
+    doguConfigs   = local.doguConfigs
+    globalConfig  = local.globalConfig
+    ces_namespace = var.ces_namespace
   })
 }
 
@@ -320,9 +321,10 @@ resource "kubectl_manifest" "blueprint" {
   yaml_body = templatefile(
     "${path.module}/blueprint.yaml.tftpl",
     {
-      "dogus"        = local.parsedDogus
-      "doguConfigs"  = local.doguConfigs
-      "globalConfig" = local.globalConfig
+      "dogus"         = local.parsedDogus
+      "doguConfigs"   = local.doguConfigs
+      "globalConfig"  = local.globalConfig
+      "ces_namespace" = var.ces_namespace
     })
   depends_on = [
     helm_release.ecosystem-core,

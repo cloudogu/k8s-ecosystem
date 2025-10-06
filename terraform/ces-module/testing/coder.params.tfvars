@@ -64,13 +64,13 @@ YAML
   # Docker-Image Registry Credentials
   docker_registry_host       = "image_registry_url"
   docker_registry_username   = "image_registry_username"
-  docker_registry_password   = "image_registry_password"
+  docker_registry_password   = "aW1hZ2VfcmVnaXN0cnlfcGFzc3dvcmQ="
   docker_registry_email      = "image_registry_username"
 
 
   # Dogu Registry Credentials
-  dogu_registry_username     = "dogureguser"
-  dogu_registry_password     = "doguregpw"
+  dogu_registry_username     = "todo"
+  dogu_registry_password     = "todo"
 
   # FQDN
   ces_fqdn  = "fqdn"

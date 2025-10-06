@@ -15,6 +15,7 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+    http = { source = "hashicorp/http" }
   }
 }
 
@@ -44,11 +45,34 @@ locals {
     version = length(split(":", var.ecosystem_core_default_config_image)) == 2 ? split(":", var.ecosystem_core_default_config_image)[1] : "latest"
   }
 
+  dogu_items = [
+    for s in var.dogus : {
+      name    = split(":", s)[0]
+      version = length(split(":", s)) == 2 ? split(":", s)[1] : null
+    }
+  ]
+
+  # Für welche Dogus müssen wir "latest" auflösen?
+  dogus_needing_latest = toset([
+    for d in local.dogu_items : d.name
+    if (d.version == null || lower(d.version) == "latest")
+  ])
+
+  # Basic-Auth wie im Shellscript (Passwort ggf. base64-decoden)
+  dogu_password_decoded = can(base64decode(var.dogu_registry_password)) ? base64decode(var.dogu_registry_password) : var.dogu_registry_password
+  dogu_auth_b64 = base64encode("${var.dogu_registry_username}:${local.dogu_password_decoded}")
+
+  latest_by_name = {
+    for name, resp in data.http.dogu_versions :
+    name => (
+      resp.status_code == 200 ? try(jsondecode(resp.response_body)[0], null) : resp.body
+    )
+  }
+
   parsedDogus = [
-    for dogu in var.dogus :
-    {
-      name            = split(":", dogu)[0]
-      version         = length(split(":", dogu)) == 2 ? split(":", dogu)[1] : "latest"
+    for d in local.dogu_items : {
+      name    = d.name
+      version = (d.version == null || lower(d.version) == "latest" ) ? coalesce(lookup(local.latest_by_name, d.name, null), "latest") : d.version
     }
   ]
 
@@ -123,13 +147,24 @@ locals {
 
   decoded_helm_password = base64decode("${var.helm_registry_password}")
 
-
   blueprint_yaml  = templatefile("${path.module}/blueprint.yaml.tftpl", {
     dogus         = local.parsedDogus
     doguConfigs   = local.doguConfigs
     globalConfig  = local.globalConfig
     ces_namespace = var.ces_namespace
   })
+}
+
+# Hole die Versionen (neueste zuerst) für alle, die "latest" brauchen
+data "http" "dogu_versions" {
+  for_each = local.dogus_needing_latest
+  url      = "https://dogu.cloudogu.com/api/v2/dogus/${each.key}/_versions"
+
+  request_headers = {
+    Authorization = "Basic ${local.dogu_auth_b64}"
+    Accept        = "application/json"
+    User-Agent    = "terraform"
+  }
 }
 
 resource "kubernetes_namespace" "ecosystem_core_chart_namespace" {

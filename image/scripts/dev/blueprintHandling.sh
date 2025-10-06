@@ -18,7 +18,7 @@ patch_and_apply_blueprint_with_latest_versions() {
   # If .blueprint-override.yaml exists, use this
   if [ -f "$BLUEPRINT_OVERRIDE_YAML" ]; then
     echo "applying $BLUEPRINT_OVERRIDE_YAML..."
-    kubectl apply -f "$BLUEPRINT_YAML"
+    kubectl apply -f "$BLUEPRINT_OVERRIDE_YAML"
     return 0
   fi
 

@@ -212,7 +212,7 @@ resource "kubernetes_secret" "ces_container_registries" {
           username = var.docker_registry_username
           password = var.docker_registry_password
           email    = var.docker_registry_email
-          auth     = base64encode("${var.docker_registry_username}:${var.docker_registry_password}")
+          auth     = base64encode("${var.docker_registry_username}:${base64decode(var.docker_registry_password)}")
         }
       }
     })

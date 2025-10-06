@@ -84,7 +84,7 @@ locals {
 
       { key: "admin_password", secretRef:  { key: "ldap_admin_password", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ],
-    postifx = [
+    postfix = [
       { key = "relayhost", value = "foobar" }
     ],
     cas = [
@@ -225,7 +225,7 @@ resource "kubernetes_secret" "dogu_registry" {
     endpoint  = "https://dogu.cloudogu.com/api/v2/dogus"
     urlschema = "default"
     username  = var.dogu_registry_username
-    password  = var.dogu_registry_password
+    password  = local.dogu_password_decoded
   }
   depends_on = [kubernetes_namespace.ces_namespace]
 }

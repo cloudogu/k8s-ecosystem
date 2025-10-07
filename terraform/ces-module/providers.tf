@@ -15,6 +15,8 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
-    http = { source = "hashicorp/http" }
+    http = {
+      source = "hashicorp/http"
+    }
   }
 }

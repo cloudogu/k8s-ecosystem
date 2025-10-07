@@ -1,7 +1,11 @@
+# This addition is needed to patch the external IP if it is set from outside like on coder setups
+
 locals {
+  # unify empty variable
   ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
 }
 
+# patch loadbalancer-service "ces-loadbalancer"
 resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
   yaml_body = templatefile(
     "${path.module}/loadbalancer.yaml.tftpl",

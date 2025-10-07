@@ -33,7 +33,7 @@ locals {
     { key = "fqdn", value = var.ces_fqdn },
     { key = "domain", value = local.topLevelDomain },
     { key = "certificate/type", value = var.ces_certificate_path == null ? "selfsigned" : "external" },
-    # This must be added to secret: ecosystem-certificate
+    # This must be added to secret: ecosystem-certificate TODO
     #{ key = "certificate", value = var.ces_certificate_path != null ? replace(file(var.ces_certificate_path), "\n", "\\n") : ""},
     #{ key = "certificateKey", value = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""},
     { key = "k8s/use_internal_ip", value = "false"},

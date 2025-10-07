@@ -6,12 +6,13 @@ locals {
     }
   ]
 
-  # Für welche Dogus müssen wir "latest" auflösen?
+  # collect dogus with latest tag
   dogus_needing_latest = toset([
     for d in local.dogu_items : d.name
     if (d.version == null || lower(d.version) == "latest")
   ])
 
+  # get version by name
   latest_by_name = {
     for name, resp in data.http.dogu_versions :
     name => (
@@ -55,7 +56,7 @@ locals {
 }
 
 
-# Hole die Versionen (neueste zuerst) für alle, die "latest" brauchen
+# get version by calling registry list
 data "http" "dogu_versions" {
   for_each = local.dogus_needing_latest
   url      = "https://dogu.cloudogu.com/api/v2/dogus/${each.key}/_versions"

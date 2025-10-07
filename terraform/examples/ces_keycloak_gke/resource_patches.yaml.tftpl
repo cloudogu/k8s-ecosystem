@@ -13,12 +13,3 @@
       path: /spec/resources
       value:
         dataVolumeSize: 5Gi
-- phase: loadbalancer
-  resource:
-    apiVersion: v1
-    kind: service
-    name: ces-loadbalancer
-  patches:
-    - op: add
-      path: /spec/loadBalancerIP
-      value: "${external_ip}"

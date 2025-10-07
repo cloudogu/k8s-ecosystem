@@ -29,29 +29,31 @@ module "ces" {
   source = "../../ces-module"
 
   # Configure CES installation options
-  setup_chart_version          = var.setup_chart_version
-  setup_chart_namespace        = var.setup_chart_namespace
-  ces_fqdn                     = var.ces_fqdn
-  ces_admin_username           = var.ces_admin_username
-  ces_admin_password           = var.ces_admin_password
-  dogus                        = var.dogus
-  component_operator_chart     = var.component_operator_chart
-  component_operator_crd_chart = var.component_operator_crd_chart
-  components                   = var.components
-  resource_patches             = file(var.resource_patches_file)
+  component_operator_crd_chart        = var.component_operator_crd_chart
+  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
+  component_operator_image            = var.component_operator_image
+  ecosystem_core_default_config_image = var.ecosystem_core_default_config_image
 
-  # Configure access for the registries. Passwords need to be base64-encoded.
-  container_registry_secrets = var.container_registry_secrets
+  ces_fqdn                            = var.ces_fqdn
+  ces_admin_username                  = var.ces_admin_username
+  ces_admin_password                  = var.ces_admin_password
+  dogus                               = var.dogus
+
+  components                          = var.components
+
+  # TODO
+  # resource_patches             = file(var.resource_patches_file)
 
   dogu_registry_username   = var.dogu_registry_username
   dogu_registry_password   = var.dogu_registry_password
-  dogu_registry_endpoint   = var.dogu_registry_endpoint
-  dogu_registry_url_schema = var.dogu_registry_url_schema
+
+  docker_registry_host       = var.docker_registry_host
+  docker_registry_username   = var.docker_registry_username
+  docker_registry_password   = var.docker_registry_password
+  docker_registry_email      = var.docker_registry_email
 
   helm_registry_host         = var.helm_registry_host
   helm_registry_schema       = var.helm_registry_schema
-  helm_registry_plain_http   = var.helm_registry_plain_http
-  helm_registry_insecure_tls = var.helm_registry_insecure_tls
   helm_registry_username     = var.helm_registry_username
   helm_registry_password     = var.helm_registry_password
 }

@@ -1,9 +1,10 @@
 locals {
-  external_ip = try(nonsensitive(var.externalIP), "")
+  ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
+  has_ext_ip = local.ext_ip != ""
 }
 
 resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
-  count = local.external_ip != "" ? 1 : 0
+  count = local.has_ext_ip ? 1 : 0
 
   yaml_body = <<YAML
 apiVersion: v1
@@ -16,6 +17,7 @@ spec:
 YAML
 
   server_side_apply = true
+
 
   depends_on = [helm_release.ecosystem-core]
 }

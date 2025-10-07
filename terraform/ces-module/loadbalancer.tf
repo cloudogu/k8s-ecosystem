@@ -1,29 +1,16 @@
 locals {
-  # nur fürs Trigger-Gate ent-sensitivieren; leer wenn null/"":
-  ext_ip = try(trimspace(nonsensitive(var.externalIP)), "")
+  ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
 }
 
-resource "null_resource" "ces_loadbalancer_ip_patch" {
-  # triggert neu, wenn Namespace oder IP sich ändern
-  triggers = {
-    ns = var.ces_namespace
-    ip = local.ext_ip
-  }
+resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
+  yaml_body = templatefile(
+    "${path.module}/loadbalancer.yaml.tftpl",
+    {
+      "externalIP"    = local.ext_ip,
+      "ces_namespace" = var.ces_namespace
+    })
 
-  provisioner "local-exec" {
-    when    = create
-    command = <<-EOT
-      set -euo pipefail
-      ip="${var.externalIP}"   # Terraform setzt hier leer, wenn null/"".
-      if [ -n "$ip" ]; then
-        kubectl -n ${var.ces_namespace} patch svc ces-loadbalancer \
-          --type=merge \
-          -p '{"spec":{"loadBalancerIP":"'"$ip"'"}}'
-      else
-        echo "externalIP nicht gesetzt – Patch wird übersprungen."
-      fi
-    EOT
-  }
+  server_side_apply = true
 
-  depends_on = [helm_release.ecosystem-core]
+  depends_on        = [helm_release.ecosystem-core]
 }

@@ -123,7 +123,7 @@ resource "kubectl_manifest" "blueprint" {
     })
   depends_on = [
     helm_release.ecosystem-core,
-    kubernetes_manifest.ces_loadblancer_ip_patch,
+    kubectl_manifest.ces_loadbalancer_ip_patch,
     kubernetes_secret.ecosystem_core_setup_credentials
   ]
 }

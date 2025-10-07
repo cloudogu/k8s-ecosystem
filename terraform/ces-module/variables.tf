@@ -269,29 +269,15 @@ variable "cas_oidc_config" {
   }
 }
 
-# ----------------------------------------------------------
-
-variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
-  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
-  type        = number
-  default     = 15
-}
-
-variable "setup_dogu_wait_timeout_secs" {
-  description = "The timeout of the setup to wait for each dogu in seconds"
-  type        = number
-  default     = 300
-}
-
-variable "resource_patches" {
-  description = "The content of the resource-patches for the CES installation."
-  type        = string
-  default     = ""
-}
-
 variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
   type        = string
   sensitive   = true
+  default     = ""
+}
+
+variable "externalIP" {
+  description = "Contains the external IP, my overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
+  type        = string
   default     = ""
 }

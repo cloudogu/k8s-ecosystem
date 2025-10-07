@@ -24,7 +24,7 @@
         components:
           required:
             - name: "k8s-dogu-operator"
-            - name: "k8s-dogu-discovery"
+            - name: "k8s-service-discovery"
 YAML
       },
       { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
@@ -103,3 +103,5 @@ YAML
     initial_admin_usernames = ["test1", "test2"]
   }
   cas_oidc_client_secret       = "oicdsecret"
+
+  externalIP = "123.123.123.123"

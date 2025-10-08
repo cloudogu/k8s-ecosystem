@@ -76,7 +76,6 @@ resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
     cas_oidc_client_secret  = var.cas_oidc_client_secret,
     ldap_admin_password = var.ces_admin_password
   }
-  depends_on = [kubernetes_namespace.ces_namespace]
 }
 
 # This installs the ecosystem-core component, the values are defined by templating the values.yaml file.

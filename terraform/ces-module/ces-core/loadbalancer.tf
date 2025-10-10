@@ -1,24 +1,25 @@
 # This addition is needed to patch the external IP if it is set from outside like on coder setups
 
 locals {
-  # unify empty variable
-  ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
-}
-
-# patch loadbalancer-service "ces-loadbalancer"
-resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  count = var.externalIP != "" ? 1 : 0
-
-  manifest = {
+  has_ip   = can(trim(var.externalIP)) && trim(var.externalIP) != ""
+  base     = {
     apiVersion = "v1"
     kind       = "Service"
     metadata = {
       name      = "ces-loadbalancer"
       namespace = var.ces_namespace
     }
-    spec = {
-      loadBalancerIP = local.ext_ip  # ← nur dieses Feld wird von Terraform „besessen“
-    }
   }
+  patch    = local.has_ip ? {
+    spec = { loadBalancerIP = var.externalIP }
+  } : {}
+
+  # Manifest = Basis + optionaler Patch
+  manifest = merge(local.base, local.patch)
+}
+
+# patch loadbalancer-service "ces-loadbalancer"
+resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
+  manifest = local.manifest
   depends_on        = [helm_release.ecosystem-core]
 }

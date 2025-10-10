@@ -16,7 +16,7 @@ module "ces-preparation" {
   dogu_registry_username = var.dogu_registry_username
 
   helm_registry_password = var.helm_registry_password
-  helm_registry_username = var.helm_registry_password
+  helm_registry_username = var.helm_registry_username
 
   component_operator_crd_chart = var.component_operator_crd_chart
   component_operator_image = var.component_operator_image

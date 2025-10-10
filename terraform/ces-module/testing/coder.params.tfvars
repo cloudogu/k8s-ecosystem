@@ -1,13 +1,10 @@
   component_operator_crd_chart                      = "k8s/k8s-component-operator-crd:1.10.1"
-  blueprint_operator_crd_chart                      = "testing/k8s/k8s-blueprint-operator-crd:1.3.0-dev.1759235847"
   component_operator_image                          = "cloudogu/k8s-component-operator:1.10.1"
-  ecosystem_core_default_config_image               = "cloudogu/ecosystem-core-default-config:0.2.2"
 
   ces_namespace = "ecosystem"
   # Configure CES installation options
   ecosystem_core_chart_namespace                    = "k8s"
   ecosystem_core_chart_version                      = "0.2.2"
-  ecosystem_core_defaultconfig_wait_timeout_minutes = 30
   ecosystem_core_timeout                            = 1800
 
   components = {
@@ -15,7 +12,7 @@
       { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0"},
       { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
       { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true },
+      { namespace = "ecosystem", name = "testing/k8s/k8s-blueprint-operator-crd", version = "1.3.0-dev.1759235847"},
       {
         namespace     = "ecosystem", name = "k8s-blueprint-operator", version = "2.8.0-dev.1758811397",
         helmNamespace = "testing/k8s",

@@ -21,8 +21,6 @@ module "ces-preparation" {
   component_operator_crd_chart = var.component_operator_crd_chart
   component_operator_image = var.component_operator_image
 
-  blueprint_operator_crd_chart = var.blueprint_operator_crd_chart
-
   ces_namespace = var.ces_namespace
 }
 

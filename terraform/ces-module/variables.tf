@@ -5,13 +5,6 @@ variable "component_operator_crd_chart" {
   default     = "k8s/k8s-component-operator-crd:1.10.1"
 }
 
-# blueprint operator crd
-variable "blueprint_operator_crd_chart" {
-  description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-lib:1.2.3"
-  type        = string
-  default     = "k8s/k8s-blueprint-operator-crd:1.3.0"
-}
-
 # component operator crd
 variable "component_operator_image" {
   description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"

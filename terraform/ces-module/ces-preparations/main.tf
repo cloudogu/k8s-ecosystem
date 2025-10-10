@@ -6,13 +6,6 @@ locals {
     version = length(split(":", var.component_operator_crd_chart)) == 2 ? split(":", var.component_operator_crd_chart)[1] : "1.10.1"
   }
 
-  _blueprint_operator_crd_chart_parts = split("/", var.blueprint_operator_crd_chart)
-  blueprint_operator_crd_chart = {
-    repository = join("/", slice(local._blueprint_operator_crd_chart_parts, 0, length(local._blueprint_operator_crd_chart_parts) - 1))
-    name = split(":", local._blueprint_operator_crd_chart_parts[length(local._blueprint_operator_crd_chart_parts) - 1])[0]
-    version = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? split(":", var.blueprint_operator_crd_chart)[1] : "1.4.0"
-  }
-
   component_operator_image = {
     repository = split(":", var.component_operator_image)[0]
     version = length(split(":", var.component_operator_image)) == 2 ? split(":", var.component_operator_image)[1] : "latest"
@@ -31,24 +24,6 @@ resource "helm_release" "k8s_component_operator_crd" {
   repository       = "oci://registry.cloudogu.com/${local.component_operator_crd_chart.repository}"
   chart            = local.component_operator_crd_chart.name
   version          = local.component_operator_crd_chart.version
-
-  namespace        = var.ces_namespace
-  create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
-
-  # Helm-Flags analog zum CLI-Aufruf
-  atomic           = true      # rollt bei Fehlern zurück
-  cleanup_on_fail  = true
-  timeout          = 300
-}
-
-# This is needed due to terraform pre-flight checks.
-# The Blueprint-CRD must be available before the ecosystem-core can install it.
-# In production the ecosystem-core would install the blueprint crd
-resource "helm_release" "k8s_blueprint_operator_crd" {
-  name             = local.blueprint_operator_crd_chart.name
-  repository       = "oci://registry.cloudogu.com/${local.blueprint_operator_crd_chart.repository}"
-  chart            = local.blueprint_operator_crd_chart.name
-  version          = local.blueprint_operator_crd_chart.version
 
   namespace        = var.ces_namespace
   create_namespace = false     # true setzen, wenn du die Ressource oben weglässt

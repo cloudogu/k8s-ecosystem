@@ -2,7 +2,7 @@
 
 # Manifest dynamisch zusammenbauen (nur mit spec.loadBalancerIP, wenn gesetzt)
 locals {
-  has_ip = trim(var.externalIP) != ""
+  has_ip = trimspace(var.externalIP) != ""
 
   manifest = merge({
     apiVersion = "v1"

@@ -7,9 +7,9 @@ locals {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  manifest = templatefile("${path.module}/loadbalancer.yaml.tftpl", {
+  manifest = yamldecode(templatefile("${path.module}/loadbalancer.yaml.tftpl", {
     "ces_namespace" = var.ces_namespace,
     "externalIP"    = local.ext_ip
-  })
+  }))
   depends_on        = [helm_release.ecosystem-core]
 }

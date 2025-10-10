@@ -1,11 +1,4 @@
-variable "container_registry_secrets" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
-  type        = list(object({
-    url      = string
-    username = string
-    password = string
-  }))
-}
+
 variable "dogu_registry_username" {
   description = "The username for the dogu-registry"
   type        = string

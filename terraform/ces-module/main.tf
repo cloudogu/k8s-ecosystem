@@ -10,7 +10,7 @@ module "ces-preparation" {
   docker_registry_email = var.docker_registry_email
   docker_registry_host = var.docker_registry_host
   docker_registry_password = var.docker_registry_password
-  docker_registry_username = var.docker_registry_password
+  docker_registry_username = var.docker_registry_username
 
   dogu_registry_password = var.dogu_registry_password
   dogu_registry_username = var.dogu_registry_username

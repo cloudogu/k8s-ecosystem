@@ -44,9 +44,7 @@ module "ces" {
 
   # Configure CES installation options
   component_operator_crd_chart        = var.component_operator_crd_chart
-  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
   component_operator_image            = var.component_operator_image
-  ecosystem_core_default_config_image = var.ecosystem_core_default_config_image
 
   ces_fqdn                     = var.ces_fqdn
   ces_admin_username           = var.ces_admin_username
@@ -62,6 +60,11 @@ module "ces" {
   # Configure access for the registries. Passwords need to be base64-encoded.
   dogu_registry_username     = var.dogu_registry_username
   dogu_registry_password     = var.dogu_registry_password
+
+  docker_registry_email      = var.docker_registry_email
+  docker_registry_host       = var.docker_registry_host
+  docker_registry_password = var.dogu_registry_password
+  docker_registry_username = var.docker_registry_username
 
   helm_registry_host         = local.helm_registry_host
   helm_registry_schema       = local.helm_registry_schema

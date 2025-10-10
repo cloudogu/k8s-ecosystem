@@ -1,30 +1,26 @@
 # This addition is needed to patch the external IP if it is set from outside like on coder setups
 
+# Manifest dynamisch zusammenbauen (nur mit spec.loadBalancerIP, wenn gesetzt)
 locals {
-  has_ip   = can(trim(var.externalIP)) && trim(var.externalIP) != ""
-  base     = {
+  has_ip = trim(var.externalIP) != ""
+
+  manifest = merge({
     apiVersion = "v1"
     kind       = "Service"
     metadata = {
       name      = "ces-loadbalancer"
       namespace = var.ces_namespace
     }
-  }
-  patch    = local.has_ip ? {
+  }, local.has_ip ? {
     spec = { loadBalancerIP = var.externalIP }
-  } : {}
-
-  # Manifest = Basis + optionaler Patch
-  manifest = merge(local.base, local.patch)
+  } : {})
 }
 
-import {
-  to = kubernetes_manifest.ces_loadbalancer_ip_patch
-  id = "apiVersion=v1,kind=Service,namespace=${var.ces_namespace},name=ces-loadbalancer"
-}
-
-# patch loadbalancer-service "ces-loadbalancer"
-resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  manifest = local.manifest
-  depends_on        = [helm_release.ecosystem-core]
+# Patch via kubectl_manifest (SSA)
+resource "kubectl_manifest" "ces_loadbalancer_ip" {
+  yaml_body         = yamlencode(local.manifest)
+  # SSA einschalten + Field Manager setzen
+  server_side_apply = true
+  # nur falls du bewusst Ownership-Konflikte überschreiben willst -> true
+  force_conflicts   = false
 }

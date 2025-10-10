@@ -7,7 +7,7 @@ locals {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  count = trim(local.ext_ip) != "" ? 1 : 0
+  count = local.ext_ip != "" ? 1 : 0
 
   manifest = {
     apiVersion = "v1"

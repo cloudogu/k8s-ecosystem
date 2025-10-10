@@ -18,6 +18,11 @@ locals {
   manifest = merge(local.base, local.patch)
 }
 
+import {
+  to = kubernetes_manifest.ces_loadbalancer_ip_patch
+  id = "apiVersion=v1,kind=Service,namespace=${var.ces_namespace},name=ces-loadbalancer"
+}
+
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
   manifest = local.manifest

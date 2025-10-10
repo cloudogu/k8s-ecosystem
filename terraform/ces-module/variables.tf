@@ -19,13 +19,6 @@ variable "component_operator_image" {
   default     = "cloudogu/k8s-component-operator:1.10.1"
 }
 
-# component operator crd
-variable "ecosystem_core_default_config_image" {
-  description = "The Image:Version of the ecosystem_core default config. Optional with version like cloudogu/ecosystem-core-default-config:0.1.0"
-  type        = string
-  default     = "cloudogu/ecosystem-core-default-config:0.2.2"
-}
-
 # resource ecosystem itself
 variable "ecosystem_core_chart_version" {
   description = "The version of the ecosystem-core chart"
@@ -37,12 +30,6 @@ variable "ecosystem_core_chart_namespace" {
   description = "The namespace of ecosystem-core chart"
   type        = string
   default     = "k8s"
-}
-
-variable "ecosystem_core_defaultconfig_wait_timeout_minutes" {
-  description = "The timeout of the setup to wait for each component in minutes"
-  type        = number
-  default     = 5
 }
 
 variable "ecosystem_core_timeout" {

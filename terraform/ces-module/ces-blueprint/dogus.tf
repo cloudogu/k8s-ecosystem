@@ -2,14 +2,14 @@ locals {
   dogu_items = [
     for s in var.dogus : {
       name    = split(":", s)[0]
-      version = length(split(":", s)) == 2 ? split(":", s)[1] : null
+      version = length(split(":", s)) == 2 ? split(":", s)[1] : "latest"
     }
   ]
 
   # collect dogus with latest tag
   dogus_needing_latest = toset([
     for d in local.dogu_items : d.name
-    if (d.version == null || lower(d.version) == "latest")
+    if lower(d.version) == "latest"
   ])
 
   # get version by name
@@ -23,7 +23,7 @@ locals {
   parsedDogus = [
     for d in local.dogu_items : {
       name    = d.name
-      version = (d.version == null || lower(d.version) == "latest" ) ? coalesce(lookup(local.latest_by_name, d.name, null), "latest") : d.version
+      version = lower(d.version) == "latest" ? coalesce(lookup(local.latest_by_name, d.name, null), "latest") : d.version
     }
   ]
 
@@ -34,9 +34,6 @@ locals {
       { key = "admin_member", value = "true" },
 
       { key: "admin_password", secretRef:  { key: "ldap_admin_password", name: "ecosystem-core-setup-credentials" }, sensitive: true}
-    ],
-    postfix = [
-      { key = "relayhost", value = "foobar" }
     ],
     cas = [
       { key = "oidc/enabled", value = var.cas_oidc_config.enabled },
@@ -53,6 +50,10 @@ locals {
       { key: "oidc/client_secret", secretRef:  { key: "cas_oidc_client_secret", name: "ecosystem-core-setup-credentials" }, sensitive: true}
     ]
   }
+
+  # Basic-Auth wie im Shellscript (Passwort ggf. base64-decoden)
+  dogu_password_decoded = can(base64decode(var.dogu_registry_password)) ? base64decode(var.dogu_registry_password) : var.dogu_registry_password
+  dogu_auth_b64 = base64encode("${var.dogu_registry_username}:${local.dogu_password_decoded}")
 }
 
 

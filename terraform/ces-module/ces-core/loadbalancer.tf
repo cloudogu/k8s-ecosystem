@@ -6,15 +6,16 @@ locals {
 }
 
 # patch loadbalancer-service "ces-loadbalancer"
-resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
-  yaml_body = templatefile(
-    "${path.module}/loadbalancer.yaml.tftpl",
-    {
-      "externalIP"    = local.ext_ip,
-      "ces_namespace" = var.ces_namespace
-    })
+resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
+  manifest = templatefile("loadbalancer.yaml.tftpl", {
+    "ces_namespace" = var.ces_namespace,
+    "externalIP"    = local.ext_ip
+  })
 
-  server_side_apply = true
+  field_manager = {
+    name            = "terraform-ces-lbip"
+    force_conflicts = false
+  }
 
   depends_on        = [helm_release.ecosystem-core]
 }

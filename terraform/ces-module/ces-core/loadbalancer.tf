@@ -7,9 +7,18 @@ locals {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  manifest = yamldecode(templatefile("${path.module}/loadbalancer.yaml.tftpl", {
-    "ces_namespace" = var.ces_namespace,
-    "externalIP"    = local.ext_ip
-  }))
+  count = trim(local.ext_ip) != "" ? 1 : 0
+
+  manifest = {
+    apiVersion = "v1"
+    kind       = "Service"
+    metadata = {
+      name      = "ces-loadbalancer"
+      namespace = var.ces_namespace
+    }
+    spec = {
+      loadBalancerIP = local.ext_ip  # ← nur dieses Feld wird von Terraform „besessen“
+    }
+  }
   depends_on        = [helm_release.ecosystem-core]
 }

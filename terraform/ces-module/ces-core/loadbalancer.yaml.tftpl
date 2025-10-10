@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ces-loadbalancer
+  namespace: ${ces_namespace}
+%{ if externalIP != "" ~}
+spec:
+  loadBalancerIP: ${externalIP}
+%{ endif ~}

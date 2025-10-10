@@ -7,7 +7,7 @@ locals {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
-  manifest = templatefile("loadbalancer.yaml.tftpl", {
+  manifest = templatefile("${path.module}/loadbalancer.yaml.tftpl", {
     "ces_namespace" = var.ces_namespace,
     "externalIP"    = local.ext_ip
   })

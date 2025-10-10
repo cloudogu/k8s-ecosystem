@@ -11,11 +11,5 @@ resource "kubernetes_manifest" "ces_loadbalancer_ip_patch" {
     "ces_namespace" = var.ces_namespace,
     "externalIP"    = local.ext_ip
   })
-
-  field_manager = {
-    name            = "terraform-ces-lbip"
-    force_conflicts = false
-  }
-
   depends_on        = [helm_release.ecosystem-core]
 }

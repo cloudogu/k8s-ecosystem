@@ -48,7 +48,7 @@ variable "components" {
       version = string
       helmNamespace = optional(string)
       disabled = optional(bool, false)
-      valuesObject = optional(any, null)
+      valuesObject = optional(any)
     }))
     backup = object ({
       enabled = bool
@@ -58,7 +58,7 @@ variable "components" {
         version = string
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valuesObject = optional(any, null)
+        valuesObject = optional(any)
       }))
     })
     monitoring = object ({
@@ -69,7 +69,7 @@ variable "components" {
         version = string
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valuesObject = optional(any, null)
+        valuesObject = optional(any)
       }))
     })
   })
@@ -257,7 +257,7 @@ variable "cas_oidc_client_secret" {
 }
 
 variable "externalIP" {
-  description = "Contains the external IP, my overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
+  description = "Contains the external IP, may overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
   type        = string
   default     = ""
 }

@@ -8,8 +8,6 @@ locals {
 
   helm_registry_schema       = "oci"
   helm_registry_host         = "registry.cloudogu.com"
-
-  resource_patches_file = "resource_patches.yaml"
 }
 
 module "kubeconfig_generator" {
@@ -51,9 +49,6 @@ module "ces" {
   ces_admin_password           = var.ces_admin_password
 
   dogus                        = var.dogus
-
-  # TODO
-  #resource_patches = file(local.resource_patches_file)
 
   components = var.components
 

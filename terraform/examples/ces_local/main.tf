@@ -30,9 +30,9 @@ module "ces" {
 
   # Configure CES installation options
   component_operator_crd_chart        = var.component_operator_crd_chart
-  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
   component_operator_image            = var.component_operator_image
-  ecosystem_core_default_config_image = var.ecosystem_core_default_config_image
+
+  ces_namespace                       = var.ces_namespace
 
   ces_fqdn                            = var.ces_fqdn
   ces_admin_username                  = var.ces_admin_username
@@ -41,19 +41,16 @@ module "ces" {
 
   components                          = var.components
 
-  # TODO
-  # resource_patches             = file(var.resource_patches_file)
+  dogu_registry_username              = var.dogu_registry_username
+  dogu_registry_password              = var.dogu_registry_password
 
-  dogu_registry_username   = var.dogu_registry_username
-  dogu_registry_password   = var.dogu_registry_password
+  docker_registry_host                = var.docker_registry_host
+  docker_registry_username            = var.docker_registry_username
+  docker_registry_password            = var.docker_registry_password
+  docker_registry_email               = var.docker_registry_email
 
-  docker_registry_host       = var.docker_registry_host
-  docker_registry_username   = var.docker_registry_username
-  docker_registry_password   = var.docker_registry_password
-  docker_registry_email      = var.docker_registry_email
-
-  helm_registry_host         = var.helm_registry_host
-  helm_registry_schema       = var.helm_registry_schema
-  helm_registry_username     = var.helm_registry_username
-  helm_registry_password     = var.helm_registry_password
+  helm_registry_host                  = var.helm_registry_host
+  helm_registry_schema                = var.helm_registry_schema
+  helm_registry_username              = var.helm_registry_username
+  helm_registry_password              = var.helm_registry_password
 }

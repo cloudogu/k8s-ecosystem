@@ -53,18 +53,11 @@ module "ces" {
 
   # Configure CES installation options
   component_operator_crd_chart        = var.component_operator_crd_chart
-  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
   component_operator_image            = var.component_operator_image
-  ecosystem_core_default_config_image = var.ecosystem_core_default_config_image
   ces_fqdn              = google_compute_address.ip_address.address
   ces_admin_username    = var.ces_admin_username
   ces_admin_password    = var.ces_admin_password
   dogus                 = var.dogus
-
-  # TODO
-  # resource_patches = templatefile("resource_patches.yaml.tftpl", {
-  #   external_ip = google_compute_address.ip_address.address,
-  # })
 
   externalIP = google_compute_address.ip_address.address
 

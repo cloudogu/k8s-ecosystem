@@ -72,16 +72,12 @@ module "ces" {
 
   # Configure CES installation options
   component_operator_crd_chart        = var.component_operator_crd_chart
-  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
   component_operator_image            = var.component_operator_image
-  ecosystem_core_default_config_image = var.ecosystem_core_default_config_image
 
   ces_fqdn                            = var.ces_fqdn
   ces_admin_password                  = var.ces_admin_password
   dogus                               = var.dogus
 
-  # TODO
-  # resource_patches             = file(var.resource_patches_file)
 
   components                          = var.components
 

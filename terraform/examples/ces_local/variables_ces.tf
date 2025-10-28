@@ -91,25 +91,11 @@ variable "component_operator_crd_chart" {
   default     = "k8s/k8s-component-operator-crd:1.10.1"
 }
 
-# blueprint operator crd
-variable "blueprint_operator_crd_chart" {
-  description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-lib:1.2.3"
-  type        = string
-  default     = "k8s/k8s-blueprint-operator-crd:1.3.0"
-}
-
 # component operator crd
 variable "component_operator_image" {
   description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
   type        = string
   default     = "cloudogu/k8s-component-operator:1.10.1"
-}
-
-# component operator crd
-variable "ecosystem_core_default_config_image" {
-  description = "The Image:Version of the ecosystem_core default config. Optional with version like cloudogu/ecosystem-core-default-config:0.1.0"
-  type        = string
-  default     = "cloudogu/ecosystem-core-default-config:0.2.2"
 }
 
 # List of cómponents, backup components and monitoring components
@@ -183,25 +169,8 @@ variable "components" {
   }
 }
 
-variable "additional_components" {
-  description = "A list of additional Components to install"
-  type        = list(object({
-    name            = string
-    version         = string
-    namespace       = string
-    deployNamespace = string
-  }))
-  default = [{ name = "k8s-longhorn", version = "latest", namespace = "k8s", deployNamespace = "longhorn-system" }]
-}
-
 variable "ces_fqdn" {
   description = "Fully qualified domain name of the EcoSystem, e.g. 'www.ecosystem.my-domain.com'"
   type        = string
   default     = ""
-}
-
-variable "resource_patches_file" {
-  description = "The location of a file containing resource-patches for the CES installation. The file-path is relative to the root-module-location"
-  type        = string
-  default     = "resource_patches.yaml"
 }

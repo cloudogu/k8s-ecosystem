@@ -69,10 +69,10 @@ variable "components" {
   default = {
     components = [
       { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0" },
-      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
+      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.15.0" },
       { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true},
-      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0" },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "2.0.1", disabled = true},
+      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "3.0.0-CR1" },
       { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
       { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1" },
       { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled = true },

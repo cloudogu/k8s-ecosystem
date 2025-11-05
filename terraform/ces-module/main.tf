@@ -1,6 +1,8 @@
 # The local Closure converts input Parameter to usable template parameters
 locals {
-
+  // enforce version
+  component_operator_crd_chart = length(split(":", var.component_operator_crd_chart)) == 2 ? var.component_operator_crd_chart : var.component_operator_crd_chart + ":1.10.1"
+  component_operator_image = length(split(":", var.component_operator_image)) == 2 ? var.component_operator_image : var.component_operator_image + ":latest"
 }
 
 
@@ -18,8 +20,7 @@ module "ces-preparation" {
   helm_registry_password = var.helm_registry_password
   helm_registry_username = var.helm_registry_username
 
-  component_operator_crd_chart = var.component_operator_crd_chart
-  component_operator_image = var.component_operator_image
+  component_operator_crd_chart = local.component_operator_crd_chart
 
   ces_namespace = var.ces_namespace
 }
@@ -33,7 +34,7 @@ module "ces-core" {
 
   ces_namespace = var.ces_namespace
 
-  component_operator_image = var.component_operator_image
+  component_operator_image = local.component_operator_image
   components = var.components
 
   default_dogu = var.default_dogu

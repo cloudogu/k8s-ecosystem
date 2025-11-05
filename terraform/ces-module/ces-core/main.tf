@@ -1,7 +1,9 @@
 locals {
+  // version is enforced by root module
+  _component_operator_image_namever = split(":", var.component_operator_image)
   component_operator_image = {
-    repository = split(":", var.component_operator_image)[0]
-    version = length(split(":", var.component_operator_image)) == 2 ? split(":", var.component_operator_image)[1] : "latest"
+    repository = local._component_operator_image_namever[0]
+    version = local._component_operator_image_namever[1]
   }
 
   compcomponents = [

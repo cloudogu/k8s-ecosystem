@@ -1,19 +1,21 @@
 locals {
+  registry = "oci://registry.cloudogu.com/"
+
   _component_operator_crd_chart_parts = split("/", var.component_operator_crd_chart)
+
+  // version is enforced by root module
+  _component_operator_crd_chart_last = local._component_operator_crd_chart_parts[length(local._component_operator_crd_chart_parts) - 1]
+  _component_operator_crd_chart_namever = split(":", local._component_operator_crd_chart_last)
+
   component_operator_crd_chart = {
     repository = join("/", slice(local._component_operator_crd_chart_parts, 0, length(local._component_operator_crd_chart_parts) - 1))
-    name = split(":", local._component_operator_crd_chart_parts[length(local._component_operator_crd_chart_parts) - 1])[0]
-    version = length(split(":", var.component_operator_crd_chart)) == 2 ? split(":", var.component_operator_crd_chart)[1] : "1.10.1"
-  }
-
-  component_operator_image = {
-    repository = split(":", var.component_operator_image)[0]
-    version = length(split(":", var.component_operator_image)) == 2 ? split(":", var.component_operator_image)[1] : "latest"
+    name = local._component_operator_crd_chart_namever[0]
+    version = local._component_operator_crd_chart_namever[1]
   }
 
   decoded_helm_password = base64decode(var.helm_registry_password)
 
-  # Basic-Auth wie im Shellscript (Passwort ggf. base64-decoden)
+  # Basic-Auth as in shell script
   dogu_password_decoded = can(base64decode(var.dogu_registry_password)) ? base64decode(var.dogu_registry_password) : var.dogu_registry_password
 }
 
@@ -21,15 +23,14 @@ locals {
 # Install the CRD using the published Helm chart from the OCI repository.
 resource "helm_release" "k8s_component_operator_crd" {
   name             = local.component_operator_crd_chart.name
-  repository       = "oci://registry.cloudogu.com/${local.component_operator_crd_chart.repository}"
+  repository       = "${local.registry}${local.component_operator_crd_chart.repository}"
   chart            = local.component_operator_crd_chart.name
   version          = local.component_operator_crd_chart.version
 
   namespace        = var.ces_namespace
-  create_namespace = false     # true setzen, wenn du die Ressource oben weglässt
+  create_namespace = false
 
-  # Helm-Flags analog zum CLI-Aufruf
-  atomic           = true      # rollt bei Fehlern zurück
+  atomic           = true
   cleanup_on_fail  = true
   timeout          = 300
 }
@@ -58,7 +59,7 @@ resource "kubernetes_secret" "ces_container_registries" {
     namespace = var.ces_namespace
   }
 
-  # Entspricht: kubectl create secret docker-registry
+  # kubectl create secret docker-registry
   type = "kubernetes.io/dockerconfigjson"
 
   data = {
@@ -95,14 +96,14 @@ resource "kubernetes_secret" "component_operator_helm_registry" {
     namespace = var.ces_namespace
   }
 
-  # entspricht: kubectl create secret generic … --from-literal=config.json='…'
+  # kubectl create secret generic … --from-literal=config.json='…'
   type = "Opaque"
 
   data = {
     "config.json" = jsonencode({
       auths = {
         "registry.cloudogu.com" = {
-          # entspricht: echo -n "${USER}:${PASS}" | base64
+          # echo -n "${USER}:${PASS}" | base64
           auth = base64encode("${var.helm_registry_username}:${local.decoded_helm_password}")
         }
       }

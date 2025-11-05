@@ -2,21 +2,12 @@
 variable "component_operator_crd_chart" {
   description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"
   type        = string
-  default     = "k8s/k8s-component-operator-crd:1.10.1"
-}
-
-# component operator crd
-variable "component_operator_image" {
-  description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
-  type        = string
-  default     = "cloudogu/k8s-component-operator:1.10.1"
 }
 
 # namespace of ces
 variable "ces_namespace" {
   description = "The namespace for the CES"
   type        = string
-  default     = "ecosystem"
 }
 
 variable "helm_registry_username" {

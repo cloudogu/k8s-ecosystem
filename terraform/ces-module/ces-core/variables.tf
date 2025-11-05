@@ -2,20 +2,17 @@
 variable "component_operator_image" {
   description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
   type        = string
-  default     = "cloudogu/k8s-component-operator:1.10.1"
 }
 
 # resource ecosystem itself
 variable "ecosystem_core_chart_version" {
   description = "The version of the ecosystem-core chart"
   type        = string
-  default     = "0.2.0"
 }
 
 variable "ecosystem_core_chart_namespace" {
   description = "The namespace of ecosystem-core chart"
   type        = string
-  default     = "k8s"
 }
 
 variable "ecosystem_core_timeout" {
@@ -28,7 +25,6 @@ variable "ecosystem_core_timeout" {
 variable "ces_namespace" {
   description = "The namespace for the CES"
   type        = string
-  default     = "ecosystem"
 }
 
 # List of cómponents, backup components and monitoring components
@@ -123,17 +119,14 @@ variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
   type        = string
   sensitive   = true
-  default     = ""
 }
 
 variable "default_dogu" {
   description = "The default Dogu of the EcoSystem"
   type        = string
-  default     = "cas"
 }
 
 variable "externalIP" {
   description = "Contains the external IP, my overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
   type        = string
-  default     = ""
 }

@@ -12,13 +12,15 @@ k8s-component-operator:
 components:
 %{ for component in components.components ~}
   ${component.name}:
+%{ if component.version != null ~}
     version: ${component.version}
+%{ endif ~}
 %{ if component.helmNamespace != null ~}
     helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
 %{ if try(component.valuesObject, null) != null ~}
     valuesObject:
-${component.valuesObject}
+      ${indent(6, component.valuesObject) }
 %{ endif ~}
 %{ if component.disabled ~}
     disabled: true
@@ -26,35 +28,43 @@ ${component.valuesObject}
 %{ endfor ~}
 backup:
   enabled: ${components.backup.enabled}
+%{ if try(components.monitoring.components, null) != null ~}
   components:
 %{ for component in components.backup.components ~}
     ${component.name}:
+%{ if component.version != null ~}
       version: ${component.version}
+%{ endif ~}
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
 %{ if component.disabled }
       disabled: true
 %{ endif ~}
-%{ if try(length(keys(component.valuesObject)), 0) > 0 ~}
+%{ if try(component.valuesObject, null) != null ~}
       valuesObject:
-        ${indent(8, yamlencode(component.valuesObject)) }
+        ${indent(8, component.valuesObject) }
 %{ endif ~}
 %{ endfor ~}
+%{ endif ~}
 monitoring:
   enabled: ${components.monitoring.enabled}
+%{ if try(components.monitoring.components, null) != null ~}
   components:
 %{ for component in components.monitoring.components ~}
     ${component.name}:
+%{ if component.version != null ~}
       version: ${component.version}
+%{ endif ~}
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
 %{ if component.disabled }
       disabled: true
 %{ endif ~}
-%{ if try(length(keys(component.valuesObject)), 0) > 0 ~}
+%{ if try(component.valuesObject, null) != null ~}
       valuesObject:
-        ${indent(8, yamlencode(component.valuesObject)) }
+        ${indent(8, component.valuesObject) }
 %{ endif ~}
 %{ endfor ~}
+%{ endif ~}

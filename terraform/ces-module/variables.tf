@@ -43,68 +43,48 @@ variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
     components = list(object({
-      namespace = string
+      namespace = optional(string)
       name = string
-      version = string
+      version = optional(string)
       helmNamespace = optional(string)
       disabled = optional(bool, false)
-      valuesObject = optional(any)
+      valuesObject = optional(any, null)
     }))
     backup = object ({
       enabled = bool
-      components = list(object({
-        namespace = string
+      components = optional(list(object({
+        namespace = optional(string)
         name = string
-        version = string
+        version = optional(string)
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valuesObject = optional(any)
-      }))
+        valuesObject = optional(any, null)
+      })))
     })
     monitoring = object ({
       enabled = bool
-      components = list(object({
-        namespace = string
+      components = optional(list(object({
+        namespace = optional(string)
         name = string
-        version = string
+        version = optional(string)
         helmNamespace = optional(string)
         disabled = optional(bool, false)
-        valuesObject = optional(any)
-      }))
+        valuesObject = optional(any, null)
+      })))
     })
   })
   default = {
     components = [
-      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.10.0" },
-      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
-      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
-      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true},
-      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0" },
-      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.1" },
-      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.1" },
-      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled = true },
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3"},
-      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0"},
-      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", disabled = true },
-      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", disabled = true },
+      { name = "k8s-blueprint-operator-crd", disabled = true},
+      { name = "k8s-ces-control", disabled = true },
+      { name = "k8s-support-mode-operator-crd", disabled = true },
+      { name = "k8s-support-mode-operator", disabled = true },
     ]
     backup = {
-      enabled = true
-      components = [
-        { namespace = "ecosystem", name = "k8s-backup-operator-crd", version = "1.6.0" },
-        { namespace = "ecosystem", name = "k8s-backup-operator", version = "1.6.0" },
-        { namespace = "ecosystem", name = "k8s-velero", version = "10.0.1-5" },
-      ]
+      enabled = false
     }
     monitoring = {
-      enabled = true
-      components = [
-        { namespace = "ecosystem", name = "k8s-prometheus", version = "75.3.5-3" },
-        { namespace = "ecosystem", name = "k8s-minio", version = "2025.6.13-2" },
-        { namespace = "ecosystem", name = "k8s-loki", version = "3.3.2-4" },
-        { namespace = "ecosystem", name = "k8s-promtail", version = "2.9.1-9" },
-        { namespace = "ecosystem", name = "k8s-alloy", version = "1.1.2-1" },
-      ]
+      enabled = false
     }
   }
 }

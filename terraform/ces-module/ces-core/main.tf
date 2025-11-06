@@ -9,7 +9,7 @@ locals {
   compcomponents = [
     for comp in var.components.components : merge(
       comp,
-        comp.name == "k8s-ces-assets" ? { valuesObject = "      nginx:\n        manager:\n          config:\n            defaultDogu: \"${var.default_dogu}\"" } : {}
+        comp.name == "k8s-ces-assets" ? { valuesObject = "nginx:\n  manager:\n    config:\n      defaultDogu: \"${var.default_dogu}\"" } : {}
     )
   ]
 

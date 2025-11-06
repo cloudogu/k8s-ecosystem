@@ -1,4 +1,4 @@
-# component operator crd
+# component operator image
 variable "component_operator_image" {
   description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
   type        = string
@@ -29,7 +29,7 @@ variable "ces_namespace" {
 
 # List of cómponents, backup components and monitoring components
 variable "components" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
+  description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
     components = list(object({
       namespace = optional(string)

@@ -46,7 +46,6 @@ resource "helm_release" "ecosystem-core" {
   timeout    = var.ecosystem_core_timeout
 
   namespace        = var.ces_namespace
-  create_namespace = true
 
   values = [
     templatefile("${path.module}/values.yaml.tftpl",

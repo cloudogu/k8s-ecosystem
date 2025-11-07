@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- use ecosystem-core instead of k8s-ces-setup for installing CES
+- [#120] use ecosystem-core instead of k8s-ces-setup in vagrant-setup
+- [#123] use ecosystem-core instead of k8s-ces-setup in terraform modules
 
 ## [v5.4.0] - 2025-09-17
 ### Changed

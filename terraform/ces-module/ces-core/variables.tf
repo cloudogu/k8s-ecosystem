@@ -27,7 +27,7 @@ variable "ces_namespace" {
   type        = string
 }
 
-# List of cómponents, backup components and monitoring components
+# List of components, backup components and monitoring components
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({

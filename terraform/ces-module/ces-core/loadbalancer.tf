@@ -23,7 +23,6 @@ resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
     })
 
   server_side_apply = true
-  force_conflicts = true
 
   depends_on        = [data.kubernetes_service.ces_lb_exists]
 }

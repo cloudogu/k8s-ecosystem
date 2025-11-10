@@ -16,7 +16,6 @@ module "ces" {
   component_operator_crd_chart                      = "k8s/k8s-component-operator-crd:1.10.1"
   blueprint_operator_crd_chart                      = "k8s/k8s-blueprint-operator-crd:1.3.0"
   component_operator_image                          = "cloudogu/k8s-component-operator:1.10.1"
-  ecosystem_core_default_config_image               = "cloudogu/ecosystem-core-default-config:0.2.2"
    
   ces_namespace = "ecosystem"
 

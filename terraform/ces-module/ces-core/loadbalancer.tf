@@ -5,6 +5,14 @@ locals {
   ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
 }
 
+data "kubernetes_service" "ces_lb_exists" {
+  metadata {
+    name      = "ces-loadbalancer"
+    namespace = var.ces_namespace
+  }
+  depends_on = [helm_release.ecosystem-core]
+}
+
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
   yaml_body = templatefile(
@@ -15,6 +23,7 @@ resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
     })
 
   server_side_apply = true
+  force_conflicts = true
 
-  depends_on        = [helm_release.ecosystem-core]
+  depends_on        = [data.kubernetes_service.ces_lb_exists]
 }

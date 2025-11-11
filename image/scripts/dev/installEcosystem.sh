@@ -102,8 +102,7 @@ applyResources() {
     --namespace="${CES_NAMESPACE}"
 
   # Install Blueprint CRD
-  helm upgrade -i k8s-blueprint-operator-crd "${helm_registry_schema}://registry.cloudogu.com/testing/k8s/k8s-blueprint-operator-crd" \
-    --version 1.3.0-dev.1757922891 \
+  helm upgrade -i k8s-blueprint-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-blueprint-operator-crd" \
     --namespace="${CES_NAMESPACE}"
 
   # Install ecosystem-core

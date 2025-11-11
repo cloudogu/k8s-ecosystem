@@ -1,4 +1,4 @@
-apiVersion: k8s.cloudogu.com/v2
+apiVersion: k8s.cloudogu.com/v3
 kind: Blueprint
 metadata:
   labels:
@@ -6,6 +6,8 @@ metadata:
     app.kubernetes.io/name: k8s-blueprint-lib
   name: blueprint
 spec:
+  displayName: "k3ces.local"
+  stopped: false
   blueprint:
     dogus:
       - name: "official/cas"
@@ -41,4 +43,6 @@ spec:
           value: "false"
         - key: "password-policy/must_contain_special_character"
           value: "false"
-
+  blueprintMask:
+    manifest:
+      dogus: []

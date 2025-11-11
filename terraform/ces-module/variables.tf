@@ -9,7 +9,7 @@ variable "component_operator_crd_chart" {
 variable "blueprint_operator_crd_chart" {
   description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-operator-crd:1.2.3"
   type        = string
-  default     = "k8s/k8s-blueprint-operator-crd:2.0.1"
+  default     = "k8s/k8s-blueprint-operator-crd:3.0.1"
 }
 
 # component operator image

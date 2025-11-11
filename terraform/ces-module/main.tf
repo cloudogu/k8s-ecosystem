@@ -1,7 +1,7 @@
 # The local Closure converts input Parameter to usable template parameters
 locals {
   // enforce version
-  blueprint_operator_crd_chart = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? var.blueprint_operator_crd_chart : var.blueprint_operator_crd_chart + ":2.1.0"
+  blueprint_operator_crd_chart = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? var.blueprint_operator_crd_chart : var.blueprint_operator_crd_chart + ":3.1.0"
   component_operator_crd_chart = length(split(":", var.component_operator_crd_chart)) == 2 ? var.component_operator_crd_chart : var.component_operator_crd_chart + ":1.10.1"
   component_operator_image = length(split(":", var.component_operator_image)) == 2 ? var.component_operator_image : var.component_operator_image + ":latest"
 }

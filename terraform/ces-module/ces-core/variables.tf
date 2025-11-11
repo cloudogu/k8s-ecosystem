@@ -31,14 +31,14 @@ variable "ces_namespace" {
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
-    components = list(object({
+    components = optional(list(object({
       namespace = optional(string)
       name = string
       version = optional(string)
       helmNamespace = optional(string)
       disabled = optional(bool, false)
       valuesObject = optional(any, null)
-    }))
+    })))
     backup = object ({
       enabled = bool
       components = optional(list(object({

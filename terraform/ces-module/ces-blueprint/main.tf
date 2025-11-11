@@ -25,9 +25,33 @@ locals {
   ]
 }
 
+# wait a short time for crd to be installed
+resource "time_sleep" "after_crd_installed" {
+  create_duration = "30s"
+}
+
+resource "kubernetes_manifest" "gate_crd_blueprints" {
+  manifest = {
+    apiVersion = "apiextensions.k8s.io/v1"
+    kind       = "CustomResourceDefinition"
+    metadata = {
+      name = "blueprints.k8s.cloudogu.com"  # plural.group
+    }
+  }
+  wait {
+    condition {
+      type = "Established"
+      status = "True"
+    }
+  }
+
+  depends_on = [time_sleep.after_crd_installed]
+}
+
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
 resource "kubectl_manifest" "blueprint" {
+  depends_on = [kubernetes_manifest.gate_crd_blueprints]
   yaml_body = templatefile(
     "${path.module}/blueprint.yaml.tftpl",
     {

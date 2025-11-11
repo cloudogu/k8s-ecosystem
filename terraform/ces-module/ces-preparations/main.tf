@@ -13,6 +13,18 @@ locals {
     version = local._component_operator_crd_chart_namever[1]
   }
 
+  _blueprint_operator_crd_chart_parts = split("/", var.blueprint_operator_crd_chart)
+
+  // version is enforced by root module
+  _blueprint_operator_crd_chart_last = local._blueprint_operator_crd_chart_parts[length(local._blueprint_operator_crd_chart_parts) - 1]
+  _blueprint_operator_crd_chart_namever = split(":", local._blueprint_operator_crd_chart_last)
+
+  blueprint_operator_crd_chart = {
+    repository = join("/", slice(local._blueprint_operator_crd_chart_parts, 0, length(local._blueprint_operator_crd_chart_parts) - 1))
+    name = local._blueprint_operator_crd_chart_namever[0]
+    version = local._blueprint_operator_crd_chart_namever[1]
+  }
+
   decoded_helm_password = base64decode(var.helm_registry_password)
 
   # Basic-Auth as in shell script
@@ -26,6 +38,22 @@ resource "helm_release" "k8s_component_operator_crd" {
   repository       = "${local.registry}${local.component_operator_crd_chart.repository}"
   chart            = local.component_operator_crd_chart.name
   version          = local.component_operator_crd_chart.version
+
+  namespace        = var.ces_namespace
+  create_namespace = false
+
+  atomic           = true
+  cleanup_on_fail  = true
+  timeout          = 300
+}
+
+# In order to create blueprint CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
+# Install the CRD using the published Helm chart from the OCI repository.
+resource "helm_release" "k8s_blueprint_operator_crd" {
+  name             = local.blueprint_operator_crd_chart.name
+  repository       = "${local.registry}${local.blueprint_operator_crd_chart.repository}"
+  chart            = local.blueprint_operator_crd_chart.name
+  version          = local.blueprint_operator_crd_chart.version
 
   namespace        = var.ces_namespace
   create_namespace = false

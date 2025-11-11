@@ -4,6 +4,12 @@ variable "component_operator_crd_chart" {
   type        = string
 }
 
+# component operator crd
+variable "blueprint_operator_crd_chart" {
+  description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-operator-crd:1.2.3"
+  type        = string
+}
+
 # namespace of ces
 variable "ces_namespace" {
   description = "The namespace for the CES"

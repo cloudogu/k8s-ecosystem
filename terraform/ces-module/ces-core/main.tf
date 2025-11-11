@@ -6,8 +6,11 @@ locals {
     version = local._component_operator_image_namever[1]
   }
 
+  _components_list = coalesce(try(var.components.components, null), [])
+
+  # Build the list with a conditional extra field for k8s-ces-assets
   compcomponents = [
-    for comp in var.components.components : merge(
+    for comp in local._components_list : merge(
       comp,
         comp.name == "k8s-ces-assets" ? { valuesObject = "nginx:\n  manager:\n    config:\n      defaultDogu: \"${var.default_dogu}\"" } : {}
     )

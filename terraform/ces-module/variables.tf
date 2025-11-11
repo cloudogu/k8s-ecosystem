@@ -23,7 +23,7 @@ variable "component_operator_image" {
 variable "ecosystem_core_chart_version" {
   description = "The version of the ecosystem-core chart"
   type        = string
-  default     = "0.2.0"
+  default     = "0.4.0"
 }
 
 variable "ecosystem_core_chart_namespace" {
@@ -49,14 +49,14 @@ variable "ces_namespace" {
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
-    components = list(object({
+    components = optional(list(object({
       namespace = optional(string)
       name = string
       version = optional(string)
       helmNamespace = optional(string)
       disabled = optional(bool, false)
       valuesObject = optional(any, null)
-    }))
+    })))
     backup = object ({
       enabled = bool
       components = optional(list(object({
@@ -81,12 +81,6 @@ variable "components" {
     })
   })
   default = {
-    components = [
-      { name = "k8s-blueprint-operator-crd", disabled = true},
-      { name = "k8s-ces-control", disabled = true },
-      { name = "k8s-support-mode-operator-crd", disabled = true },
-      { name = "k8s-support-mode-operator", disabled = true },
-    ]
     backup = {
       enabled = false
     }

@@ -9,6 +9,7 @@ k8s-component-operator:
       registry: docker.io
       repository: "${component_operator_image.repository}"
       tag: "${component_operator_image.version}"
+%{ if length(components.components) > 0 ~}
 components:
 %{ for component in components.components ~}
   ${component.name}:
@@ -26,6 +27,7 @@ components:
     disabled: true
 %{ endif ~}
 %{ endfor ~}
+%{ endif ~}
 backup:
   enabled: ${components.backup.enabled}
 %{ if try(components.monitoring.components, null) != null ~}

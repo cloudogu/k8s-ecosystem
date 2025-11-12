@@ -9,7 +9,7 @@ variable "component_operator_crd_chart" {
 variable "blueprint_operator_crd_chart" {
   description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-operator-crd:1.2.3"
   type        = string
-  default     = "k8s/k8s-blueprint-operator-crd:2.0.1"
+  default     = "k8s/k8s-blueprint-operator-crd:3.1.0"
 }
 
 # component operator image
@@ -49,14 +49,14 @@ variable "ces_namespace" {
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
-    components = optional(list(object({
+    components = list(object({
       namespace = optional(string)
       name = string
       version = optional(string)
       helmNamespace = optional(string)
       disabled = optional(bool, false)
       valuesObject = optional(any, null)
-    })))
+    }))
     backup = object ({
       enabled = bool
       components = optional(list(object({
@@ -81,6 +81,12 @@ variable "components" {
     })
   })
   default = {
+    components = [
+      { name = "k8s-blueprint-operator-crd", disabled = true},
+      { name = "k8s-ces-control", disabled = true },
+      { name = "k8s-support-mode-operator-crd", disabled = true },
+      { name = "k8s-support-mode-operator", disabled = true },
+    ]
     backup = {
       enabled = false
     }

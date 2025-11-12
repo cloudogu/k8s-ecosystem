@@ -83,7 +83,7 @@ variable "component_operator_image" {
 
 # List of components, backup components and monitoring components
 variable "components" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
+  description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
     components = optional(list(object({
       namespace = string

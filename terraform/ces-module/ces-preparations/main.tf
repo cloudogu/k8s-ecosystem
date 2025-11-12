@@ -42,6 +42,7 @@ resource "kubernetes_namespace" "ces_namespace" {
 resource "kubernetes_config_map" "fqdn" {
   metadata {
     name = "global-config"
+    namespace = var.ces_namespace
   }
 
   data = {

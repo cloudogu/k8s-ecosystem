@@ -25,6 +25,8 @@ module "ces-preparation" {
   blueprint_operator_crd_chart = local.blueprint_operator_crd_chart
 
   ces_namespace = var.ces_namespace
+
+  externalIP = var.externalIP
 }
 
 module "ces-core" {

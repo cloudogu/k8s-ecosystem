@@ -6,4 +6,12 @@ metadata:
   namespace: ${ces_namespace}
 spec:
   loadBalancerIP: ${externalIP}
+%{ else ~}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: noop-placeholder
+  namespace: ${ces_namespace}
+data:
+  noop: "true"
 %{ endif ~}

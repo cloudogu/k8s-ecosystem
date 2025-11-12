@@ -58,7 +58,7 @@ module "ces" {
 
   docker_registry_email      = var.docker_registry_email
   docker_registry_host       = var.docker_registry_host
-  docker_registry_password = var.dogu_registry_password
+  docker_registry_password = var.docker_registry_password
   docker_registry_username = var.docker_registry_username
 
   helm_registry_host         = local.helm_registry_host

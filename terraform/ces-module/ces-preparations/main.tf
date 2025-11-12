@@ -38,7 +38,7 @@ resource "kubernetes_namespace" "ces_namespace" {
     name = var.ces_namespace
   }
 }
-
+/*
 resource "kubernetes_config_map" "fqdn" {
   metadata {
     name = "global-config"
@@ -57,7 +57,7 @@ resource "kubernetes_config_map" "fqdn" {
     ]
   }
 }
-
+*/
 
 # In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
 # Install the CRD using the published Helm chart from the OCI repository.

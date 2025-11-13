@@ -33,12 +33,6 @@ locals {
   ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
 }
 
-resource "kubernetes_namespace" "ces_namespace" {
-  metadata {
-    name = var.ces_namespace
-  }
-}
-
 # Create the namespace for the ecosystem when create_namespace is true
 resource "kubernetes_namespace" "ces_namespace" {
   count = var.create_namespace ? 1 : 0

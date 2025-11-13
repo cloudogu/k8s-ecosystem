@@ -57,6 +57,10 @@ resource "helm_release" "ecosystem-core" {
         "components"                                     = local.components
       })
   ]
+
+  # wait for default-config-job to be completed
+  wait_for_jobs = true
+
   depends_on = [
     kubernetes_secret.ecosystem_core_setup_credentials,
   ]

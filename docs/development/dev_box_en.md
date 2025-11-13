@@ -36,25 +36,26 @@ your passwords with base64-encoding. Use the following command: `printf '%s' 'pa
 
 The following configuration values can be specified (among others):
 
-| value                    | description                                                 |
-|--------------------------|-------------------------------------------------------------|
-| dogu_registry_url        | The URL of the dogu registry                                |
-| dogu_registry_username   | The username to login to the dogu registry                  |
-| dogu_registry_password   | The password to login to the dogu Registry                  |
-| image_registry_url       | The URL of the image registry                               |
-| image_registry_username  | The username to login to the image registry                 |
-| image_registry_password  | The password to login to the image registry                 |
-| image_registry_email     | The e-mail address of the image registry user               |
-| helm_registry_host       | The host of the helm registry                               |
-| helm_registry_schema     | The schema of the helm registry                             |
-| helm_registry_plain_http | Is the helm registry accessed via HTTP or HTTPS?            |
-| helm_registry_username   | The username to login to the helm registry                  |
-| helm_registry_password   | The password to login to the helm registry                  |
-| vm_memory                | The VMs memory                                              |
-| vm_cpus                  | The number of CPUs in the VMs                               |
-| worker_count             | The number of worker nodes of the cluster                   |
-| main_k3s_ip_address      | The IP address of the main node of the cluster              |
-| certificate_type         | `selfsigned` or `mkcert`; see [certificates](#certificates) |
+| value                    | description                                                                                                                                                                                        |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| dogu_registry_url        | The URL of the dogu registry                                                                                                                                                                       |
+| dogu_registry_username   | The username to login to the dogu registry                                                                                                                                                         |
+| dogu_registry_password   | The password to login to the dogu Registry                                                                                                                                                         |
+| image_registry_url       | The URL of the image registry                                                                                                                                                                      |
+| image_registry_username  | The username to login to the image registry                                                                                                                                                        |
+| image_registry_password  | The password to login to the image registry                                                                                                                                                        |
+| image_registry_email     | The e-mail address of the image registry user                                                                                                                                                      |
+| helm_registry_host       | The host of the helm registry                                                                                                                                                                      |
+| helm_registry_schema     | The schema of the helm registry                                                                                                                                                                    |
+| helm_registry_plain_http | Is the helm registry accessed via HTTP or HTTPS?                                                                                                                                                   |
+| helm_registry_username   | The username to login to the helm registry                                                                                                                                                         |
+| helm_registry_password   | The password to login to the helm registry                                                                                                                                                         |
+| vm_memory                | The VMs memory                                                                                                                                                                                     |
+| vm_cpus                  | The number of CPUs in the VMs                                                                                                                                                                      |
+| worker_count             | The number of worker nodes of the cluster                                                                                                                                                          |
+| main_k3s_ip_address      | The IP address of the main node of the cluster                                                                                                                                                     |
+| certificate_type         | `selfsigned` or `mkcert`; see [certificates](#certificates)                                                                                                                                        |
+| forceUpgradeEcosystem    | default: `false`; if `true`, the ecosystem-core Helm release and the blueprint are updated with every `vagrant up`; see [Blueprint & Update of the Ecosystem](#blueprint--update-of-the-ecosystem) |
 
 #### Encryption of the configuration
 
@@ -99,3 +100,37 @@ mkcert -install
 
 Then in the [configuration](#configuration) the value for `certificate_type` can be set to `mkcert`.
 If no certificate exists yet, the `vagrantfile` then creates a new certificate with `mkcert` which is used by the CES.
+
+### Blueprint & Update of the Ecosystem
+
+When initially starting the DEV-Box with `vagrant up`, the "ecosystem-core" Helm chart and a blueprint with the following Dogus are installed:
+* ldap
+* postfix
+* cas
+* usermgt
+
+The Dogus are entered in the blueprint with their latest versions.
+
+Once the blueprint has been successfully applied (condition `Completed: True`), it is set to `stopped: true`.
+As a result, the blueprint is no longer applied automatically, allowing additional Dogus to be installed manually without the blueprint-operator deleting or modifying them.
+
+#### Force update
+After the initial start of the DEV-box, subsequent starts with `vagrant up` check whether the Helm release `ecosystem-core` is already installed.
+If this is the case, no further steps are taken.
+This behavior can be disabled via the `forceUpgradeEcosystem` configuration in the `.vagrant.rb` file.
+Then the Helm release `ecosystem-core` and the blueprint will be updated with every `vagrant up`.
+
+#### Blueprint override
+
+To install additional Dogus or special configurations, a file named `.blueprint-override.yaml` can be stored in the root directory.
+If this file exists, it will be used instead of the generated blueprint.
+
+Procedure:
+1. Copy the template:
+   `cp .blueprint-override.yaml.template .blueprint-override.yaml`
+2. Customize the content (e.g., define additional Dogus or specific versions).
+3. Run `vagrant up`. The file is automatically merged into the blueprint and applied.
+
+Notes:
+- The file must be named exactly `.blueprint-override.yaml` and located in the root directory.
+- Syntax and structure must correspond to the blueprint schema.

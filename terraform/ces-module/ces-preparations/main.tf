@@ -31,6 +31,15 @@ locals {
   dogu_password_decoded = can(base64decode(var.dogu_registry_password)) ? base64decode(var.dogu_registry_password) : var.dogu_registry_password
 }
 
+# Create the namespace for the ecosystem when create_namespace is true
+resource "kubernetes_namespace" "ces_namespace" {
+  count = var.create_namespace ? 1 : 0
+
+  metadata {
+    name = var.ces_namespace
+  }
+}
+
 # In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
 # Install the CRD using the published Helm chart from the OCI repository.
 resource "helm_release" "k8s_component_operator_crd" {

@@ -38,6 +38,12 @@ variable "ecosystem_core_timeout" {
   default     = 600
 }
 
+variable "create_namespace" {
+  description = "Flag to specify whether the namespace in variable ces_namespace shall be created"
+  type = bool
+  default = false
+}
+
 # namespace of ces
 variable "ces_namespace" {
   description = "The namespace for the CES"

@@ -1,3 +1,8 @@
+variable "create_namespace" {
+  description = "Flag to specify whether the namespace in variable ces_namespace shall be created"
+  type = bool
+}
+
 # component operator crd
 variable "component_operator_crd_chart" {
   description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"

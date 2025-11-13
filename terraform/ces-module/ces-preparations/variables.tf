@@ -65,3 +65,8 @@ variable "dogu_registry_password" {
   type        = string
   sensitive   = true
 }
+
+variable "externalIP" {
+  description = "Contains the external IP, my overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
+  type        = string
+}

@@ -26,6 +26,8 @@ module "ces-preparation" {
 
   create_namespace = var.create_namespace
   ces_namespace    = var.ces_namespace
+
+  externalIP = var.externalIP
 }
 
 module "ces-core" {

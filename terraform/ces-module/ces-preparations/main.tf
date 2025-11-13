@@ -29,6 +29,14 @@ locals {
 
   # Basic-Auth as in shell script
   dogu_password_decoded = can(base64decode(var.dogu_registry_password)) ? base64decode(var.dogu_registry_password) : var.dogu_registry_password
+
+  ext_ip     = try(trimspace(nonsensitive(var.externalIP)), "")
+}
+
+resource "kubernetes_namespace" "ces_namespace" {
+  metadata {
+    name = var.ces_namespace
+  }
 }
 
 # Create the namespace for the ecosystem when create_namespace is true
@@ -43,6 +51,7 @@ resource "kubernetes_namespace" "ces_namespace" {
 # In order to create component CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
 # Install the CRD using the published Helm chart from the OCI repository.
 resource "helm_release" "k8s_component_operator_crd" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   name             = local.component_operator_crd_chart.name
   repository       = "${local.registry}${local.component_operator_crd_chart.repository}"
   chart            = local.component_operator_crd_chart.name
@@ -59,6 +68,7 @@ resource "helm_release" "k8s_component_operator_crd" {
 # In order to create blueprint CRs, the corresponding CustomResourceDefinition (CRD) must already be registered in the cluster.
 # Install the CRD using the published Helm chart from the OCI repository.
 resource "helm_release" "k8s_blueprint_operator_crd" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   name             = local.blueprint_operator_crd_chart.name
   repository       = "${local.registry}${local.blueprint_operator_crd_chart.repository}"
   chart            = local.blueprint_operator_crd_chart.name
@@ -74,6 +84,7 @@ resource "helm_release" "k8s_blueprint_operator_crd" {
 
 # This secret contains the access data for the **Dogu Registry**.
 resource "kubernetes_secret" "dogu_registry" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   metadata {
     name      = "k8s-dogu-operator-dogu-registry"
     namespace = var.ces_namespace
@@ -91,6 +102,7 @@ resource "kubernetes_secret" "dogu_registry" {
 
 # This secret contains the access data for the **container registry** in Docker registry format.
 resource "kubernetes_secret" "ces_container_registries" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   metadata {
     name      = "ces-container-registries"
     namespace = var.ces_namespace
@@ -115,6 +127,7 @@ resource "kubernetes_secret" "ces_container_registries" {
 
 # In addition to authentication, a ConfigMap and a secret must be created for the **Helm registry**.
 resource "kubernetes_config_map" "component_operator_helm_repository" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   metadata {
     name      = "component-operator-helm-repository"
     namespace = var.ces_namespace
@@ -128,6 +141,7 @@ resource "kubernetes_config_map" "component_operator_helm_repository" {
   }
 }
 resource "kubernetes_secret" "component_operator_helm_registry" {
+  depends_on = [kubernetes_namespace.ces_namespace]
   metadata {
     name      = "component-operator-helm-registry"
     namespace = var.ces_namespace

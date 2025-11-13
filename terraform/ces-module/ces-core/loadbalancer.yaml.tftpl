@@ -1,9 +1,17 @@
+%{ if externalIP != "" ~}
 apiVersion: v1
 kind: Service
 metadata:
   name: ces-loadbalancer
   namespace: ${ces_namespace}
-%{ if externalIP != "" ~}
 spec:
   loadBalancerIP: ${externalIP}
+%{ else ~}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: noop-placeholder
+  namespace: ${ces_namespace}
+data:
+  noop: "true"
 %{ endif ~}

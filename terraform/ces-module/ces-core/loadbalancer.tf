@@ -15,12 +15,10 @@ data "kubernetes_service" "ces_lb_exists" {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
-  for_each = local.ext_ip != "" ? { apply = local.ext_ip } : {}
-
   yaml_body = templatefile(
     "${path.module}/loadbalancer.yaml.tftpl",
     {
-      "externalIP"    = each.value,
+      "externalIP"    = local.ext_ip,
       "ces_namespace" = var.ces_namespace
     })
 

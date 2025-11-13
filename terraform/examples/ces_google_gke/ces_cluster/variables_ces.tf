@@ -93,7 +93,7 @@ variable "components" {
       disabled = optional(bool, false)
       valuesObject = optional(any, null)
     })))
-    backup = object ({
+    backup = optional(object ({
       enabled = bool
       components = optional(list(object({
         namespace = string
@@ -103,8 +103,8 @@ variable "components" {
         disabled = optional(bool, false)
         valuesObject = optional(any, null)
       })))
-    })
-    monitoring = object ({
+    }))
+    monitoring = optional(object ({
       enabled = bool
       components = optional(list(object({
         namespace = string
@@ -114,16 +114,9 @@ variable "components" {
         disabled = optional(bool, false)
         valuesObject = optional(any, null)
       })))
-    })
+    }))
   })
-  default = {
-    backup = {
-      enabled = true
-    }
-    monitoring = {
-      enabled = true
-    }
-  }
+  default = {}
 }
 
 variable "ces_fqdn" {

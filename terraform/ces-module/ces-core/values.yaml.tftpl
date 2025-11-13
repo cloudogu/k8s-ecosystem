@@ -9,7 +9,8 @@ k8s-component-operator:
       registry: docker.io
       repository: "${component_operator_image.repository}"
       tag: "${component_operator_image.version}"
-%{ if length(components.components) > 0 ~}
+
+%{ if components.components != null && length(components.components) > 0 ~}
 components:
 %{ for component in components.components ~}
   ${component.name}:
@@ -28,6 +29,8 @@ components:
 %{ endif ~}
 %{ endfor ~}
 %{ endif ~}
+
+%{ if components.backup != null ~}
 backup:
   enabled: ${components.backup.enabled}
 %{ if try(components.monitoring.components, null) != null ~}
@@ -49,6 +52,9 @@ backup:
 %{ endif ~}
 %{ endfor ~}
 %{ endif ~}
+%{ endif ~}
+
+%{ if components.monitoring != null ~}
 monitoring:
   enabled: ${components.monitoring.enabled}
 %{ if try(components.monitoring.components, null) != null ~}
@@ -70,6 +76,8 @@ monitoring:
 %{ endif ~}
 %{ endfor ~}
 %{ endif ~}
+%{ endif ~}
+
 defaultConfig:
   env:
     waitTimeoutMinutes: 15

@@ -31,6 +31,8 @@ variable "ces_namespace" {
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."
   type = object ({
+
+    # System components
     components = optional(list(object({
       namespace = optional(string)
       name = string
@@ -38,8 +40,10 @@ variable "components" {
       helmNamespace = optional(string)
       disabled = optional(bool, false)
       valuesObject = optional(any, null)
-    })))
-    backup = object ({
+    }))),
+
+    # Backup stack
+    backup = optional(object ({
       enabled = bool
       components = optional(list(object({
         namespace = optional(string)
@@ -49,8 +53,10 @@ variable "components" {
         disabled = optional(bool, false)
         valuesObject = optional(any, null)
       })))
-    })
-    monitoring = object ({
+    }))
+
+    # Monitoring stack
+    monitoring = optional(object ({
       enabled = bool
       components = optional(list(object({
         namespace = optional(string)
@@ -60,7 +66,7 @@ variable "components" {
         disabled = optional(bool, false)
         valuesObject = optional(any, null)
       })))
-    })
+    }))
   })
 }
 
@@ -85,11 +91,6 @@ variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
   type        = string
   sensitive   = true
-}
-
-variable "default_dogu" {
-  description = "The default Dogu of the EcoSystem"
-  type        = string
 }
 
 variable "externalIP" {

@@ -5,24 +5,7 @@ locals {
     repository = local._component_operator_image_namever[0]
     version = local._component_operator_image_namever[1]
   }
-
-  _components_list = coalesce(try(var.components.components, null), [])
-
-  # Build the list with a conditional extra field for k8s-ces-assets
-  compcomponents = [
-    for comp in local._components_list : merge(
-      comp,
-        comp.name == "k8s-ces-assets" ? { valuesObject = "nginx:\n  manager:\n    config:\n      defaultDogu: \"${var.default_dogu}\"" } : {}
-    )
-  ]
-
-  components = {
-    components = local.compcomponents
-    backup = var.components.backup
-    monitoring = var.components.monitoring
-  }
 }
-
 
 # This secret contains the access data for the **Dogu Registry**.
 resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
@@ -35,7 +18,7 @@ resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
 
   data = {
     cas_oidc_client_secret  = var.cas_oidc_client_secret,
-    ldap_admin_password = var.ces_admin_password
+    ldap_admin_password     = var.ces_admin_password
   }
 }
 
@@ -54,7 +37,7 @@ resource "helm_release" "ecosystem-core" {
     templatefile("${path.module}/values.yaml.tftpl",
       {
         "component_operator_image"                       = local.component_operator_image
-        "components"                                     = local.components
+        "components"                                     = var.components
       })
   ]
 

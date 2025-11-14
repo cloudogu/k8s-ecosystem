@@ -44,7 +44,7 @@ locals {
   k8s_ces_assets_comp = (
     length(local.k8s_ces_assets_comp_candidate) > 0 ?
     merge(
-      local.k8s_ces_assets_comp_candidate,
+      local.k8s_ces_assets_comp_candidate[0],
       local.k8s_ces_assets_with_default_dogu
     ) :
     local.k8s_ces_assets_with_default_dogu

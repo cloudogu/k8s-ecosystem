@@ -19,10 +19,13 @@ authorized_keys
 .env.sh
 terraform.tfvars
 
-# generated setup.json
-.setup.json
-# generated values file for the setup
-additionalValues.yaml
+# generated values file for longhorn
+.longhorn-values.yaml
+# generated values file for ecosystem-core
+.additionalValues.yaml
+# generated blueprint file
+.blueprint.yaml
+.blueprint-override.yaml
 
 **/gcp_sa.json
 **/.terraform

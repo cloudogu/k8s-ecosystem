@@ -15,6 +15,7 @@ data "kubernetes_service" "ces_lb_exists" {
 
 # patch loadbalancer-service "ces-loadbalancer"
 resource "kubectl_manifest" "ces_loadbalancer_ip_patch" {
+  count = coalesce(var.externalIP, "") != "" ? 1 : 0
   yaml_body = templatefile(
     "${path.module}/loadbalancer.yaml.tftpl",
     {

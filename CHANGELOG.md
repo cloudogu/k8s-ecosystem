@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v5.6.0] - 2025-11-17
 ### Changed
 - [#120] use ecosystem-core instead of k8s-ces-setup in vagrant-setup
 - [#123] use ecosystem-core instead of k8s-ces-setup in terraform modules

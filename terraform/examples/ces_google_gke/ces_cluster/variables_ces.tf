@@ -1,11 +1,4 @@
-variable "container_registry_secrets" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
-  type        = list(object({
-    url      = string
-    username = string
-    password = string
-  }))
-}
+
 variable "dogu_registry_username" {
   description = "The username for the dogu-registry"
   type        = string
@@ -13,6 +6,28 @@ variable "dogu_registry_username" {
 
 variable "dogu_registry_password" {
   description = "The base64-encoded password for the dogu-registry"
+  type        = string
+  sensitive   = true
+}
+
+# docker credentials
+variable "docker_registry_host" {
+  description = "The host for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_username" {
+  description = "The username for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_email" {
+  description = "The email for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_password" {
+  description = "The base64-encoded password for the docker-registry"
   type        = string
   sensitive   = true
 }
@@ -46,35 +61,62 @@ variable "dogus" {
   default     = [
     "official/ldap",
     "official/postfix",
-    "k8s/nginx-static",
-    "k8s/nginx-ingress",
     "official/cas",
     "official/jenkins",
-    "official/nexus",
     "official/scm"
   ]
 }
 
+# component operator crd
 variable "component_operator_crd_chart" {
-  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.7.0"
-  type = string
-  default = "k8s/k8s-component-operator-crd:latest"
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"
+  type        = string
+  default     = "k8s/k8s-component-operator-crd:1.10.1"
 }
 
-variable "component_operator_chart" {
-  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.7.0"
-  type = string
-  default = "k8s/k8s-component-operator:latest"
+# component operator crd
+variable "component_operator_image" {
+  description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
+  type        = string
+  default     = "cloudogu/k8s-component-operator:1.10.1"
 }
 
+# List of components, backup components and monitoring components
 variable "components" {
-  description = "A list of components to install, optional with version like k8s/k8s-dogu-operator:3.2.1"
-  type = list(string)
-  default = [
-    "k8s/k8s-dogu-operator",
-    "k8s/k8s-dogu-operator-crd",
-    "k8s/k8s-service-discovery",
-  ]
+  description = "A list of components, ordered by default components, backup and monitoring."
+  type = object ({
+    components = optional(list(object({
+      namespace = string
+      name = string
+      version = string
+      helmNamespace = optional(string)
+      disabled = optional(bool, false)
+      valuesObject = optional(any, null)
+    })))
+    backup = optional(object ({
+      enabled = bool
+      components = optional(list(object({
+        namespace = string
+        name = string
+        version = string
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      })))
+    }))
+    monitoring = optional(object ({
+      enabled = bool
+      components = optional(list(object({
+        namespace = string
+        name = string
+        version = string
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      })))
+    }))
+  })
+  default = {}
 }
 
 variable "ces_fqdn" {

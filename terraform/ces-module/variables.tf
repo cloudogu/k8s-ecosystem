@@ -1,45 +1,171 @@
-variable "setup_chart_version" {
-  description = "The version of the k8s-ces-setup chart"
+# component operator crd
+variable "component_operator_crd_chart" {
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"
   type        = string
-  default     = "4.1.1"
+  default     = "k8s/k8s-component-operator-crd:1.10.1"
 }
 
-variable "setup_chart_namespace" {
-  description = "The namespace of k8s-ces-setup chart"
+# component operator crd
+variable "blueprint_operator_crd_chart" {
+  description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-operator-crd:1.2.3"
+  type        = string
+  default     = "k8s/k8s-blueprint-operator-crd:3.1.0"
+}
+
+# component operator image
+variable "component_operator_image" {
+  description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
+  type        = string
+  default     = "cloudogu/k8s-component-operator:1.10.1"
+}
+
+# resource ecosystem itself
+variable "ecosystem_core_chart_version" {
+  description = "The version of the ecosystem-core chart"
+  type        = string
+  default     = "1.1.0"
+}
+
+variable "ecosystem_core_chart_namespace" {
+  description = "The namespace of ecosystem-core chart"
   type        = string
   default     = "k8s"
 }
 
-variable "setup_timeout" {
-  description = "The helm timeout of the setup in seconds"
+variable "ecosystem_core_timeout" {
+  description = "The helm timeout of ecosystem-core to complete the installation in seconds"
   type        = number
-  default     = 300
+  default     = 600
 }
 
-variable "setup_fqdn_from_loadbalancer_wait_timeout_mins" {
-  description = "The timeout of the setup to wait for the fqdn from the loadbalancer in minutes"
-  type        = number
-  default     = 15
+variable "create_namespace" {
+  description = "Flag to specify whether the namespace in variable ces_namespace shall be created"
+  type = bool
+  default = false
 }
 
-variable "setup_dogu_wait_timeout_secs" {
-  description = "The timeout of the setup to wait for each dogu in seconds"
-  type        = number
-  default     = 300
-}
-
-variable "setup_component_wait_timeout_secs" {
-  description = "The timeout of the setup to wait for each component in seconds"
-  type        = number
-  default     = 1800
-}
-
+# namespace of ces
 variable "ces_namespace" {
   description = "The namespace for the CES"
   type        = string
   default     = "ecosystem"
 }
 
+# List of components, backup components and monitoring components
+variable "components" {
+  description = "A list of components, ordered by default components, backup and monitoring."
+  type = object ({
+    components = optional(list(object({
+      namespace = optional(string)
+      name = string
+      version = optional(string)
+      helmNamespace = optional(string)
+      disabled = optional(bool, false)
+      valuesObject = optional(any, null)
+    })))
+    backup = optional(object ({
+      enabled = bool
+      components = optional(list(object({
+        namespace = optional(string)
+        name = string
+        version = optional(string)
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      })))
+    }))
+    monitoring = optional(object ({
+      enabled = bool
+      components = optional(list(object({
+        namespace = optional(string)
+        name = string
+        version = optional(string)
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      })))
+    }))
+  })
+  default = {}
+}
+
+# helm credentials
+variable "helm_registry_host" {
+  description = "The host for the helm-registry"
+  type        = string
+}
+
+variable "helm_registry_schema" {
+  description = "The schema for the helm-registry"
+  type        = string
+}
+
+variable "helm_registry_username" {
+  description = "The username for the helm-registry"
+  type        = string
+}
+
+variable "helm_registry_password" {
+  description = "The base64-encoded password for the helm-registry"
+  type        = string
+  sensitive   = true
+}
+
+# docker credentials
+variable "docker_registry_host" {
+  description = "The host for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_username" {
+  description = "The username for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_email" {
+  description = "The email for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_password" {
+  description = "The base64-encoded password for the docker-registry"
+  type        = string
+  sensitive   = true
+}
+
+# dogu registry credentials
+variable "dogu_registry_username" {
+  description = "The username for the dogu-registry"
+  type        = string
+}
+
+variable "dogu_registry_password" {
+  description = "The base64-encoded password for the dogu-registry"
+  type        = string
+  sensitive   = true
+}
+
+# FQDN
+variable "ces_fqdn" {
+  description = "Fully qualified domain name of the EcoSystem, e.g. 'www.ecosystem.my-domain.com'"
+  type        = string
+}
+
+# Certificate
+variable "ces_certificate_path" {
+  # Dev Cert:  openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=Oregon/L=Portland/O=CompanyName/OU=DepartmentName/CN=example.com"
+  description = "The certificate of the EcoSystem in PEM format. If null, a self-signed cert is created. If an intermediate certificate is used it also has to be entered here. The certificate chain has to be in the right order: The instance certificate first, intermediate certificate(s) second and at last the root certificate."
+  type        = string
+  default     = null
+}
+
+variable "ces_certificate_key_path" {
+  description = " The certificate key of the EcoSystem in PEM format"
+  type        = string
+  default     = null
+}
+
+# CES Admin
 variable "ces_admin_username" {
   description = "The CES admin username"
   type        = string
@@ -58,29 +184,6 @@ variable "ces_admin_email" {
   default     = "admin@admin.admin"
 }
 
-variable "ces_fqdn" {
-  description = "Fully qualified domain name of the EcoSystem, e.g. 'www.ecosystem.my-domain.com'"
-  type        = string
-}
-
-variable "ces_certificate_path" {
-  # Dev Cert:  openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=Oregon/L=Portland/O=CompanyName/OU=DepartmentName/CN=example.com"
-  description = "The certificate of the EcoSystem in PEM format. If null, a self-signed cert is created. If an intermediate certificate is used it also has to be entered here. The certificate chain has to be in the right order: The instance certificate first, intermediate certificate(s) second and at last the root certificate."
-  type        = string
-  default     = null
-}
-
-variable "ces_certificate_key_path" {
-  description = " The certificate key of the EcoSystem in PEM format"
-  type        = string
-  default     = null
-}
-
-variable "default_dogu" {
-  description = "The default Dogu of the EcoSystem"
-  type        = string
-  default     = "cas"
-}
 
 variable "dogus" {
   description = "A list of Dogus to install, optional with version like official/cas:7.0.8-3"
@@ -88,116 +191,14 @@ variable "dogus" {
   default = [
     "official/ldap",
     "official/postfix",
-    "k8s/nginx-static",
-    "k8s/nginx-ingress",
     "official/cas"
   ]
 }
 
-variable "component_operator_crd_chart" {
-  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
+variable "default_dogu" {
+  description = "The default Dogu of the EcoSystem"
   type        = string
-  default     = "k8s/k8s-component-operator-crd:latest"
-}
-
-variable "component_operator_chart" {
-  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
-  type        = string
-  default     = "k8s/k8s-component-operator:latest"
-}
-
-variable "components" {
-  description = "A list of components to install, optional with version like k8s/k8s-dogu-operator:3.0.1"
-  type = list(string)
-  default = [
-    "k8s/k8s-dogu-operator",
-    "k8s/k8s-dogu-operator-crd",
-    "k8s/k8s-service-discovery",
-  ]
-}
-
-variable "container_registry_secrets" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
-  type = list(object({
-    url      = string
-    username = string
-    password = string
-  }))
-}
-
-variable "dogu_registry_username" {
-  description = "The username for the dogu-registry"
-  type        = string
-}
-
-variable "dogu_registry_password" {
-  description = "The base64-encoded password for the dogu-registry"
-  type        = string
-  sensitive   = true
-}
-
-variable "dogu_registry_endpoint" {
-  description = "The endpoint for the dogu-registry"
-  type        = string
-}
-
-variable "dogu_registry_url_schema" {
-  description = "The URL schema for the dogu-registry ('default' or 'index')"
-  type        = string
-  default     = "default"
-}
-
-variable "helm_registry_host" {
-  description = "The host for the helm-registry"
-  type        = string
-}
-
-variable "helm_registry_schema" {
-  description = "The schema for the helm-registry"
-  type        = string
-}
-
-variable "helm_registry_plain_http" {
-  description = "A flag which indicates if the component-operator should use plain http for the helm-registry"
-  type        = bool
-  default     = false
-}
-
-variable "helm_registry_insecure_tls" {
-  description = "A flag which indicates if the component-operator should use insecure TLS for the helm-registry"
-  type        = bool
-  default     = false
-}
-
-variable "helm_registry_username" {
-  description = "The username for the helm-registry"
-  type        = string
-}
-
-variable "helm_registry_password" {
-  description = "The base64-encoded password for the helm-registry"
-  type        = string
-  sensitive   = true
-}
-
-variable "resource_patches" {
-  description = "The content of the resource-patches for the CES installation."
-  type        = string
-  default     = ""
-}
-
-variable "is_setup_applied_matching_resource" {
-  description = "This variable defines a resource with its kind, api and field selector and is used to determine if the setup has already been executed or not."
-  type = object({
-    kind           = string
-    api            = string
-    field_selector = string
-  })
-  default = {
-    kind           = "CustomResourceDefinition",
-    api            = "apiextensions.k8s.io/v1",
-    field_selector = "metadata.name==dogus.k8s.cloudogu.com"
-  }
+  default     = "cas"
 }
 
 variable "cas_oidc_config" {
@@ -232,5 +233,11 @@ variable "cas_oidc_client_secret" {
   description = "Contains the secret to be used together with the client ID to identify the CAS to the OIDC provider. Encrypted."
   type        = string
   sensitive   = true
+  default     = ""
+}
+
+variable "externalIP" {
+  description = "Contains the external IP, may overwrite the loadbalancer external ip, defaults to empty -> so the loadbalancer ip will not be patched"
+  type        = string
   default     = ""
 }

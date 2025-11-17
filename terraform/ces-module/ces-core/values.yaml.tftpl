@@ -1,0 +1,83 @@
+# Default values for ecosystem-core.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+skipPreconditionValidation: false
+k8s-component-operator:
+  manager:
+    image:
+      registry: docker.io
+      repository: "${component_operator_image.repository}"
+      tag: "${component_operator_image.version}"
+
+%{ if components.components != null && length(components.components) > 0 ~}
+components:
+%{ for component in components.components ~}
+  ${component.name}:
+%{ if component.version != null ~}
+    version: ${component.version}
+%{ endif ~}
+%{ if component.helmNamespace != null ~}
+    helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
+%{ if try(component.valuesObject, null) != null ~}
+    valuesObject:
+      ${indent(6, component.valuesObject) }
+%{ endif ~}
+%{ if component.disabled ~}
+    disabled: true
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+
+%{ if components.backup != null ~}
+backup:
+  enabled: ${components.backup.enabled}
+%{ if try(components.monitoring.components, null) != null ~}
+  components:
+%{ for component in components.backup.components ~}
+    ${component.name}:
+%{ if component.version != null ~}
+      version: ${component.version}
+%{ endif ~}
+%{ if component.helmNamespace != null ~}
+      helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
+%{ if component.disabled }
+      disabled: true
+%{ endif ~}
+%{ if try(component.valuesObject, null) != null ~}
+      valuesObject:
+        ${indent(8, component.valuesObject) }
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ endif ~}
+
+%{ if components.monitoring != null ~}
+monitoring:
+  enabled: ${components.monitoring.enabled}
+%{ if try(components.monitoring.components, null) != null ~}
+  components:
+%{ for component in components.monitoring.components ~}
+    ${component.name}:
+%{ if component.version != null ~}
+      version: ${component.version}
+%{ endif ~}
+%{ if component.helmNamespace != null ~}
+      helmNamespace: "${component.helmNamespace}"
+%{ endif ~}
+%{ if component.disabled }
+      disabled: true
+%{ endif ~}
+%{ if try(component.valuesObject, null) != null ~}
+      valuesObject:
+        ${indent(8, component.valuesObject) }
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ endif ~}
+
+defaultConfig:
+  env:
+    waitTimeoutMinutes: 15

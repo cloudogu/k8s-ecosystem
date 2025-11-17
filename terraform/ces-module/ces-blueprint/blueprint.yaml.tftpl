@@ -1,0 +1,18 @@
+apiVersion: k8s.cloudogu.com/v3
+kind: Blueprint
+metadata:
+  labels:
+    app: ces
+    app.kubernetes.io/name: k8s-blueprint-lib
+  name: blueprint-ces-module
+  namespace: ${ces_namespace}
+spec:
+  displayName: "Blueprint Terraform CES-Module"
+  blueprint:
+    dogus:
+      ${indent(6, yamlencode(dogus))}
+    config:
+      dogus:
+        ${indent(8, yamlencode(doguConfigs))}
+      global:
+        ${indent(8, yamlencode(globalConfig))}

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.6.0] - 2025-11-17
+### Changed
+- [#120] use ecosystem-core instead of k8s-ces-setup in vagrant-setup
+- [#123] use ecosystem-core instead of k8s-ces-setup in terraform modules
+
 ## [v5.5.0] - 2025-11-17
 ### Changed
 - Upgrade k3s to v1.33.5+k3s1

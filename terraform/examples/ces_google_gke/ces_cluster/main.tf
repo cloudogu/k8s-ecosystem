@@ -6,18 +6,8 @@ locals {
   kubernetes_version = "1.31"
   node_count         = 3
 
-  dogu_registry_url_schema = "default"
-  dogu_registry_endpoint   = "https://dogu.cloudogu.com/api/v2/dogus"
-
   helm_registry_schema       = "oci"
   helm_registry_host         = "registry.cloudogu.com"
-  helm_registry_plain_http   = false
-  helm_registry_insecure_tls = false
-
-  setup_chart_namespace = "k8s"
-  setup_chart_version   = "4.1.1"
-
-  resource_patches_file = "resource_patches.yaml"
 }
 
 module "kubeconfig_generator" {
@@ -51,30 +41,32 @@ module "ces" {
   source = "../../../ces-module"
 
   # Configure CES installation options
-  setup_chart_version          = local.setup_chart_version
-  setup_chart_namespace        = local.setup_chart_namespace
+  component_operator_crd_chart        = var.component_operator_crd_chart
+  component_operator_image            = var.component_operator_image
+
   ces_fqdn                     = var.ces_fqdn
   ces_admin_username           = var.ces_admin_username
   ces_admin_password           = var.ces_admin_password
+
   dogus                        = var.dogus
-  resource_patches = file(local.resource_patches_file)
-  component_operator_chart     = var.component_operator_chart
-  component_operator_crd_chart = var.component_operator_crd_chart
+
   components = var.components
 
   # Configure access for the registries. Passwords need to be base64-encoded.
-  container_registry_secrets = var.container_registry_secrets
   dogu_registry_username     = var.dogu_registry_username
   dogu_registry_password     = var.dogu_registry_password
-  dogu_registry_endpoint     = local.dogu_registry_endpoint
-  dogu_registry_url_schema   = local.dogu_registry_url_schema
+
+  docker_registry_email      = var.docker_registry_email
+  docker_registry_host       = var.docker_registry_host
+  docker_registry_password   = var.docker_registry_password
+  docker_registry_username   = var.docker_registry_username
 
   helm_registry_host         = local.helm_registry_host
   helm_registry_schema       = local.helm_registry_schema
-  helm_registry_plain_http   = local.helm_registry_plain_http
-  helm_registry_insecure_tls = local.helm_registry_insecure_tls
   helm_registry_username     = var.helm_registry_username
   helm_registry_password     = var.helm_registry_password
+
+  create_namespace = true
 }
 
 module "scale_jobs" {

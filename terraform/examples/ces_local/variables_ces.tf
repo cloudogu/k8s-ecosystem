@@ -1,12 +1,3 @@
-variable "container_registry_secrets" {
-  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
-  type        = list(object({
-    url      = string
-    username = string
-    password = string
-  }))
-}
-
 variable "dogu_registry_username" {
   description = "The username for the dogu-registry"
   type        = string
@@ -16,18 +7,6 @@ variable "dogu_registry_password" {
   description = "The base64-encoded password for the dogu-registry"
   type        = string
   sensitive   = true
-}
-
-variable "dogu_registry_endpoint" {
-  description = "The endpoint for the dogu-registry"
-  type        = string
-  default     = "https://dogu.cloudogu.com/api/v2/dogus"
-}
-
-variable "dogu_registry_url_schema" {
-  description = "The URL schema for the dogu-registry ('default' or 'index')"
-  type        = string
-  default     = "default"
 }
 
 variable "helm_registry_host" {
@@ -42,18 +21,6 @@ variable "helm_registry_schema" {
   default     = "oci"
 }
 
-variable "helm_registry_plain_http" {
-  description = "A flag which indicates if the component-operator should use plain http for the helm-registry"
-  type        = bool
-  default     = false
-}
-
-variable "helm_registry_insecure_tls" {
-  description = "A flag which indicates if the component-operator should use insecure TLS for the helm-registry"
-  type        = bool
-  default     = false
-}
-
 variable "helm_registry_username" {
   description = "The username for the helm-registry"
   type        = string
@@ -61,6 +28,28 @@ variable "helm_registry_username" {
 
 variable "helm_registry_password" {
   description = "The base64-encoded password for the helm-registry"
+  type        = string
+  sensitive   = true
+}
+
+# docker credentials
+variable "docker_registry_host" {
+  description = "The host for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_username" {
+  description = "The username for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_email" {
+  description = "The email for the docker-registry"
+  type        = string
+}
+
+variable "docker_registry_password" {
+  description = "The base64-encoded password for the docker-registry"
   type        = string
   sensitive   = true
 }
@@ -95,60 +84,93 @@ variable "ces_namespace" {
   default     = "ecosystem"
 }
 
+# component operator crd
 variable "component_operator_crd_chart" {
-  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.1"
-  type = string
-  default = "k8s/k8s-component-operator-crd:latest"
+  description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"
+  type        = string
+  default     = "k8s/k8s-component-operator-crd:1.10.1"
 }
 
-variable "component_operator_chart" {
-  description = "The helm chart of the component operator. Optional with version like k8s/k8s-component-operator:1.2.1"
-  type = string
-  default = "k8s/k8s-component-operator:latest"
+# component operator crd
+variable "component_operator_image" {
+  description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
+  type        = string
+  default     = "cloudogu/k8s-component-operator:1.10.1"
 }
 
+# List of cómponents, backup components and monitoring components
 variable "components" {
-  description = "A list of components to install, optional with version like k8s/k8s-dogu-operator:3.0.1"
-  type = list(string)
-  default = [
-    "k8s/k8s-dogu-operator",
-    "k8s/k8s-dogu-operator-crd",
-    "k8s/k8s-service-discovery",
-    "k8s/k8s-longhorn",
-  ]
-}
-
-variable "additional_components" {
-  description = "A list of additional Components to install"
-  type        = list(object({
-    name            = string
-    version         = string
-    namespace       = string
-    deployNamespace = string
-  }))
-  default = [{ name = "k8s-longhorn", version = "latest", namespace = "k8s", deployNamespace = "longhorn-system" }]
+  description = "A list of credentials for container registries used by dogus and components. The password must be base64 encoded. The regular configuration would contain registry.cloudogu.com as url."
+  type = object ({
+    components = list(object({
+      namespace = string
+      name = string
+      version = string
+      helmNamespace = optional(string)
+      disabled = optional(bool, false)
+      valuesObject = optional(any, null)
+    }))
+    backup = object ({
+      enabled = bool
+      components = list(object({
+        namespace = string
+        name = string
+        version = string
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      }))
+    })
+    monitoring = object ({
+      enabled = bool
+      components = list(object({
+        namespace = string
+        name = string
+        version = string
+        helmNamespace = optional(string)
+        disabled = optional(bool, false)
+        valuesObject = optional(any, null)
+      }))
+    })
+  })
+  default = {
+    components = [
+      { namespace = "ecosystem", name = "k8s-dogu-operator-crd", version = "2.9.0" },
+      { namespace = "ecosystem", name = "k8s-dogu-operator", version = "3.13.0" },
+      { namespace = "ecosystem", name = "k8s-service-discovery", version = "3.0.0" },
+      { namespace = "ecosystem", name = "k8s-blueprint-operator-crd", version = "1.3.0", disabled = true},
+      { namespace = "ecosystem", name = "k8s-blueprint-operator", version = "2.7.0" },
+      { namespace = "ecosystem", name = "k8s-ces-gateway", version = "1.0.4" },
+      { namespace = "ecosystem", name = "k8s-ces-assets", version = "1.0.3" },
+      { namespace = "ecosystem", name = "k8s-ces-control", version = "1.7.1", disabled = true },
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator-crd", version = "0.2.3"},
+      { namespace = "ecosystem", name = "k8s-debug-mode-operator", version = "0.3.0"},
+      { namespace = "ecosystem", name = "k8s-support-mode-operator-crd", version = "0.2.0", disabled = true },
+      { namespace = "ecosystem", name = "k8s-support-mode-operator", version = "0.3.0", disabled = true },
+    ]
+    backup = {
+      enabled = true
+      components = [
+        { namespace = "ecosystem", name = "k8s-backup-operator-crd", version = "1.6.0" },
+        { namespace = "ecosystem", name = "k8s-backup-operator", version = "1.6.0" },
+        { namespace = "ecosystem", name = "k8s-velero", version = "10.0.1-5" },
+      ]
+    }
+    monitoring = {
+      enabled = true
+      components = [
+        { namespace = "ecosystem", name = "k8s-prometheus", version = "75.3.5-3" },
+        { namespace = "ecosystem", name = "k8s-minio", version = "2025.6.13-2" },
+        { namespace = "ecosystem", name = "k8s-loki", version = "3.3.2-4" },
+        { namespace = "ecosystem", name = "k8s-promtail", version = "2.9.1-9" },
+        { namespace = "ecosystem", name = "k8s-alloy", version = "1.1.2-1" },
+      ]
+    }
+  }
 }
 
 variable "ces_fqdn" {
   description = "Fully qualified domain name of the EcoSystem, e.g. 'www.ecosystem.my-domain.com'"
   type        = string
   default     = ""
-}
-
-variable "setup_chart_namespace" {
-  description = "The namespace of k8s-ces-setup chart"
-  type        = string
-  default     = "k8s"
-}
-
-variable "setup_chart_version" {
-  description = "The version of the k8s-ces-setup chart"
-  type        = string
-  default     = "4.1.1"
-}
-
-variable "resource_patches_file" {
-  description = "The location of a file containing resource-patches for the CES installation. The file-path is relative to the root-module-location"
-  type        = string
-  default     = "resource_patches.yaml"
 }

@@ -12,7 +12,8 @@ fqdn = "k3ces.local"
 kube_ctx_name= "k3ces.local"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
-install_setup = true
+install_ecosystem = true
+forceUpgradeEcosystem = false
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
@@ -26,8 +27,8 @@ helm_registry_schema = ""
 helm_registry_plain_http = ""
 helm_registry_username = ""
 helm_registry_password = ""
-basebox_version = "v3.0.0"
-basebox_checksum = "dee0b0c17e11818d069d2f4e032a09689e3b4e78fe105e9fee09ec1c3c12e25f"
+basebox_version = "v5.5.0"
+basebox_checksum = "ea981714db53abe0c189b6ea1346653a99f363b6cc4317242d36b51933c77238"
 basebox_checksum_type = "sha256"
 basebox_url = "https://storage.googleapis.com/cloudogu-ecosystem/basebox-mn/" + basebox_version + "/basebox-mn-" + basebox_version + ".box"
 basebox_name = "basebox-mn-" + basebox_version
@@ -101,17 +102,13 @@ Vagrant.configure("2") do |config|
           `mkcert -cert-file .vagrant/certs/k3ces.local.crt -key-file .vagrant/certs/k3ces.local.key #{fqdn} #{main_k3s_ip_address}`
         end
 
-        # create a copy of the setup.json file and replace the certificate settings
-        require 'json'
-        setup = JSON.parse(File.read("image/scripts/dev/setup.json"))
-        setup["naming"]["certificateType"] = "external"
-        setup["naming"]["certificate"] = File.read(".vagrant/certs/k3ces.local.crt")
-        setup["naming"]["certificateKey"] = File.read(".vagrant/certs/k3ces.local.key")
-        File.write("image/scripts/dev/.setup.json", JSON.pretty_generate(setup))
       else
-        # remove geneated .setup.json file, if an old version exists
-        if File.file?("image/scripts/dev/.setup.json")
-          File.delete("image/scripts/dev/.setup.json")
+        # remove geneated certificate files
+        if File.file?(".vagrant/certs/k3ces.local.crt")
+          File.delete(".vagrant/certs/k3ces.local.crt")
+        end
+        if File.file?(".vagrant/certs/k3ces.local.key")
+          File.delete(".vagrant/certs/k3ces.local.key")
         end
       end
     end
@@ -188,7 +185,7 @@ Vagrant.configure("2") do |config|
                     args: [fqdn, main_k3s_ip_address, main_k3s_port, kube_ctx_name] }
   end
 
-  if install_setup
+  if install_ecosystem
     config.trigger.after :up do |trigger|
       longhorn_replicas = [worker_count + 1, 3].min
       if worker_count > 0
@@ -196,8 +193,8 @@ Vagrant.configure("2") do |config|
       else
         trigger.only_on = "main"
       end
-      trigger.info = "Install ces-setup"
-      trigger.run = { path: "image/scripts/dev/installLatestK8sCesSetup.sh",
+      trigger.info = "Install ecosystem"
+      trigger.run = { path: "image/scripts/dev/installEcosystem.sh",
                       args: [ces_namespace,
                             helm_repository_namespace,
                             dogu_registry_username,
@@ -212,7 +209,9 @@ Vagrant.configure("2") do |config|
                             helm_registry_schema,
                             helm_registry_plain_http,
                             kube_ctx_name,
-                            longhorn_replicas
+                            longhorn_replicas,
+                            fqdn,
+                            forceUpgradeEcosystem.to_s
                       ]
       }
     end

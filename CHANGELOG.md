@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.5.0] - 2025-11-17
+### Changed
+- Upgrade k3s to v1.33.5+k3s1
+- Upgrade k9s to v0.50.16
+
 ## [v5.4.0] - 2025-09-17
 ### Changed
 - Upgrade Ubuntu to 24.04.3

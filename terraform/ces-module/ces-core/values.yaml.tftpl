@@ -33,7 +33,7 @@ components:
 %{ if components.backup != null ~}
 backup:
   enabled: ${components.backup.enabled}
-%{ if try(components.monitoring.components, null) != null ~}
+%{ if try(components.backup.components, null) != null ~}
   components:
 %{ for component in components.backup.components ~}
     ${component.name}:

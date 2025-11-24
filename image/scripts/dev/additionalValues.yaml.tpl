@@ -11,3 +11,6 @@ backup:
   enabled: false
 monitoring:
   enabled: false
+defaultConfig:
+  env:
+    waitTimeoutMinutes: 60

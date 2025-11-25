@@ -43,9 +43,7 @@ backup:
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
-%{ if component.disabled }
-      disabled: true
-%{ endif ~}
+      disabled: ${component.disabled}
 %{ if try(component.valuesObject, null) != null ~}
       valuesObject:
         ${indent(8, component.valuesObject) }
@@ -67,9 +65,7 @@ monitoring:
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
-%{ if component.disabled }
-      disabled: true
-%{ endif ~}
+      disabled: ${component.disabled}
 %{ if try(component.valuesObject, null) != null ~}
       valuesObject:
         ${indent(8, component.valuesObject) }

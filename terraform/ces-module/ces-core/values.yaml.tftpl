@@ -33,7 +33,7 @@ components:
 %{ if components.backup != null ~}
 backup:
   enabled: ${components.backup.enabled}
-%{ if try(components.monitoring.components, null) != null ~}
+%{ if try(length(components.backup.components), 0) > 0 ~}
   components:
 %{ for component in components.backup.components ~}
     ${component.name}:
@@ -43,9 +43,7 @@ backup:
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
-%{ if component.disabled }
-      disabled: true
-%{ endif ~}
+      disabled: ${component.disabled}
 %{ if try(component.valuesObject, null) != null ~}
       valuesObject:
         ${indent(8, component.valuesObject) }
@@ -57,7 +55,7 @@ backup:
 %{ if components.monitoring != null ~}
 monitoring:
   enabled: ${components.monitoring.enabled}
-%{ if try(components.monitoring.components, null) != null ~}
+%{ if try(length(components.monitoring.components), 0) > 0 ~}
   components:
 %{ for component in components.monitoring.components ~}
     ${component.name}:
@@ -67,9 +65,7 @@ monitoring:
 %{ if component.helmNamespace != null ~}
       helmNamespace: "${component.helmNamespace}"
 %{ endif ~}
-%{ if component.disabled }
-      disabled: true
-%{ endif ~}
+      disabled: ${component.disabled}
 %{ if try(component.valuesObject, null) != null ~}
       valuesObject:
         ${indent(8, component.valuesObject) }

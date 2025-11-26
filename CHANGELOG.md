@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- [#123] fix wrong component stack name in values template of the ces-core terraform module
+- [#123] fix values template of the ces-core terraform module
 
 ## [v5.6.0] - 2025-11-17
 ### Changed

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#125] Add snapshot crd required by the backup stack.
 
+## [v5.6.1] - 2025-11-26
+### Fixed
+- [#123] fix values template of the ces-core terraform module
+
 ## [v5.6.0] - 2025-11-17
 ### Changed
 - [#120] use ecosystem-core instead of k8s-ces-setup in vagrant-setup

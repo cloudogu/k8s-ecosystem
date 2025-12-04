@@ -97,6 +97,13 @@ applyResources() {
     --values ${LONGHORN_VALUES_YAML} \
     --version 1.10.0
 
+  # Install SnapshotController
+  helm upgrade -i k8s-snapshot-controller-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller-crd" \
+    --namespace="kube-system" --version 8.2.1-3
+
+  helm upgrade -i k8s-snapshot-controller "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller" \
+    --namespace="kube-system" --version 8.2.1-3
+
   # Install Component CRD
   helm upgrade -i k8s-component-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-component-operator-crd" \
     --namespace="${CES_NAMESPACE}"

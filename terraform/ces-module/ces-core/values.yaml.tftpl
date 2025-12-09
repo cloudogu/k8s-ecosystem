@@ -3,12 +3,6 @@
 # Declare variables to be passed into your templates.
 
 skipPreconditionValidation: false
-k8s-component-operator:
-  manager:
-    image:
-      registry: docker.io
-      repository: "${component_operator_image.repository}"
-      tag: "${component_operator_image.version}"
 
 %{ if components.components != null && length(components.components) > 0 ~}
 components:

@@ -3,7 +3,6 @@ locals {
   // enforce version
   blueprint_operator_crd_chart = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? var.blueprint_operator_crd_chart : var.blueprint_operator_crd_chart + ":3.1.0"
   component_operator_crd_chart = length(split(":", var.component_operator_crd_chart)) == 2 ? var.component_operator_crd_chart : var.component_operator_crd_chart + ":1.10.1"
-  component_operator_image = length(split(":", var.component_operator_image)) == 2 ? var.component_operator_image : var.component_operator_image + ":latest"
 
   disabled_blueprint_crd_comp = { name = "k8s-blueprint-operator-crd", disabled = true}
 
@@ -89,8 +88,6 @@ module "ces-core" {
   helm_registry_schema = var.helm_registry_schema
 
   ces_namespace = var.ces_namespace
-
-  component_operator_image = local.component_operator_image
 
   components = {
     components = local.components_sanitized

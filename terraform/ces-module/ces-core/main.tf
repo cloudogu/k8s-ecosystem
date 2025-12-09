@@ -1,11 +1,4 @@
-locals {
-  // version is enforced by root module
-  _component_operator_image_namever = split(":", var.component_operator_image)
-  component_operator_image = {
-    repository = local._component_operator_image_namever[0]
-    version = local._component_operator_image_namever[1]
-  }
-}
+locals {}
 
 # This secret contains the access data for the **Dogu Registry**.
 resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
@@ -36,7 +29,6 @@ resource "helm_release" "ecosystem-core" {
   values = [
     templatefile("${path.module}/values.yaml.tftpl",
       {
-        "component_operator_image"                       = local.component_operator_image
         "components"                                     = var.components
       })
   ]

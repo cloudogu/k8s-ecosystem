@@ -3,26 +3,25 @@ locals {
 
   _component_operator_crd_chart_parts = split("/", var.component_operator_crd_chart)
 
-  // version is enforced by root module
   _component_operator_crd_chart_last = local._component_operator_crd_chart_parts[length(local._component_operator_crd_chart_parts) - 1]
   _component_operator_crd_chart_namever = split(":", local._component_operator_crd_chart_last)
 
   component_operator_crd_chart = {
     repository = join("/", slice(local._component_operator_crd_chart_parts, 0, length(local._component_operator_crd_chart_parts) - 1))
     name = local._component_operator_crd_chart_namever[0]
-    version = local._component_operator_crd_chart_namever[1]
+    version = length(local._component_operator_crd_chart_namever) > 1 ? local._component_operator_crd_chart_namever[1] : null
   }
+
 
   _blueprint_operator_crd_chart_parts = split("/", var.blueprint_operator_crd_chart)
 
-  // version is enforced by root module
   _blueprint_operator_crd_chart_last = local._blueprint_operator_crd_chart_parts[length(local._blueprint_operator_crd_chart_parts) - 1]
   _blueprint_operator_crd_chart_namever = split(":", local._blueprint_operator_crd_chart_last)
 
   blueprint_operator_crd_chart = {
     repository = join("/", slice(local._blueprint_operator_crd_chart_parts, 0, length(local._blueprint_operator_crd_chart_parts) - 1))
     name = local._blueprint_operator_crd_chart_namever[0]
-    version = local._blueprint_operator_crd_chart_namever[1]
+    version = length(local._blueprint_operator_crd_chart_namever) > 1 ? local._blueprint_operator_crd_chart_namever[1] : null
   }
 
   decoded_helm_password = base64decode(var.helm_registry_password)

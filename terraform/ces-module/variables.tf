@@ -2,14 +2,14 @@
 variable "component_operator_crd_chart" {
   description = "The helm chart of the component crd. Optional with version like k8s/k8s-component-operator-crd:1.2.3"
   type        = string
-  default     = "k8s/k8s-component-operator-crd:1.10.1"
+  default     = "k8s/k8s-component-operator-crd"
 }
 
 # component operator crd
 variable "blueprint_operator_crd_chart" {
   description = "The helm chart of the blueprint crd. Optional with version like k8s/k8s-blueprint-operator-crd:1.2.3"
   type        = string
-  default     = "k8s/k8s-blueprint-operator-crd:3.1.0"
+  default     = "k8s/k8s-blueprint-operator-crd"
 }
 
 # resource ecosystem itself

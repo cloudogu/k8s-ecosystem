@@ -1,9 +1,5 @@
 # The local Closure converts input Parameter to usable template parameters
 locals {
-  // enforce version
-  blueprint_operator_crd_chart = length(split(":", var.blueprint_operator_crd_chart)) == 2 ? var.blueprint_operator_crd_chart : var.blueprint_operator_crd_chart + ":3.1.0"
-  component_operator_crd_chart = length(split(":", var.component_operator_crd_chart)) == 2 ? var.component_operator_crd_chart : var.component_operator_crd_chart + ":1.10.1"
-
   disabled_blueprint_crd_comp = { name = "k8s-blueprint-operator-crd", disabled = true}
 
   k8s_ces_assets_with_default_dogu = {
@@ -71,8 +67,8 @@ module "ces-preparation" {
   helm_registry_password = var.helm_registry_password
   helm_registry_username = var.helm_registry_username
 
-  component_operator_crd_chart = local.component_operator_crd_chart
-  blueprint_operator_crd_chart = local.blueprint_operator_crd_chart
+  component_operator_crd_chart = var.component_operator_crd_chart
+  blueprint_operator_crd_chart = var.blueprint_operator_crd_chart
 
   create_namespace = var.create_namespace
   ces_namespace    = var.ces_namespace

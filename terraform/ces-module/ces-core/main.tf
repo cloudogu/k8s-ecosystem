@@ -1,4 +1,6 @@
-locals {}
+locals {
+  ecosystem_core_version = length(var.ecosystem_core_chart_version) > 0 ? var.ecosystem_core_chart_version : null
+}
 
 # This secret contains the access data for the **Dogu Registry**.
 resource "kubernetes_secret" "ecosystem_core_setup_credentials" {
@@ -21,7 +23,7 @@ resource "helm_release" "ecosystem-core" {
   name       = "ecosystem-core"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.ecosystem_core_chart_namespace}"
   chart      = "ecosystem-core"
-  version    = var.ecosystem_core_chart_version
+  version    = local.ecosystem_core_version
   timeout    = var.ecosystem_core_timeout
 
   namespace        = var.ces_namespace

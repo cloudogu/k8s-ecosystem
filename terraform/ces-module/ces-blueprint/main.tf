@@ -19,7 +19,7 @@ locals {
       #{ key = "certificateKey", value = var.ces_certificate_key_path != null ? replace(file(var.ces_certificate_key_path), "\n", "\\n") : ""},
 
       # Password Policy
-      {key  = "password-policy/min_length", value: "1"} ,
+      { key  = "password-policy/min_length", value: "1"} ,
       { key = "password-policy/must_contain_capital_letter", value: "false"},
       { key = "password-policy/must_contain_digit", value: "false" },
       { key = "password-policy/must_contain_lower_case_letter", value = "false" },
@@ -30,6 +30,7 @@ locals {
     ],
   )
 
+  // generate blueprint from parameters
   generated_blueprint = yamldecode(templatefile(
     "${path.module}/blueprint.yaml.tftpl",
     {
@@ -38,9 +39,41 @@ locals {
       "globalConfig"  = local.globalConfig
       "ces_namespace" = var.ces_namespace
     }))
-  passed_blueprint = try(yamldecode(var.blueprint), {})
 
-  merged_blueprint = merge(local.passed_blueprint, local.generated_blueprint)
+
+  // patch passed blueprint
+  passed_blueprint = try(yamldecode(var.blueprint), {})
+  passed_blueprint_dogus = try(local.passed_blueprint.spec.blueprint.dogus, [])
+
+  dogu_by_name = {
+    for d in concat(local.passed_blueprint_dogus, local.parsedDogus) :
+    d.name => d
+  }
+
+  merged_dogus = values(local.dogu_by_name)
+
+  passed_blueprint_doguConfigs = try(local.passed_blueprint.spec.blueprint.config.dogus, {})
+  merged_blueprint_doguConfigs = merge(local.passed_blueprint_doguConfigs, local.doguConfigs)
+
+  passed_blueprint_globalConfig = try(local.passed_blueprint.spec.blueprint.config.global, [])
+  merged_blueprint_globalConfig = concat(local.passed_blueprint_globalConfig, local.globalConfig)
+
+  merged_blueprint_obj = merge(local.passed_blueprint, {
+    metadata = merge(try(local.passed_blueprint.metadata, {}), {
+      namespace = var.ces_namespace
+    }) ,
+    spec = merge(try(local.passed_blueprint.spec, {}), {
+      blueprint = merge(try(local.passed_blueprint.spec.blueprint, {}), {
+        dogus = local.merged_dogus,
+        config = {
+          dogus = local.merged_blueprint_doguConfigs,
+          global = local.merged_blueprint_globalConfig
+        }
+      })
+    })
+  })
+
+  merged_blueprint = trimspace(var.blueprint) == "" ? local.generated_blueprint : local.merged_blueprint_obj
 }
 
 output "blueprint_value" {

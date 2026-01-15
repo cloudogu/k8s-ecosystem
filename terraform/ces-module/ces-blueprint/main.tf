@@ -58,9 +58,10 @@ locals {
   passed_blueprint_globalConfig = try(local.passed_blueprint.spec.blueprint.config.global, [])
   merged_blueprint_globalConfig = concat(local.passed_blueprint_globalConfig, local.globalConfig)
 
-  merged_blueprint_obj = merge(local.passed_blueprint, {
+  merged_blueprint = merge(local.passed_blueprint, {
     metadata = merge(try(local.passed_blueprint.metadata, {}), {
-      namespace = var.ces_namespace
+      namespace = var.ces_namespace,
+      name = "blueprint-ces-module"
     }) ,
     spec = merge(try(local.passed_blueprint.spec, {}), {
       blueprint = merge(try(local.passed_blueprint.spec.blueprint, {}), {
@@ -73,23 +74,16 @@ locals {
     })
   })
 
-  merged_blueprint = trimspace(var.blueprint) == "" ? local.generated_blueprint : local.merged_blueprint_obj
-}
-
-output "blueprint_value" {
-  value = var.blueprint
-}
-
-output "passed_blueprint_value" {
-  value = yamlencode(local.passed_blueprint)
-}
-
-output "merged_blueprint_value" {
-  value = yamlencode(local.merged_blueprint)
 }
 
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
-resource "kubectl_manifest" "blueprint" {
+resource "kubectl_manifest" "generated_blueprint" {
+  count        = trimspace(var.blueprint) == "" ? 1 : 0
+  yaml_body = yamlencode(local.generated_blueprint)
+}
+
+resource "kubectl_manifest" "passed_blueprint" {
+  count        = trimspace(var.blueprint) == "" ? 0 : 1
   yaml_body = yamlencode(local.merged_blueprint)
 }

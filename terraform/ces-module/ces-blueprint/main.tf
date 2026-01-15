@@ -43,6 +43,18 @@ locals {
   merged_blueprint = merge(local.passed_blueprint, local.generated_blueprint)
 }
 
+output "blueprint_value" {
+  value = var.blueprint
+}
+
+output "passed_blueprint_value" {
+  value = yamlencode(local.passed_blueprint)
+}
+
+output "merged_blueprint_value" {
+  value = yamlencode(local.merged_blueprint)
+}
+
 # The Blueprint is used to configure the system after the ecosystem-core has installed all
 # necessary components, therefor it depends on the resource "ecosystem-core"
 resource "kubectl_manifest" "blueprint" {

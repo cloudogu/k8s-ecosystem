@@ -241,3 +241,10 @@ variable "externalIP" {
   type        = string
   default     = ""
 }
+
+# Blueprint
+variable "blueprint" {
+  description = "Predefined Blueprint. "
+  type        = string
+  default     = ""
+}

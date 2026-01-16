@@ -81,7 +81,7 @@ variable "cas_oidc_client_secret" {
 
 # Blueprint
 variable "blueprint" {
-  description = "Predefined Blueprint. TODO: add description with override warning"
+  description = "Predefined Blueprint. If this Parameter is set, the dogu-parameter will be ignored"
   type        = string
 }
 

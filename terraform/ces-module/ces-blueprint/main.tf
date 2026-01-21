@@ -62,7 +62,17 @@ locals {
   merged_blueprint_doguConfigs = merge(local.passed_blueprint_doguConfigs, local.doguConfigs)
 
   passed_blueprint_globalConfig = try(local.passed_blueprint.spec.blueprint.config.global, [])
-  merged_blueprint_globalConfig = concat(local.passed_blueprint_globalConfig, local.globalConfig)
+
+  globalConfig_by_key_grouped = {
+    for c in concat(local.passed_blueprint_globalConfig, local.globalConfig) :
+    c.key => c...
+  }
+
+  globalConfig_by_key = {
+    for key, instances in local.globalConfig_by_key_grouped :
+    key => instances[length(instances) - 1]
+  }
+  merged_blueprint_globalConfig = values(local.globalConfig_by_key)
 
   merged_blueprint = merge(local.passed_blueprint, {
     metadata = merge(try(local.passed_blueprint.metadata, {}), {

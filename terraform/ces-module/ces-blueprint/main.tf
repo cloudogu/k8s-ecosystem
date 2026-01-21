@@ -56,11 +56,6 @@ locals {
     name => instances[length(instances) - 1]
   }
 
-  dogu_by_name = {
-    for d in concat(local.passed_blueprint_dogus, local.parsedDogus) :
-    d.name => d
-  }
-
   merged_dogus = values(local.dogu_by_name)
 
   passed_blueprint_doguConfigs = try(local.passed_blueprint.spec.blueprint.config.dogus, {})

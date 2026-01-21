@@ -45,6 +45,17 @@ locals {
   passed_blueprint = try(yamldecode(var.blueprint), {})
   passed_blueprint_dogus = try(local.passed_blueprint.spec.blueprint.dogus, [])
 
+  // merge lists of dogus. duplicats results in list of lists
+  dogu_by_name_grouped = {
+    for d in concat(local.passed_blueprint_dogus, local.parsedDogus) :
+    d.name => d...
+  }
+
+  dogu_by_name = {
+    for name, instances in local.dogu_by_name_grouped :
+    name => instances[length(instances) - 1]
+  }
+
   dogu_by_name = {
     for d in concat(local.passed_blueprint_dogus, local.parsedDogus) :
     d.name => d

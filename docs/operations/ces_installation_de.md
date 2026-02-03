@@ -218,7 +218,7 @@ helm_registry_secret:
 #  {
 #    "naming": {
 #      "fqdn": "",
-#      "domain": "k3ces.local",
+#      "domain": "k3ces.localhost",
 #      "certificateType": "selfsigned",
 #      "relayHost": "yourrelayhost.com",
 #      "useInternalIp": false,
@@ -503,14 +503,14 @@ Beispiel `k3sConfig.json`:
   ],
   "docker-registry-configuration": {
     "mirrors": {
-      "k3ces.local:30099": {
+      "k3ces.localhost:30099": {
         "endpoint": [
-          "http://k3ces.local:30099"
+          "http://k3ces.localhost:30099"
         ]
       }
     },
     "configs": {
-      "k3ces.local:30099": {
+      "k3ces.localhost:30099": {
         "tls": {
           "insecure_skip_verify": false
         }

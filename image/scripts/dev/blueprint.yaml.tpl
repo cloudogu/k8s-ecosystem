@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: k8s-blueprint-lib
   name: blueprint
 spec:
-  displayName: "k3ces.local"
+  displayName: "k3ces.localhost"
   stopped: false
   blueprint:
     dogus:
@@ -28,9 +28,9 @@ spec:
             sensitive: true
       global:
         - key: "fqdn"
-          value: "k3ces.local"
+          value: "k3ces.localhost"
         - key: "domain"
-          value: "k3ces.local"
+          value: "k3ces.localhost"
         - key: "certificate/type"
           value: "selfsigned"
         - key: "password-policy/min_length"

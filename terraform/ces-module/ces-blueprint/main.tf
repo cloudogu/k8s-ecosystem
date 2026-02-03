@@ -2,8 +2,8 @@ locals {
   has_ces_fqdn = trimspace(var.ces_fqdn) != ""
 
   split_fqdn = split(".", var.ces_fqdn)
-  # Top Level Domain extracted from fully qualified domain name. k3ces.local is used for development mode and empty fqdn.
-  topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.local"
+  # Top Level Domain extracted from fully qualified domain name. k3ces.localhost is used for development mode and empty fqdn.
+  topLevelDomain = var.ces_fqdn != "" ? "${element(split(".", var.ces_fqdn), length(local.split_fqdn) - 2)}.${element(local.split_fqdn, length(local.split_fqdn) - 1)}" : "k3ces.localhost"
 
   globalConfig = concat(
     local.has_ces_fqdn ? [

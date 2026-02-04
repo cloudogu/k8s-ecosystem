@@ -129,5 +129,7 @@ module "ces-blueprint" {
 
   dogus = var.dogus
 
+  blueprint = var.blueprint
+
 }
 

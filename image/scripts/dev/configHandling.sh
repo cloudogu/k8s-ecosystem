@@ -3,8 +3,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-CERTIFICATE_CRT_FILE=".vagrant/certs/k3ces.local.crt"
-CERTIFICATE_KEY_FILE=".vagrant/certs/k3ces.local.key"
+CERTIFICATE_CRT_FILE=".vagrant/certs/k3ces.localdomain.crt"
+CERTIFICATE_KEY_FILE=".vagrant/certs/k3ces.localdomain.key"
 
 # --- Helpers ---
 

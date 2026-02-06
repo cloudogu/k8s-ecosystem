@@ -23,9 +23,9 @@ Folgende Applikationen werden zur leichteren Handhabung empfohlen:
 #### Dateisystem
 
 - Gegebenenfalls muss der Ordner `~/.kube` angelegt werden
-- in `/etc/hosts` folgenden Eintrag ergänzen: `192.168.56.2     k3ces.localhost`
-- Umgebungsvariable setzen: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.localhost`
-- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.localhost:30099"] }`
+- in `/etc/hosts` folgenden Eintrag ergänzen: `192.168.56.2     k3ces.localdomain`
+- Umgebungsvariable setzen: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.localdomain`
+- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.localdomain:30099"] }`
   (wird benötigt, um beim Entwickeln eigene Images in die Helm-Registry zu pushen)
 
 ### Konfiguration

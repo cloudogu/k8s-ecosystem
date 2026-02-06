@@ -1,7 +1,7 @@
 # Usage
 
 This example just uses the current configured `KUBECONFIG`.
-Ensure to have a running `k3ces.localhost` cluster running.
+Ensure to have a running `k3ces.localdomain` cluster running.
 
 # Create cluster
 

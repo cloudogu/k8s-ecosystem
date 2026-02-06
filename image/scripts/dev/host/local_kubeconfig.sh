@@ -46,7 +46,7 @@ function runSetup() {
   local fqdn="${1}"
   local ip="${2}"
   local port="${3:-6443}"
-  local ctxName="${4:-k3ces.localhost}"
+  local ctxName="${4:-k3ces.localdomain}"
   updateKubectlAccess "${port}" "${ctxName}"
   detectFqdnInEtcHosts "${fqdn}" "${ip}"
 }

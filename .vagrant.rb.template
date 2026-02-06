@@ -13,7 +13,7 @@ image_registry_username=""
 # Password in Base64-encoding
 image_registry_password=""
 image_registry_email="test@mtest.de"
-helm_registry_host="k3ces.localhost:30098"
+helm_registry_host="k3ces.localdomain:30098"
 helm_registry_schema="oci"
 helm_registry_plain_http="true"
 helm_registry_username=""

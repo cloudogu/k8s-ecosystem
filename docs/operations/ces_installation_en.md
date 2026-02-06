@@ -217,7 +217,7 @@ helm_registry_secret:
 #  {
 #    "naming": {
 #      "fqdn": "",
-#      "domain": "k3ces.localhost",
+#      "domain": "k3ces.localdomain",
 #      "certificateType": "selfsigned",
 #      "relayHost": "yourrelayhost.com",
 #      "useInternalIp": false,
@@ -283,7 +283,7 @@ The setup will start automatically if `completed: true` is in each section of `s
 Otherwise, the setup can be started manually:
 
 - `kubectl port-forward service/k8s-ces-setup 30080:8080`
-- `curl -I --request POST --url http://localhost:30080/api/v1/setup`
+- `curl -I --request POST --url http://localdomain:30080/api/v1/setup`
 
 > Information: If the setup process aborts because an invalid value was specified in `setup.json`, the configmap `k8s-setup-config` must be deleted after correcting the `setup.json`.
 > After this, the setup can be started again.
@@ -500,14 +500,14 @@ Example `k3sConfig.json`:
   ],
   "docker-registry-configuration": {
     "mirrors": {
-      "k3ces.localhost:30099": {
+      "k3ces.localdomain:30099": {
         "endpoint": [
-          "http://k3ces.localhost:30099"
+          "http://k3ces.localdomain:30099"
         ]
       }
     },
     "configs": {
-      "k3ces.localhost:30099": {
+      "k3ces.localdomain:30099": {
         "tls": {
           "insecure_skip_verify": false
         }

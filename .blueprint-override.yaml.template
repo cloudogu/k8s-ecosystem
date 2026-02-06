@@ -26,6 +26,9 @@ spec:
               key: admin-password
               name: initial-admin-password
             sensitive: true
+        cas:
+          - key: allow_local_urls
+            value: "true"
       global:
         - key: "fqdn"
           value: "k3ces.localhost"

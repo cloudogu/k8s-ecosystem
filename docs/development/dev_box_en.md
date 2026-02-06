@@ -134,3 +134,8 @@ Procedure:
 Notes:
 - The file must be named exactly `.blueprint-override.yaml` and located in the root directory.
 - Syntax and structure must correspond to the blueprint schema.
+
+#### Cas configuration
+To ensure that cas Dogu forwards the logout URLs correctly locally, it is important
+that the key `allow_local_urls` is set to `‘true’` in the configuration for cas.
+This makes `*.localdomain` a valid domain for cas and the logout URLs are set correctly.

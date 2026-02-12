@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#125] Add snapshot crd required by the backup stack.
 - [#129] Add optional Blueprint parameter for the ces-blueprint terraform module.
 
+### Changed
+- [#127] Adjust ces terraform module to install the latest version of ecosystem-core, component-crd-chart and blueprint-crd-chart by default.
+
 ## [v5.6.1] - 2025-11-26
 ### Fixed
 - [#123] fix values template of the ces-core terraform module

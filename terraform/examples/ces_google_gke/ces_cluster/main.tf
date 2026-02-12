@@ -42,7 +42,8 @@ module "ces" {
 
   # Configure CES installation options
   component_operator_crd_chart        = var.component_operator_crd_chart
-  component_operator_image            = var.component_operator_image
+  blueprint_operator_crd_chart        = var.blueprint_operator_crd_chart
+  ecosystem_core_chart_version        = var.ecosystem_core_chart_version
 
   ces_fqdn                     = var.ces_fqdn
   ces_admin_username           = var.ces_admin_username

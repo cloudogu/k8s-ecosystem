@@ -78,3 +78,10 @@ variable "cas_oidc_client_secret" {
   type        = string
   sensitive   = true
 }
+
+# Blueprint
+variable "blueprint" {
+  description = "Predefined Blueprint. If this Parameter is set, the dogu-parameter will be ignored"
+  type        = string
+}
+

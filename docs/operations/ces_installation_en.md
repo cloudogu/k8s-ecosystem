@@ -283,7 +283,7 @@ The setup will start automatically if `completed: true` is in each section of `s
 Otherwise, the setup can be started manually:
 
 - `kubectl port-forward service/k8s-ces-setup 30080:8080`
-- `curl -I --request POST --url http://localdomain:30080/api/v1/setup`
+- `curl -I --request POST --url http://localhost:30080/api/v1/setup`
 
 > Information: If the setup process aborts because an invalid value was specified in `setup.json`, the configmap `k8s-setup-config` must be deleted after correcting the `setup.json`.
 > After this, the setup can be started again.

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.7.1] - 2026-03-06
+### Added
+- [#130] wait for k8s-dogu-operator to be healthy before applying blueprint
+### Fixed
+- [#130] use `k3ces.localdomain` instead of `k3ces.local` as fqdn
+  - The cas dogu does not support `*.local` as a local url (`*.localdomain` and `*.localhost` are allowed by cas)
+
 ## [v5.7.0] - 2026-02-04
 ### Added
 - [#125] Add snapshot crd required by the backup stack.

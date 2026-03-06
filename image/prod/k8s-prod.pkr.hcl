@@ -28,7 +28,7 @@ variable "disk_size" {
 
 variable "fqdn" {
   type    = string
-  default = "k3ces.local"
+  default = "k3ces.localdomain"
 }
 
 variable "iso_checksum" {

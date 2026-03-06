@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: k8s-blueprint-lib
   name: blueprint
 spec:
-  displayName: "k3ces.local"
+  displayName: "k3ces.localdomain"
   stopped: false
   blueprint:
     dogus:
@@ -26,11 +26,14 @@ spec:
               key: admin-password
               name: initial-admin-password
             sensitive: true
+        cas:
+          - key: allow_local_urls
+            value: "true"
       global:
         - key: "fqdn"
-          value: "k3ces.local"
+          value: "k3ces.localdomain"
         - key: "domain"
-          value: "k3ces.local"
+          value: "k3ces.localdomain"
         - key: "certificate/type"
           value: "selfsigned"
         - key: "password-policy/min_length"

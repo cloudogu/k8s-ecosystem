@@ -8,8 +8,8 @@ vm_image = ENV["K8S_VM_IMAGE"] || "bento/ubuntu-20.04"
 main_k3s_ip_address = "192.168.56.2"
 main_k3s_port = 6443
 worker_k3s_network_prefix = "192.168.56"
-fqdn = "k3ces.local"
-kube_ctx_name= "k3ces.local"
+fqdn = "k3ces.localdomain"
+kube_ctx_name= "k3ces.localdomain"
 ces_namespace = "ecosystem"
 helm_repository_namespace = "k8s"
 install_ecosystem = true
@@ -97,18 +97,18 @@ Vagrant.configure("2") do |config|
         end
 
         # create certificates
-        if ! File.file?(".vagrant/certs/k3ces.local.crt") || !File.file?(".vagrant/certs/k3ces.local.key")
+        if ! File.file?(".vagrant/certs/k3ces.localdomain.crt") || !File.file?(".vagrant/certs/k3ces.localdomain.key")
           `mkdir -p .vagrant/certs`
-          `mkcert -cert-file .vagrant/certs/k3ces.local.crt -key-file .vagrant/certs/k3ces.local.key #{fqdn} #{main_k3s_ip_address}`
+          `mkcert -cert-file .vagrant/certs/k3ces.localdomain.crt -key-file .vagrant/certs/k3ces.localdomain.key #{fqdn} #{main_k3s_ip_address}`
         end
 
       else
         # remove geneated certificate files
-        if File.file?(".vagrant/certs/k3ces.local.crt")
-          File.delete(".vagrant/certs/k3ces.local.crt")
+        if File.file?(".vagrant/certs/k3ces.localdomain.crt")
+          File.delete(".vagrant/certs/k3ces.localdomain.crt")
         end
-        if File.file?(".vagrant/certs/k3ces.local.key")
-          File.delete(".vagrant/certs/k3ces.local.key")
+        if File.file?(".vagrant/certs/k3ces.localdomain.key")
+          File.delete(".vagrant/certs/k3ces.localdomain.key")
         end
       end
     end

@@ -7,6 +7,9 @@ set -o pipefail
 # load blueprint helpers
 . "image/scripts/dev/blueprintHandling.sh"
 
+# load component helpers
+. "image/scripts/dev/componentHandling.sh"
+
 # load configMap / secret helpers
 . "image/scripts/dev/configHandling.sh"
 
@@ -118,7 +121,10 @@ applyResources() {
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
   helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/ecosystem-core" \
     --values ${ADDITIONAL_VALUES_YAML} \
-    --namespace="${CES_NAMESPACE}"
+    --namespace="${CES_NAMESPACE}" \
+    --timeout=20m
+
+  wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900
 
   # Apply blueprint with latest dogu versions
   patch_and_apply_blueprint_with_latest_versions "${dogu_registry_username}" "${dogu_registry_password}" "${fqdn}"

@@ -23,9 +23,9 @@ Folgende Applikationen werden zur leichteren Handhabung empfohlen:
 #### Dateisystem
 
 - Gegebenenfalls muss der Ordner `~/.kube` angelegt werden
-- in `/etc/hosts` folgenden Eintrag ergänzen: `192.168.56.2     k3ces.local`
-- Umgebungsvariable setzen: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.local`
-- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.local:30099"] }`
+- in `/etc/hosts` folgenden Eintrag ergänzen: `192.168.56.2     k3ces.localdomain`
+- Umgebungsvariable setzen: `export KUBECONFIG=~/.kube/config:~/.kube/k3ces.localdomain`
+- in `/etc/docker/daemon.json` folgenden Eintrag ergänzen: `{ "insecure-registries": ["k3ces.localdomain:30099"] }`
   (wird benötigt, um beim Entwickeln eigene Images in die Helm-Registry zu pushen)
 
 ### Konfiguration
@@ -134,3 +134,8 @@ Vorgehen:
 Hinweise:
 - Die Datei muss exakt `.blueprint-override.yaml` heißen und im Root-Verzeichnis liegen.
 - Syntax und Struktur müssen dem Blueprint-Schema entsprechen.
+
+#### Cas Konfiguration
+Damit das cas Dogu die Logout-Urls lokal korrekt weiterleitet, ist es wichtig, 
+dass in der Konfiguration für cas der Key `allow_local_urls` auf `"true"` gesetzt wird.
+Dadurch ist für den cas `*.localdomain` eine valide Domain und die Logout-Urls werden korrekt gesetzt.

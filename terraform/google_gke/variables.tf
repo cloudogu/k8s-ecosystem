@@ -41,14 +41,14 @@ variable "cluster_name" {
 
 variable "cluster_labels" {
   description = "labels for the GKE cluster, which will be propagated to all underlying resources like GCE disks."
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "node_pool_labels" {
   description = "labels for the GKE node pool, which will be propagated to all underlying resources like GCE disks."
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "idp_enabled" {
@@ -59,4 +59,16 @@ variable "idp_enabled" {
 variable "node_count" {
   type        = number
   description = "The amount of nodes."
+}
+
+variable "gke_vpc_name" {
+  description = "Existing GKE VPC name"
+  type        = string
+  default     = "coder"
+}
+
+variable "gke_subnet_name" {
+  description = "Name of the subnet for node IPs in gke_vpc_name"
+  type        = string
+  default     = "nodes"
 }

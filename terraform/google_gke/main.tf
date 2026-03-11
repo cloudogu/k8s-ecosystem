@@ -12,6 +12,15 @@ resource "google_container_cluster" "default" {
   resource_labels    = var.cluster_labels
   min_master_version = var.kubernetes_version
 
+  network    = var.gke_vpc_name
+  subnetwork = var.gke_subnet_name
+
+  # reserve small blocks (1024 IPs) for pods and services
+  ip_allocation_policy {
+    cluster_ipv4_cidr_block  = "/22" # config for pods
+    services_ipv4_cidr_block = "/22"
+  }
+
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -19,7 +28,7 @@ resource "google_container_cluster" "default" {
   initial_node_count       = 1
 
   // activate Dataplane 2, so that cilium can be used for network policies
-  // FIXME: currently, mn-ces does not support cilium as network policies seem to be more restricitve there
+  // FIXME: currently, mn-ces does not support cilium as network policies seem to be more restrictive there
   //datapath_provider                        = "ADVANCED_DATAPATH"
   //enable_cilium_clusterwide_network_policy = true
   cost_management_config {

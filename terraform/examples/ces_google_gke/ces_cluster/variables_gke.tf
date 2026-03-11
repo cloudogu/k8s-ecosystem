@@ -32,3 +32,15 @@ variable "cluster_name" {
   description = "The cluster name"
   type        = string
 }
+
+variable "gke_vpc_name" {
+  description = "Existing GKE VPC name"
+  type        = string
+  default     = "coder"
+}
+
+variable "gke_subnet_name" {
+  description = "Name of the subnet for node IPs in gke_vpc_name"
+  type        = string
+  default     = "nodes"
+}

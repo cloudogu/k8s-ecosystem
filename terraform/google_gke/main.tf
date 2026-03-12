@@ -15,7 +15,7 @@ resource "google_container_cluster" "default" {
   network    = var.gke_vpc_name
   subnetwork = var.gke_subnet_name
 
-  # reserve small blocks (1024 IPs) for pods and services
+  # reserve small blocks (default 2048 IPs) for pods and services
   ip_allocation_policy {
     cluster_ipv4_cidr_block  = var.gke_vpc_pods_cidr # config for pods
     services_ipv4_cidr_block = var.gke_vpc_services_cidr

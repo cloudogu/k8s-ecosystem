@@ -5,6 +5,8 @@ cluster_name     = "test-cluster"
 
 gke_vpc_name    = "coder"
 gke_subnet_name = "nodes"
+gke_vpc_pods_cidr =  "/21"
+gke_vpc_services_cidr = "/21"
 
 // EcoSystem Credentials
 dogu_registry_username   = "username"

@@ -28,15 +28,34 @@ image_registry_url=${9}
 helm_registry_username=${10}
 helm_registry_password=${11}
 helm_registry_host=${12}
-helm_registry_schema=${13}
-helm_registry_plain_http=${14}
-kube_ctx_name=${15}
-default_class_replica_count="${16:-2}"
-fqdn=${17}
-forceUpgradeEcosystem=${18}
+component_helm_registry_host="${helm_registry_host}"
+
+# Backward-compatible argument parsing:
+# legacy callers pass 18 args, new callers pass 19 args with an explicit component registry host.
+if [[ $# -ge 19 ]]; then
+  component_helm_registry_host=${13}
+  helm_registry_schema=${14}
+  helm_registry_plain_http=${15}
+  kube_ctx_name=${16}
+  default_class_replica_count="${17:-2}"
+  fqdn=${18}
+  forceUpgradeEcosystem=${19}
+else
+  helm_registry_schema=${13}
+  helm_registry_plain_http=${14}
+  kube_ctx_name=${15}
+  default_class_replica_count="${16:-2}"
+  fqdn=${17}
+  forceUpgradeEcosystem=${18}
+fi
 INSTALL_LONGHORN="${INSTALL_LONGHORN:-true}"
 KUBECONFIG_PATH="${KUBECONFIG_PATH:-${HOME}/.kube/$kube_ctx_name}"
 ENABLE_INTERNAL_FQDN_DNS="${ENABLE_INTERNAL_FQDN_DNS:-false}"
+
+registry_chart_ref() {
+  local chart_name="$1"
+  printf '%s://%s/%s/%s' "${helm_registry_schema}" "${helm_registry_host}" "${helm_repository_namespace}" "${chart_name}"
+}
 
 # shouldApplyResources checks whether ecosystem-core is already installed and if an upgrade should be applied
 shouldApplyResources() {
@@ -59,8 +78,15 @@ shouldApplyResources() {
 applyResources() {
   echo "Applying resources for setup..."
 
-  # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
-  login_registry_helm "registry.cloudogu.com" "${helm_registry_username}" "${helm_registry_password}"
+  local helm_registry_args=()
+  if [[ "${helm_registry_plain_http}" == "true" ]]; then
+    helm_registry_args+=(--plain-http)
+  fi
+  if [[ "${helm_registry_insecure_tls:-false}" == "true" ]]; then
+    helm_registry_args+=(--insecure-skip-tls-verify)
+  fi
+
+  login_registry_helm "${helm_registry_host}" "${helm_registry_username}" "${helm_registry_password}" "${helm_registry_plain_http}"
 
   # Ensure Registries
   ensure_dogu_registry_secret \
@@ -77,7 +103,7 @@ applyResources() {
     "${CES_NAMESPACE}"
 
   ensure_helm_registry_config \
-    "${helm_registry_host}" \
+    "${component_helm_registry_host}" \
     "${helm_registry_schema}" \
     "${helm_registry_plain_http}" \
     "${helm_registry_insecure_tls:-false}" \
@@ -111,25 +137,30 @@ applyResources() {
   fi
 
   # Install SnapshotController
-  helm upgrade -i k8s-snapshot-controller-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller-crd" \
+  helm upgrade -i k8s-snapshot-controller-crd "$(registry_chart_ref "k8s-snapshot-controller-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="kube-system" --version 8.2.1-3
 
-  helm upgrade -i k8s-snapshot-controller "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller" \
+  helm upgrade -i k8s-snapshot-controller "$(registry_chart_ref "k8s-snapshot-controller")" \
+    "${helm_registry_args[@]}" \
     --namespace="kube-system" --version 8.2.1-3
 
   # Install Component CRD
-  helm upgrade -i k8s-component-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-component-operator-crd" \
+  helm upgrade -i k8s-component-operator-crd "$(registry_chart_ref "k8s-component-operator-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="${CES_NAMESPACE}"
 
   # Install Blueprint CRD
-  helm upgrade -i k8s-blueprint-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-blueprint-operator-crd" \
+  helm upgrade -i k8s-blueprint-operator-crd "$(registry_chart_ref "k8s-blueprint-operator-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="${CES_NAMESPACE}"
 
   # Install ecosystem-core
   ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
   ADDITIONAL_VALUES_YAML=image/scripts/dev/.additionalValues.yaml
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
-  helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/ecosystem-core" \
+  helm upgrade -i ecosystem-core "$(registry_chart_ref "ecosystem-core")" \
+    "${helm_registry_args[@]}" \
     --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}" \
     --timeout=20m

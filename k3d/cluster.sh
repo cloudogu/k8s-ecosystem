@@ -18,6 +18,11 @@ MERGE_DEFAULT_KUBECONFIG="${MERGE_DEFAULT_KUBECONFIG:-${K3D_MERGE_DEFAULT_KUBECO
 SWITCH_DEFAULT_KUBECONFIG_CONTEXT="${SWITCH_DEFAULT_KUBECONFIG_CONTEXT:-${K3D_SWITCH_DEFAULT_KUBECONFIG_CONTEXT:-false}}"
 DEFAULT_KUBECONFIG_PATH="${DEFAULT_KUBECONFIG_PATH:-${K3D_DEFAULT_KUBECONFIG_PATH:-${HOME}/.kube/config}}"
 DEFAULT_NAMESPACE="${CES_NAMESPACE:-ecosystem}"
+LOCAL_REGISTRY_ENABLED="${LOCAL_REGISTRY_ENABLED:-true}"
+LOCAL_REGISTRY_PROXY_NAME="${LOCAL_REGISTRY_PROXY_NAME:-registry-proxy.localhost}"
+LOCAL_REGISTRY_PROXY_PORT="${LOCAL_REGISTRY_PROXY_PORT:-5002}"
+LOCAL_REGISTRY_CLUSTER_PORT="${LOCAL_REGISTRY_CLUSTER_PORT:-5000}"
+LOCAL_REGISTRY_PROXY_CONTAINER="k3d-${LOCAL_REGISTRY_PROXY_NAME}"
 
 usage() {
   cat <<EOF
@@ -39,6 +44,7 @@ Environment overrides:
   MERGE_DEFAULT_KUBECONFIG             Merge the cluster into the default kubeconfig (default: ${MERGE_DEFAULT_KUBECONFIG})
   SWITCH_DEFAULT_KUBECONFIG_CONTEXT    Switch current context in the default kubeconfig (default: ${SWITCH_DEFAULT_KUBECONFIG_CONTEXT})
   DEFAULT_KUBECONFIG_PATH              Target file for the merged default kubeconfig (default: ${DEFAULT_KUBECONFIG_PATH})
+  LOCAL_REGISTRY_ENABLED               Attach the local proxy registry and configure a registry mirror (default: ${LOCAL_REGISTRY_ENABLED})
 EOF
 }
 
@@ -53,6 +59,26 @@ require_command() {
 ensure_prerequisites() {
   require_command k3d
   require_command kubectl
+  require_command jq
+}
+
+local_registry_exists() {
+  if [[ "${LOCAL_REGISTRY_ENABLED}" != "true" ]]; then
+    return 0
+  fi
+
+  k3d registry list "${LOCAL_REGISTRY_PROXY_NAME}" -o json 2>/dev/null | jq -e 'length > 0' >/dev/null 2>&1
+}
+
+write_registry_config() {
+  local file_path="$1"
+
+  cat > "${file_path}" <<EOF
+mirrors:
+  "registry.cloudogu.com":
+    endpoint:
+      - "http://${LOCAL_REGISTRY_PROXY_CONTAINER}:${LOCAL_REGISTRY_CLUSTER_PORT}"
+EOF
 }
 
 write_kubeconfig() {
@@ -163,9 +189,22 @@ EOF
 }
 
 create_cluster() {
+  local registry_config_file=""
+  trap 'rm -f "${registry_config_file:-}"; trap - RETURN' RETURN
+
   if k3d cluster list "${CLUSTER_NAME}" >/dev/null 2>&1; then
     echo "cluster '${CLUSTER_NAME}' already exists" >&2
     exit 1
+  fi
+
+  if [[ "${LOCAL_REGISTRY_ENABLED}" == "true" ]]; then
+    if ! local_registry_exists; then
+      echo "local proxy registry '${LOCAL_REGISTRY_PROXY_NAME}' is not running" >&2
+      echo "start it first with: k3d/registry.sh start" >&2
+      exit 1
+    fi
+    registry_config_file="$(mktemp)"
+    write_registry_config "${registry_config_file}"
   fi
 
   local args=(
@@ -183,6 +222,13 @@ create_cluster() {
 
   if [[ -n "${K3S_IMAGE}" ]]; then
     args+=(--image "${K3S_IMAGE}")
+  fi
+
+  if [[ "${LOCAL_REGISTRY_ENABLED}" == "true" ]]; then
+    args+=(
+      --registry-use "${LOCAL_REGISTRY_PROXY_CONTAINER}:${LOCAL_REGISTRY_CLUSTER_PORT}"
+      --registry-config "${registry_config_file}"
+    )
   fi
 
   k3d "${args[@]}"

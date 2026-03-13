@@ -6,14 +6,15 @@ set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLUSTER_SCRIPT="${SCRIPT_DIR}/cluster.sh"
 INSTALL_SCRIPT="${SCRIPT_DIR}/install.sh"
-GLOBAL_ENV_FILE="${SCRIPT_DIR}/config.env"
+REGISTRY_SCRIPT="${SCRIPT_DIR}/registry.sh"
+GLOBAL_ENV_FILE="${K3D_GLOBAL_ENV_FILE:-${SCRIPT_DIR}/config.env}"
 ENV_DIR="${SCRIPT_DIR}/environments"
 
 mkdir -p "${ENV_DIR}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") <create|start|stop|delete|list> [NAME]
+Usage: $(basename "$0") <create|open|start|stop|delete|list> [NAME]
 
 Commands:
   create NAME   Create a new k3d cluster and install CES into it
@@ -50,6 +51,10 @@ load_global_config_if_present() {
   MERGE_DEFAULT_KUBECONFIG="${MERGE_DEFAULT_KUBECONFIG:-${K3D_MERGE_DEFAULT_KUBECONFIG:-true}}"
   SWITCH_DEFAULT_KUBECONFIG_CONTEXT="${SWITCH_DEFAULT_KUBECONFIG_CONTEXT:-${K3D_SWITCH_DEFAULT_KUBECONFIG_CONTEXT:-false}}"
   DEFAULT_KUBECONFIG_PATH="${DEFAULT_KUBECONFIG_PATH:-${K3D_DEFAULT_KUBECONFIG_PATH:-${HOME}/.kube/config}}"
+  LOCAL_REGISTRY_ENABLED="${LOCAL_REGISTRY_ENABLED:-true}"
+  LOCAL_REGISTRY_DEV_PORT="${LOCAL_REGISTRY_DEV_PORT:-5001}"
+  LOCAL_REGISTRY_PROXY_NAME="${LOCAL_REGISTRY_PROXY_NAME:-registry-proxy.localhost}"
+  LOCAL_REGISTRY_CLUSTER_PORT="${LOCAL_REGISTRY_CLUSTER_PORT:-5000}"
 }
 
 load_global_config() {
@@ -126,6 +131,11 @@ Default kubeconfig:
 
 Hosts file:
   managed automatically: ${MANAGE_HOSTS_FILE}
+
+Registry stack:
+  enabled: ${LOCAL_REGISTRY_ENABLED}
+  push:    localhost:${LOCAL_REGISTRY_DEV_PORT}
+  consume: k3d-${LOCAL_REGISTRY_PROXY_NAME}:${LOCAL_REGISTRY_CLUSTER_PORT}
 EOF
 }
 
@@ -338,6 +348,10 @@ create_ecosystem() {
 
   write_instance_env "${name}" "${env_file}" "${fqdn}" "${host_ip}" "${api_port}" "${kubeconfig_path}"
 
+  if [[ "${LOCAL_REGISTRY_ENABLED}" == "true" ]]; then
+    "${REGISTRY_SCRIPT}" start >/dev/null
+  fi
+
   run_with_instance_env "${env_file}" env K3D_SKIP_NEXT_STEPS=true "${CLUSTER_SCRIPT}" create
   "${INSTALL_SCRIPT}" "${env_file}"
   ensure_host_entry "${name}" "${fqdn}" "${host_ip}"
@@ -377,6 +391,10 @@ start_ecosystem() {
   load_global_config_if_present
   local env_file
   env_file="$(instance_env_file "${name}")"
+
+  if [[ "${LOCAL_REGISTRY_ENABLED}" == "true" ]]; then
+    "${REGISTRY_SCRIPT}" start >/dev/null
+  fi
 
   k3d cluster start "${name}"
 

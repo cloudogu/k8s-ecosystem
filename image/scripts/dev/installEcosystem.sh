@@ -10,6 +10,9 @@ set -o pipefail
 # load component helpers
 . "image/scripts/dev/componentHandling.sh"
 
+# load internal FQDN helpers
+. "image/scripts/dev/internalFqdnHandling.sh"
+
 # load configMap / secret helpers
 . "image/scripts/dev/configHandling.sh"
 
@@ -31,6 +34,9 @@ kube_ctx_name=${15}
 default_class_replica_count="${16:-2}"
 fqdn=${17}
 forceUpgradeEcosystem=${18}
+INSTALL_LONGHORN="${INSTALL_LONGHORN:-true}"
+KUBECONFIG_PATH="${KUBECONFIG_PATH:-${HOME}/.kube/$kube_ctx_name}"
+ENABLE_INTERNAL_FQDN_DNS="${ENABLE_INTERNAL_FQDN_DNS:-false}"
 
 # shouldApplyResources checks whether ecosystem-core is already installed and if an upgrade should be applied
 shouldApplyResources() {
@@ -85,20 +91,24 @@ applyResources() {
   ensure_certificate_secret \
     "${CES_NAMESPACE}"
 
-  # Install Longhorn
-  helm repo add longhorn https://charts.longhorn.io
-  helm repo update
+  if [ "${INSTALL_LONGHORN}" = "true" ]; then
+    echo "Installing Longhorn..."
+    helm repo add longhorn https://charts.longhorn.io
+    helm repo update
 
-  LONGHORN_VALUES_TEMPLATE=image/scripts/dev/longhorn-values.yaml.tpl
-  LONGHORN_VALUES_YAML=image/scripts/dev/.longhorn-values.yaml
-  cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
-  sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${LONGHORN_VALUES_YAML}
+    LONGHORN_VALUES_TEMPLATE=image/scripts/dev/longhorn-values.yaml.tpl
+    LONGHORN_VALUES_YAML=image/scripts/dev/.longhorn-values.yaml
+    cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
+    sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${LONGHORN_VALUES_YAML}
 
-  helm upgrade -i longhorn longhorn/longhorn \
-    --namespace longhorn-system \
-    --create-namespace \
-    --values ${LONGHORN_VALUES_YAML} \
-    --version 1.10.0
+    helm upgrade -i longhorn longhorn/longhorn \
+      --namespace longhorn-system \
+      --create-namespace \
+      --values ${LONGHORN_VALUES_YAML} \
+      --version 1.10.0
+  else
+    echo "Skipping Longhorn installation (INSTALL_LONGHORN=${INSTALL_LONGHORN})."
+  fi
 
   # Install SnapshotController
   helm upgrade -i k8s-snapshot-controller-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller-crd" \
@@ -124,7 +134,9 @@ applyResources() {
     --namespace="${CES_NAMESPACE}" \
     --timeout=20m
 
-  wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900
+  ensure_internal_fqdn_dns
+
+  wait_for_component_healthy "k8s-dogu-operator" "${CES_NAMESPACE}" 900
 
   # Apply blueprint with latest dogu versions
   patch_and_apply_blueprint_with_latest_versions "${dogu_registry_username}" "${dogu_registry_password}" "${fqdn}"
@@ -136,7 +148,9 @@ applyResources() {
 # --- Main ---
 
 # set environment for helm and kubectl
-export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
+export KUBECONFIG="${KUBECONFIG_PATH}"
+
+ensure_namespace
 
 echo "set default k8s namespace"
 kubectl config set-context --current --namespace "${CES_NAMESPACE}"
@@ -146,5 +160,6 @@ if shouldApplyResources; then
   applyResources
   echo "**** Finished installEcosystem.sh"
 else
+  ensure_internal_fqdn_dns_if_service_exists
   echo "**** ecosystem is already installed; not applying resources"
 fi

@@ -9,8 +9,8 @@ HOST_IP="${K3D_HOST_IP:-127.0.0.2}"
 API_PORT="${K3D_API_PORT:-6550}"
 HTTP_PORT="${K3D_HTTP_PORT:-80}"
 HTTPS_PORT="${K3D_HTTPS_PORT:-443}"
-SERVER_COUNT="${K3D_SERVER_COUNT:-1}"
-AGENT_COUNT="${K3D_AGENT_COUNT:-1}"
+SERVER_COUNT="1"
+AGENT_COUNT="0"
 KUBECONFIG_PATH="${KUBECONFIG_PATH:-${K3D_KUBECONFIG_PATH:-${HOME}/.kube/k3ces.localdomain}}"
 K3S_IMAGE="${K3D_K3S_IMAGE:-}"
 SKIP_NEXT_STEPS="${K3D_SKIP_NEXT_STEPS:-false}"
@@ -23,6 +23,7 @@ LOCAL_REGISTRY_PROXY_NAME="${LOCAL_REGISTRY_PROXY_NAME:-registry-proxy.localhost
 LOCAL_REGISTRY_PROXY_PORT="${LOCAL_REGISTRY_PROXY_PORT:-5002}"
 LOCAL_REGISTRY_CLUSTER_PORT="${LOCAL_REGISTRY_CLUSTER_PORT:-5000}"
 LOCAL_REGISTRY_PROXY_CONTAINER="k3d-${LOCAL_REGISTRY_PROXY_NAME}"
+COREDNS_CUSTOM_MANIFEST_PATH="${K3D_COREDNS_CUSTOM_MANIFEST_PATH:-}"
 
 usage() {
   cat <<EOF
@@ -35,8 +36,6 @@ Environment overrides:
   K3D_API_PORT           Kubernetes API port on the host (default: ${API_PORT})
   K3D_HTTP_PORT          HTTP port on the host (default: ${HTTP_PORT})
   K3D_HTTPS_PORT         HTTPS port on the host (default: ${HTTPS_PORT})
-  K3D_SERVER_COUNT       Number of k3d server nodes (default: ${SERVER_COUNT})
-  K3D_AGENT_COUNT        Number of k3d agent nodes (default: ${AGENT_COUNT})
   KUBECONFIG_PATH        Output path for the kubeconfig (default: ${KUBECONFIG_PATH})
   K3D_K3S_IMAGE          Optional k3s image override
   K3D_SKIP_NEXT_STEPS    Suppress the post-create hint output (default: ${SKIP_NEXT_STEPS})
@@ -228,6 +227,12 @@ create_cluster() {
     args+=(
       --registry-use "${LOCAL_REGISTRY_PROXY_CONTAINER}:${LOCAL_REGISTRY_CLUSTER_PORT}"
       --registry-config "${registry_config_file}"
+    )
+  fi
+
+  if [[ -n "${COREDNS_CUSTOM_MANIFEST_PATH}" ]]; then
+    args+=(
+      --volume "${COREDNS_CUSTOM_MANIFEST_PATH}:/var/lib/rancher/k3s/server/manifests/coredns-custom.yaml@server:0"
     )
   fi
 

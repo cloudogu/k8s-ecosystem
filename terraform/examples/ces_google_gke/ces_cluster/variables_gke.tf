@@ -32,3 +32,27 @@ variable "cluster_name" {
   description = "The cluster name"
   type        = string
 }
+
+variable "gke_vpc_name" {
+  description = "Existing GKE VPC name"
+  type        = string
+  default     = "coder"
+}
+
+variable "gke_subnet_name" {
+  description = "Name of the subnet for node IPs in gke_vpc_name"
+  type        = string
+  default     = "nodes"
+}
+
+variable "gke_vpc_services_cidr" {
+  description = "CIDR mask for the IP address range for services in the cluster. Default /21 equals 2048 IPs."
+  type        = string
+  default     = "/21"
+}
+
+variable "gke_vpc_pods_cidr" {
+  description = "CIDR mask for the IP address range for pods in the cluster. Default /21 equals 2048 IPs."
+  type        = string
+  default     = "/21"
+}

@@ -230,8 +230,6 @@ helm_registry_secret:
 #      "install": [
 #        "official/ldap",
 #        "official/postfix",
-#        "k8s/nginx-static",
-#        "k8s/nginx-ingress",
 #        "official/cas"
 #      ],
 #      "completed": true

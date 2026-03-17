@@ -36,8 +36,9 @@ Danach die Zugangsdaten in `k3d/config.env` eintragen.
 Wichtige Punkte:
 
 - Die Datei enthält gemeinsame Defaults für alle lokalen `k3d`-Ecosystems.
-- Longhorn ist für `k3d` standardmäßig deaktiviert, weil `k3d` bereits die StorageClass `local-path` mitbringt.
-- Für `k3d` wird ein interner CoreDNS-Eintrag gesetzt, damit Pods den jeweiligen CES-FQDN auf den Service `ces-loadbalancer` auflösen können.
+- `k3d` startet standardmaessig als Single-Node-Cluster (`K3D_SERVER_COUNT=1`, `K3D_AGENT_COUNT=0`).
+- Als Storage wird die in `k3s` enthaltene Default-StorageClass `local-path` verwendet.
+- Die cluster-interne CES-FQDN wird über ein beim Cluster-Create gemountetes `coredns-custom`-Manifest auf `ces-loadbalancer.ecosystem.svc.cluster.local` umgeschrieben und bleibt dadurch auch nach `k3d stop/start` erhalten.
 - Standardmäßig wird ein lokaler Registry-Stack mit zwei Endpunkten verwendet:
   - eine schreibbare Dev-Registry für `docker push` und `helm push`
   - eine Proxy-Registry als Pull-Through-Cache für `registry.cloudogu.com`

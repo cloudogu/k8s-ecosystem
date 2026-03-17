@@ -36,8 +36,9 @@ Then fill in the credentials in `k3d/config.env`.
 Important notes:
 
 - The file contains shared defaults for all local `k3d` ecosystems.
-- Longhorn is disabled by default for `k3d`, because `k3d` already provides the `local-path` storage class.
-- The scripts add an internal CoreDNS entry so pods resolve the CES FQDN to the `ces-loadbalancer` service.
+- `k3d` starts as a single-node cluster by default (`K3D_SERVER_COUNT=1`, `K3D_AGENT_COUNT=0`).
+- Storage uses the default `local-path` storage class that ships with `k3s`.
+- The cluster-internal CES FQDN is rewritten to `ces-loadbalancer.ecosystem.svc.cluster.local` via a mounted `coredns-custom` manifest at cluster creation time, so it survives `k3d stop/start`.
 - By default, a local registry stack with two endpoints is used:
   - one writable dev registry for `docker push` and `helm push`
   - one proxy registry as a pull-through cache for `registry.cloudogu.com`

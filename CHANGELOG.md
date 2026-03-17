@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.7.2] - 2026-03-17
+### Changed
+- [#132] use coder vpc and reserve smaller ip ranges for pods and services
+
 ## [v5.7.1] - 2026-03-06
 ### Added
 - [#130] wait for k8s-dogu-operator to be healthy before applying blueprint

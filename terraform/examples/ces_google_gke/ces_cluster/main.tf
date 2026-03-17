@@ -26,6 +26,11 @@ module "google_gke" {
   kubernetes_version = local.kubernetes_version
   idp_enabled        = false
 
+  gke_vpc_name    = var.gke_vpc_name
+  gke_subnet_name = var.gke_subnet_name
+  gke_vpc_pods_cidr =  var.gke_vpc_pods_cidr
+  gke_vpc_services_cidr = var.gke_vpc_services_cidr
+
   node_pool_name = var.node_pool_name
   machine_type   = var.machine_type
   node_count     = local.node_count

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v5.7.2] - 2026-03-17
 ### Changed
 - [#132] use coder vpc and reserve smaller ip ranges for pods and services
 

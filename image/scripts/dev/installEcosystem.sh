@@ -10,9 +10,6 @@ set -o pipefail
 # load component helpers
 . "image/scripts/dev/componentHandling.sh"
 
-# load internal FQDN helpers
-. "image/scripts/dev/internalFqdnHandling.sh"
-
 # load configMap / secret helpers
 . "image/scripts/dev/configHandling.sh"
 
@@ -28,33 +25,28 @@ image_registry_url=${9}
 helm_registry_username=${10}
 helm_registry_password=${11}
 helm_registry_host=${12}
-component_helm_registry_host="${helm_registry_host}"
-
-# Backward-compatible argument parsing:
-# legacy callers pass 18 args, new callers pass 19 args with an explicit component registry host.
-if [[ $# -ge 19 ]]; then
-  component_helm_registry_host=${13}
-  helm_registry_schema=${14}
-  helm_registry_plain_http=${15}
-  kube_ctx_name=${16}
-  default_class_replica_count="${17:-2}"
-  fqdn=${18}
-  forceUpgradeEcosystem=${19}
-else
-  helm_registry_schema=${13}
-  helm_registry_plain_http=${14}
-  kube_ctx_name=${15}
-  default_class_replica_count="${16:-2}"
-  fqdn=${17}
-  forceUpgradeEcosystem=${18}
-fi
+runtime_helm_registry_host=${13}
+helm_registry_schema=${14}
+helm_registry_plain_http=${15}
+kube_ctx_name=${16}
+default_class_replica_count="${17:-2}"
+fqdn=${18}
+forceUpgradeEcosystem=${19}
 INSTALL_LONGHORN="${INSTALL_LONGHORN:-true}"
 KUBECONFIG_PATH="${KUBECONFIG_PATH:-${HOME}/.kube/$kube_ctx_name}"
-ENABLE_INTERNAL_FQDN_DNS="${ENABLE_INTERNAL_FQDN_DNS:-false}"
 
 registry_chart_ref() {
   local chart_name="$1"
   printf '%s://%s/%s/%s' "${helm_registry_schema}" "${helm_registry_host}" "${helm_repository_namespace}" "${chart_name}"
+}
+
+ensure_namespace() {
+  if kubectl get namespace "${CES_NAMESPACE}" >/dev/null 2>&1; then
+    echo "Namespace '${CES_NAMESPACE}' already exists."
+  else
+    echo "Creating namespace '${CES_NAMESPACE}'..."
+    kubectl create namespace "${CES_NAMESPACE}"
+  fi
 }
 
 # shouldApplyResources checks whether ecosystem-core is already installed and if an upgrade should be applied
@@ -103,7 +95,7 @@ applyResources() {
     "${CES_NAMESPACE}"
 
   ensure_helm_registry_config \
-    "${component_helm_registry_host}" \
+    "${runtime_helm_registry_host}" \
     "${helm_registry_schema}" \
     "${helm_registry_plain_http}" \
     "${helm_registry_insecure_tls:-false}" \
@@ -165,8 +157,6 @@ applyResources() {
     --namespace="${CES_NAMESPACE}" \
     --timeout=20m
 
-  ensure_internal_fqdn_dns
-
   wait_for_component_healthy "k8s-dogu-operator" "${CES_NAMESPACE}" 900
 
   # Apply blueprint with latest dogu versions
@@ -191,6 +181,5 @@ if shouldApplyResources; then
   applyResources
   echo "**** Finished installEcosystem.sh"
 else
-  ensure_internal_fqdn_dns_if_service_exists
   echo "**** ecosystem is already installed; not applying resources"
 fi

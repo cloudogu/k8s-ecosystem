@@ -59,9 +59,9 @@ set_defaults() {
   DOGU_REGISTRY_URLSCHEMA="${DOGU_REGISTRY_URLSCHEMA:-default}"
   IMAGE_REGISTRY_URL="${IMAGE_REGISTRY_URL:-${remote_image_registry_url}}"
   HELM_REGISTRY_HOST="${HELM_REGISTRY_HOST:-${remote_helm_registry_host}}"
+  RUNTIME_HELM_REGISTRY_HOST="${RUNTIME_HELM_REGISTRY_HOST:-${HELM_REGISTRY_HOST}}"
   HELM_REGISTRY_SCHEMA="${HELM_REGISTRY_SCHEMA:-oci}"
   HELM_REGISTRY_PLAIN_HTTP="${HELM_REGISTRY_PLAIN_HTTP:-false}"
-  COMPONENT_HELM_REGISTRY_HOST="${COMPONENT_HELM_REGISTRY_HOST:-${HELM_REGISTRY_HOST}}"
   LOCAL_REGISTRY_ENABLED="${LOCAL_REGISTRY_ENABLED:-true}"
   LOCAL_REGISTRY_PROXY_NAME="${LOCAL_REGISTRY_PROXY_NAME:-registry-proxy.localhost}"
   LOCAL_REGISTRY_PROXY_PORT="${LOCAL_REGISTRY_PROXY_PORT:-5002}"
@@ -72,19 +72,17 @@ set_defaults() {
   KUBE_CTX_NAME="${KUBE_CTX_NAME:-${FQDN}}"
   KUBECONFIG_PATH="${KUBECONFIG_PATH:-${HOME}/.kube/${KUBE_CTX_NAME}}"
   FORCE_UPGRADE_ECOSYSTEM="${FORCE_UPGRADE_ECOSYSTEM:-false}"
-  INSTALL_LONGHORN="${INSTALL_LONGHORN:-false}"
-  ENABLE_INTERNAL_FQDN_DNS="${ENABLE_INTERNAL_FQDN_DNS:-true}"
-  DEFAULT_CLASS_REPLICA_COUNT="${DEFAULT_CLASS_REPLICA_COUNT:-1}"
+  INSTALL_LONGHORN="false"
 
   if [[ "${LOCAL_REGISTRY_ENABLED}" == "true" ]]; then
     local local_proxy_host="localhost:${LOCAL_REGISTRY_PROXY_PORT}"
-    local local_proxy_component_host="k3d-${LOCAL_REGISTRY_PROXY_NAME}:${LOCAL_REGISTRY_CLUSTER_PORT}"
+    local local_proxy_runtime_host="k3d-${LOCAL_REGISTRY_PROXY_NAME}:${LOCAL_REGISTRY_CLUSTER_PORT}"
 
     if [[ "${HELM_REGISTRY_HOST}" == "${remote_helm_registry_host}" ]]; then
       HELM_REGISTRY_HOST="${local_proxy_host}"
     fi
-    if [[ "${COMPONENT_HELM_REGISTRY_HOST}" == "${remote_helm_registry_host}" ]]; then
-      COMPONENT_HELM_REGISTRY_HOST="${local_proxy_component_host}"
+    if [[ "${RUNTIME_HELM_REGISTRY_HOST}" == "${remote_helm_registry_host}" ]]; then
+      RUNTIME_HELM_REGISTRY_HOST="${local_proxy_runtime_host}"
     fi
     HELM_REGISTRY_PLAIN_HTTP="true"
   fi
@@ -128,7 +126,6 @@ run_install() {
   cd "${REPO_ROOT}"
 
   INSTALL_LONGHORN="${INSTALL_LONGHORN}" \
-  ENABLE_INTERNAL_FQDN_DNS="${ENABLE_INTERNAL_FQDN_DNS}" \
   KUBECONFIG_PATH="${KUBECONFIG_PATH}" \
   image/scripts/dev/installEcosystem.sh \
     "${CES_NAMESPACE}" \
@@ -143,11 +140,11 @@ run_install() {
     "${HELM_REGISTRY_USERNAME}" \
     "${HELM_REGISTRY_PASSWORD}" \
     "${HELM_REGISTRY_HOST}" \
-    "${COMPONENT_HELM_REGISTRY_HOST}" \
+    "${RUNTIME_HELM_REGISTRY_HOST}" \
     "${HELM_REGISTRY_SCHEMA}" \
     "${HELM_REGISTRY_PLAIN_HTTP}" \
     "${KUBE_CTX_NAME}" \
-    "${DEFAULT_CLASS_REPLICA_COUNT}" \
+    "1" \
     "${FQDN}" \
     "${FORCE_UPGRADE_ECOSYSTEM}"
 }

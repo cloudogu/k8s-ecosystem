@@ -58,25 +58,20 @@ The process to a Dogu installation with its involved components is illustrated i
 
 ## Overview of dogu-specific features in Kubernetes.
 
-These Kubernetes-specific dogus are used in the Kubernetes Cloudogu EcoSystem:
-
-- [k8s/nginx-ingress](https://github.com/cloudogu/nginx-ingress)
-- [k8s/nginx-static](https://github.com/cloudogu/nginx-static)
-
 In principle, all Dogus in a Cloudogu EcoSystem function in Kubernetes as they do in the single-node variant. However, the following exceptions exist.
 
-The dogu `official/nginx` is replaced by two dogus and one component in a Kubernetes environment: `k8s/nginx-ingress` and `k8s/nginx-static`. The reason for this is that several things are done simultaneously in Kubernetes that cannot be continued in this way in Kubernetes. In addition, there is the activity of an [ingress-controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), which has no equivalent in a Docker-only world.
+The dogu `official/nginx` is replaced by two components in a Kubernetes environment: `k8s-ces-gateway` and `k8s-ces-assets`. The reason for this is that several things are done simultaneously in Kubernetes that cannot be continued in this way in Kubernetes. In addition, there is the activity of an [ingress-controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), which has no equivalent in a Docker-only world.
 
 The following table compares the functionalities and respective mapping components/dogus:
 
 | theme                   | K8s-CES               | conventional CES                                  |
 |-------------------------|-----------------------|---------------------------------------------------|
-| Reverse proxy           | k8s/nginx-ingress     | official/nginx                                    |
-| Ingress Controller      | k8s/nginx-ingress     | -/-                                               |
-| HTTP Response Injection | k8s/nginx-ingress     | official/nginx                                    |
-| Static Content Hosting  | k8s/nginx-static      | official/nginx                                    |
+| Reverse proxy           | k8s-ces-gateway       | official/nginx                                    |
+| Ingress Controller      | k8s-ces-gateway       | -/-                                               |
+| HTTP Response Injection | k8s-ces-gateway       | official/nginx                                    |
+| Static Content Hosting  | k8s-ces-assets        | official/nginx                                    |
 | Create Warp Menu        | k8s-service-discovery | official/nginx + official/registrator + ces-confd |
-| TLS-termination         | k8s/nginx-ingress     | official/nginx                                    |
+| TLS-termination         | k8s-ces-gateway       | official/nginx                                    |
 
 ## Operating system packages
 

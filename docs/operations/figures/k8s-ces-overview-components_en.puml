@@ -20,6 +20,25 @@ rectangle "Cluster" as cluster <<$k8s>> {
       rectangle servdiscpod as "k8s-service-discovery Pod" {
         rectangle servdisc as "k8s-service-discovery" <<$cloudogu>> #white
       }
+
+      rectangle gatewaypod as "k8s-ces-gateway Pod" {
+        rectangle gateway as "k8s-ces-gateway" <<$cloudogu>> #white
+        note right of gateway #ffffee
+          reverse proxy,
+          ingress controller, and
+          warp menu injector
+        end note
+      }
+
+      rectangle assetspod as "k8s-ces-assets Pod" {
+        rectangle assets as "k8s-ces-assets" <<$cloudogu>> #white
+      }
+
+        note bottom of assets #ffffee
+          delivers static
+          web resources
+        end note
+
       note as servdiscnote #ffffee
         creates Warp-Menü and
         ingress rules, handles
@@ -76,23 +95,6 @@ rectangle "Cluster" as cluster <<$k8s>> {
     k8scesctl -u-> configuration
 
     rectangle dogus #white {
-
-      rectangle nginxIngressPod as "nginx-ingress Pod" {
-        DOGU_NGINX(nginxingress, "nginx ingress") #white
-        note right of nginxingress #ffffee
-          reverse proxy,
-          ingress controller, and
-          warp menu injektor
-        end note
-      }
-      rectangle nginxstaticPod as "nginx-static Pod" {
-        DOGU_NGINX(nginxstatic, "nginx-static") #white
-        note bottom of nginxstatic #ffffee
-          delivers static
-          web resources
-        end note
-      }
-
       rectangle postgresqlPod as "postgresql Pod" {
         DOGU_POSTGRESQL(postgresql, "PostgreSQL") #white
       }
@@ -123,10 +125,9 @@ k8sapi --> k8sres : manages all \nresources
 admin -> kubectlces
 kubectlces --> k8sapi
 
-user --d-> nginxingress
-nginxingress -r-> nginxstatic
-nginxingress <-d-> scm
-nginxingress <-d-> redmine
+user --d-> gateway
+gateway <-d-> scm
+gateway <-d-> redmine
 redmine <-d-> postgresql
 
 

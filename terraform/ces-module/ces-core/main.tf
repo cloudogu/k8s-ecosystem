@@ -1,10 +1,5 @@
 locals {
-  // version is enforced by root module
-  _component_operator_image_namever = split(":", var.component_operator_image)
-  component_operator_image = {
-    repository = local._component_operator_image_namever[0]
-    version = local._component_operator_image_namever[1]
-  }
+  ecosystem_core_version = length(var.ecosystem_core_chart_version) > 0 ? var.ecosystem_core_chart_version : null
 }
 
 # This secret contains the access data for the **Dogu Registry**.
@@ -28,7 +23,7 @@ resource "helm_release" "ecosystem-core" {
   name       = "ecosystem-core"
   repository = "${var.helm_registry_schema}://${var.helm_registry_host}/${var.ecosystem_core_chart_namespace}"
   chart      = "ecosystem-core"
-  version    = var.ecosystem_core_chart_version
+  version    = local.ecosystem_core_version
   timeout    = var.ecosystem_core_timeout
 
   namespace        = var.ces_namespace
@@ -36,7 +31,6 @@ resource "helm_release" "ecosystem-core" {
   values = [
     templatefile("${path.module}/values.yaml.tftpl",
       {
-        "component_operator_image"                       = local.component_operator_image
         "components"                                     = var.components
       })
   ]

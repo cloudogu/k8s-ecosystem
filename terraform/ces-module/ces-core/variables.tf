@@ -1,10 +1,3 @@
-# component operator image
-variable "component_operator_image" {
-  description = "The Image:Version of the component operator. Optional with version like cloudogu/k8s-component-operator:1.10.0"
-  type        = string
-}
-
-# resource ecosystem itself
 variable "ecosystem_core_chart_version" {
   description = "The version of the ecosystem-core chart"
   type        = string

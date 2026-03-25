@@ -45,13 +45,23 @@ ensure_configmap() {
   echo "ConfigMap \"$name\" ensured in namespace \"$namespace\"."
 }
 
-# login_registry_helm <host> <username> <password>
+# login_registry_helm <host> <username> <password> [plain_http]
 login_registry_helm() {
   local host="$1"
   local user="$2"
+  local plain_http="${4:-false}"
+  if [[ -z "${user}" || -z "${3}" ]]; then
+    return 0
+  fi
   local pass_decoded
   pass_decoded="$(decode_if_b64 "$3")"
-  printf '%s' "$pass_decoded" | helm registry login "$host" --username "$user" --password-stdin
+
+  local args=()
+  if [[ "${plain_http}" == "true" ]]; then
+    args+=(--plain-http)
+  fi
+
+  printf '%s' "$pass_decoded" | helm registry login "$host" --username "$user" --password-stdin "${args[@]}"
 }
 
 # Fetch latest version string for a given dogu via the registry API
@@ -112,8 +122,14 @@ ensure_helm_registry_config() {
   password_decoded="$(decode_if_b64 "$6")"
   local namespace="$7"
 
-  local auth_b64
-  auth_b64="$(printf '%s:%s' "$username" "$password_decoded" | base64 | tr -d '\n')"
+  local auth_json
+  if [[ -n "${username}" || -n "${password_decoded}" ]]; then
+    local auth_b64
+    auth_b64="$(printf '%s:%s' "$username" "$password_decoded" | base64 | tr -d '\n')"
+    auth_json="{\"auths\": {\"$host\": {\"auth\": \"$auth_b64\"}}}"
+  else
+    auth_json="{\"auths\": {\"$host\": {}}}"
+  fi
 
   ensure_configmap "component-operator-helm-repository" "$namespace" \
     --from-literal=endpoint="$host" \
@@ -122,7 +138,7 @@ ensure_helm_registry_config() {
     --from-literal=insecureTls="$insecure_tls"
 
   ensure_secret "component-operator-helm-registry" generic "$namespace" \
-    --from-literal=config.json="{\"auths\": {\"$host\": {\"auth\": \"$auth_b64\"}}}"
+    --from-literal=config.json="${auth_json}"
   echo "Helm registry config ensured (ConfigMap + Secret)."
 }
 

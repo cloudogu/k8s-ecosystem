@@ -25,12 +25,29 @@ image_registry_url=${9}
 helm_registry_username=${10}
 helm_registry_password=${11}
 helm_registry_host=${12}
-helm_registry_schema=${13}
-helm_registry_plain_http=${14}
-kube_ctx_name=${15}
-default_class_replica_count="${16:-2}"
-fqdn=${17}
-forceUpgradeEcosystem=${18}
+runtime_helm_registry_host=${13}
+helm_registry_schema=${14}
+helm_registry_plain_http=${15}
+kube_ctx_name=${16}
+default_class_replica_count="${17:-2}"
+fqdn=${18}
+forceUpgradeEcosystem=${19}
+INSTALL_LONGHORN="${INSTALL_LONGHORN:-true}"
+KUBECONFIG_PATH="${KUBECONFIG_PATH:-${HOME}/.kube/$kube_ctx_name}"
+
+registry_chart_ref() {
+  local chart_name="$1"
+  printf '%s://%s/%s/%s' "${helm_registry_schema}" "${helm_registry_host}" "${helm_repository_namespace}" "${chart_name}"
+}
+
+ensure_namespace() {
+  if kubectl get namespace "${CES_NAMESPACE}" >/dev/null 2>&1; then
+    echo "Namespace '${CES_NAMESPACE}' already exists."
+  else
+    echo "Creating namespace '${CES_NAMESPACE}'..."
+    kubectl create namespace "${CES_NAMESPACE}"
+  fi
+}
 
 # shouldApplyResources checks whether ecosystem-core is already installed and if an upgrade should be applied
 shouldApplyResources() {
@@ -53,8 +70,15 @@ shouldApplyResources() {
 applyResources() {
   echo "Applying resources for setup..."
 
-  # Remove hard coded registry.cloudogu.com if helm 3.13 is released. Use then --plain-http flag with the proxy registry.
-  login_registry_helm "registry.cloudogu.com" "${helm_registry_username}" "${helm_registry_password}"
+  local helm_registry_args=()
+  if [[ "${helm_registry_plain_http}" == "true" ]]; then
+    helm_registry_args+=(--plain-http)
+  fi
+  if [[ "${helm_registry_insecure_tls:-false}" == "true" ]]; then
+    helm_registry_args+=(--insecure-skip-tls-verify)
+  fi
+
+  login_registry_helm "${helm_registry_host}" "${helm_registry_username}" "${helm_registry_password}" "${helm_registry_plain_http}"
 
   # Ensure Registries
   ensure_dogu_registry_secret \
@@ -71,7 +95,7 @@ applyResources() {
     "${CES_NAMESPACE}"
 
   ensure_helm_registry_config \
-    "${helm_registry_host}" \
+    "${runtime_helm_registry_host}" \
     "${helm_registry_schema}" \
     "${helm_registry_plain_http}" \
     "${helm_registry_insecure_tls:-false}" \
@@ -85,46 +109,55 @@ applyResources() {
   ensure_certificate_secret \
     "${CES_NAMESPACE}"
 
-  # Install Longhorn
-  helm repo add longhorn https://charts.longhorn.io
-  helm repo update
+  if [ "${INSTALL_LONGHORN}" = "true" ]; then
+    echo "Installing Longhorn..."
+    helm repo add longhorn https://charts.longhorn.io
+    helm repo update
 
-  LONGHORN_VALUES_TEMPLATE=image/scripts/dev/longhorn-values.yaml.tpl
-  LONGHORN_VALUES_YAML=image/scripts/dev/.longhorn-values.yaml
-  cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
-  sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${LONGHORN_VALUES_YAML}
+    LONGHORN_VALUES_TEMPLATE=image/scripts/dev/longhorn-values.yaml.tpl
+    LONGHORN_VALUES_YAML=image/scripts/dev/.longhorn-values.yaml
+    cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
+    sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${LONGHORN_VALUES_YAML}
 
-  helm upgrade -i longhorn longhorn/longhorn \
-    --namespace longhorn-system \
-    --create-namespace \
-    --values ${LONGHORN_VALUES_YAML} \
-    --version 1.10.0
+    helm upgrade -i longhorn longhorn/longhorn \
+      --namespace longhorn-system \
+      --create-namespace \
+      --values ${LONGHORN_VALUES_YAML} \
+      --version 1.10.0
+  else
+    echo "Skipping Longhorn installation (INSTALL_LONGHORN=${INSTALL_LONGHORN})."
+  fi
 
   # Install SnapshotController
-  helm upgrade -i k8s-snapshot-controller-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller-crd" \
+  helm upgrade -i k8s-snapshot-controller-crd "$(registry_chart_ref "k8s-snapshot-controller-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="kube-system" --version 8.2.1-3
 
-  helm upgrade -i k8s-snapshot-controller "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-snapshot-controller" \
+  helm upgrade -i k8s-snapshot-controller "$(registry_chart_ref "k8s-snapshot-controller")" \
+    "${helm_registry_args[@]}" \
     --namespace="kube-system" --version 8.2.1-3
 
   # Install Component CRD
-  helm upgrade -i k8s-component-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-component-operator-crd" \
+  helm upgrade -i k8s-component-operator-crd "$(registry_chart_ref "k8s-component-operator-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="${CES_NAMESPACE}"
 
   # Install Blueprint CRD
-  helm upgrade -i k8s-blueprint-operator-crd "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/k8s-blueprint-operator-crd" \
+  helm upgrade -i k8s-blueprint-operator-crd "$(registry_chart_ref "k8s-blueprint-operator-crd")" \
+    "${helm_registry_args[@]}" \
     --namespace="${CES_NAMESPACE}"
 
   # Install ecosystem-core
   ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
   ADDITIONAL_VALUES_YAML=image/scripts/dev/.additionalValues.yaml
   cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
-  helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/ecosystem-core" \
+  helm upgrade -i ecosystem-core "$(registry_chart_ref "ecosystem-core")" \
+    "${helm_registry_args[@]}" \
     --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}" \
     --timeout=20m
 
-  wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900
+  wait_for_component_healthy "k8s-dogu-operator" "${CES_NAMESPACE}" 900
 
   # Apply blueprint with latest dogu versions
   patch_and_apply_blueprint_with_latest_versions "${dogu_registry_username}" "${dogu_registry_password}" "${fqdn}"
@@ -136,7 +169,9 @@ applyResources() {
 # --- Main ---
 
 # set environment for helm and kubectl
-export KUBECONFIG="${HOME}/.kube/$kube_ctx_name"
+export KUBECONFIG="${KUBECONFIG_PATH}"
+
+ensure_namespace
 
 echo "set default k8s namespace"
 kubectl config set-context --current --namespace "${CES_NAMESPACE}"

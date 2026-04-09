@@ -126,6 +126,7 @@ module "ces-blueprint" {
   ces_certificate_path = var.ces_certificate_path
   ces_namespace = var.ces_namespace
   ces_fqdn = var.ces_fqdn
+  stopped = var.blueprint_stopped
 
   dogus = var.dogus
 

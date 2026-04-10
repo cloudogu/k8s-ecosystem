@@ -26,7 +26,6 @@ variable "ces_fqdn" {
 variable "stopped" {
   description = "If true, the blueprint is created but not executed"
   type        = bool
-  default     = false
 }
 
 # Certificate

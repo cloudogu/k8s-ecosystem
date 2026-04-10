@@ -38,6 +38,7 @@ resource "helm_release" "ecosystem-core" {
       {
         "component_operator_image"                       = local.component_operator_image
         "components"                                     = var.components
+        "enable_fqdn_applier"                            = var.enable_fqdn_applier
       })
   ]
 

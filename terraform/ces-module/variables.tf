@@ -158,6 +158,13 @@ variable "blueprint_stopped" {
   default     = false
 }
 
+# FQDN-Apply
+variable "enable_fqdn_applier" {
+  description = "If set to true, the fqdn applier will be enabled. This is used in environments where dns isn't available and the loadbalancer ip should be the fqdn of the ecosystem. (Typically development environments) While deploying the components, the applier will wait for the loadbalancer service to be created and use the external ip to set it in the global config as fqdn. If set to false, the fqdn has to be set by the blueprint config or manually. This is required for dogus to start."
+  type        = bool
+  default     = false
+}
+
 # Certificate
 variable "ces_certificate_path" {
   # Dev Cert:  openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=Oregon/L=Portland/O=CompanyName/OU=DepartmentName/CN=example.com"

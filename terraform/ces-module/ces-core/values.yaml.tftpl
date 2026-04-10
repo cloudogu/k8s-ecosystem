@@ -5,7 +5,7 @@
 skipPreconditionValidation: false
 loadbalancer-annotations:
   cloud.google.com/l4-rbs: "enabled"
-  networking.gke.io/load-balancer-ip-addresses: "${extIP}"
+  networking.gke.io/load-balancer-ip-addresses: "${extIPName}"
 k8s-component-operator:
   manager:
     image:

@@ -3,7 +3,8 @@
 # Declare variables to be passed into your templates.
 
 skipPreconditionValidation: false
-loadbalancer-annotations: {"networking.gke.io/load-balancer-ip-addresses" = ${extIP}}
+loadbalancer-annotations:
+  networking.gke.io/load-balancer-ip-addresses: "${extIP}"
 k8s-component-operator:
   manager:
     image:

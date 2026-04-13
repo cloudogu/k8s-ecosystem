@@ -38,6 +38,7 @@ locals {
       "doguConfigs"   = local.doguConfigs
       "globalConfig"  = local.globalConfig
       "ces_namespace" = var.ces_namespace
+      "stopped"       = var.stopped
     }))
 
 
@@ -81,6 +82,7 @@ locals {
     }) ,
     spec = merge(try(local.passed_blueprint.spec, {}), {
       blueprint = merge(try(local.passed_blueprint.spec.blueprint, {}), {
+        stopped = var.stopped,
         dogus = local.merged_dogus,
         config = {
           dogus = local.merged_blueprint_doguConfigs,

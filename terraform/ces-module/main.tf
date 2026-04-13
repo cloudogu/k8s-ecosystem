@@ -107,6 +107,8 @@ module "ces-core" {
   ces_admin_password = var.ces_admin_password
 
   cas_oidc_client_secret = var.cas_oidc_client_secret
+
+  enable_fqdn_applier = var.enable_fqdn_applier
 }
 
 module "ces-blueprint" {
@@ -126,6 +128,7 @@ module "ces-blueprint" {
   ces_certificate_path = var.ces_certificate_path
   ces_namespace = var.ces_namespace
   ces_fqdn = var.ces_fqdn
+  stopped = var.blueprint_stopped
 
   dogus = var.dogus
 

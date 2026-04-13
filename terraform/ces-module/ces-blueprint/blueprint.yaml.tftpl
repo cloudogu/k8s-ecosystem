@@ -8,6 +8,7 @@ metadata:
   namespace: ${ces_namespace}
 spec:
   displayName: "Blueprint Terraform CES-Module"
+  stopped: ${stopped}
   blueprint:
     dogus:
       ${indent(6, yamlencode(dogus))}

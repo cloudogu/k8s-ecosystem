@@ -22,6 +22,12 @@ variable "ces_fqdn" {
   type        = string
 }
 
+# Stopped
+variable "stopped" {
+  description = "If true, the blueprint is created but not executed"
+  type        = bool
+}
+
 # Certificate
 variable "ces_certificate_path" {
   # Dev Cert:  openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=Oregon/L=Portland/O=CompanyName/OU=DepartmentName/CN=example.com"

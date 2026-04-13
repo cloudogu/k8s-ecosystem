@@ -3,6 +3,9 @@
 # Declare variables to be passed into your templates.
 
 skipPreconditionValidation: false
+loadbalancer-annotations:
+  cloud.google.com/l4-rbs: "enabled"
+  networking.gke.io/load-balancer-ip-addresses: "${extIPName}"
 k8s-component-operator:
   manager:
     image:
@@ -77,3 +80,4 @@ monitoring:
 defaultConfig:
   env:
     waitTimeoutMinutes: 15
+    enableFqdnApplier: ${enable_fqdn_applier}

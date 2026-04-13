@@ -27,6 +27,12 @@ variable "ces_namespace" {
   type        = string
 }
 
+# FQDN-Apply
+variable "enable_fqdn_applier" {
+  description = "If set to true, the fqdn applier will be enabled. This is used in environments where dns isn't available and the loadbalancer ip should be the fqdn of the ecosystem. (Typically development environments) While deploying the components, the applier will wait for the loadbalancer service to be created and use the external ip to set it in the global config as fqdn. If set to false, the fqdn has to be set by the blueprint config or manually. This is required for dogus to start."
+  type        = bool
+}
+
 # List of components, backup components and monitoring components
 variable "components" {
   description = "A list of components, ordered by default components, backup and monitoring."

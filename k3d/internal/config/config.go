@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bufio"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -8,31 +9,20 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-
-	"github.com/cloudogu/k8s-ecosystem/k3d/internal/envfiles"
 )
 
 type Paths struct {
-	K3DDir          string
-	RepoRoot        string
-	GlobalEnvFile   string
-	ConfigTemplate  string
-	EnvironmentDir  string
-	EcosystemScript string
-	ClusterScript   string
-	RegistryScript  string
-	InstallScript   string
+	K3DDir         string
+	RepoRoot       string
+	GlobalEnvFile  string
+	EnvironmentDir string
 }
 
 type Global struct {
 	BaseDomain                  string
 	KubeconfigDirectory         string
-	DefaultKubeconfigPath       string
 	APIStartPort                int
 	DefaultNamespace            string
-	ManageHostsFile             bool
-	MergeDefaultKubeconfig      bool
-	SwitchDefaultKubeconfigCtx  bool
 	LocalRegistryEnabled        bool
 	LocalRegistryStoragePath    string
 	LocalRegistryDevName        string
@@ -56,7 +46,7 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 
-	values, err := envfiles.ParseFileOptional(paths.GlobalEnvFile)
+	values, err := parseOptionalEnvFile(paths.GlobalEnvFile)
 	if err != nil {
 		return Config{}, fmt.Errorf("load global config: %w", err)
 	}
@@ -71,12 +61,8 @@ func Load() (Config, error) {
 		Global: Global{
 			BaseDomain:                  firstNonEmpty(values["BASE_DOMAIN"], "k3ces.localdomain"),
 			KubeconfigDirectory:         firstNonEmpty(values["KUBECONFIG_DIRECTORY"], filepath.Join(home, ".kube")),
-			DefaultKubeconfigPath:       firstNonEmpty(values["DEFAULT_KUBECONFIG_PATH"], filepath.Join(home, ".kube", "config")),
 			APIStartPort:                parseIntDefault(firstNonEmpty(os.Getenv("K3D_API_PORT_START"), values["K3D_API_PORT_START"]), 6550),
 			DefaultNamespace:            firstNonEmpty(values["CES_NAMESPACE"], "ecosystem"),
-			ManageHostsFile:             parseBoolDefault(values["MANAGE_HOSTS_FILE"], true),
-			MergeDefaultKubeconfig:      parseBoolDefault(values["MERGE_DEFAULT_KUBECONFIG"], true),
-			SwitchDefaultKubeconfigCtx:  parseBoolDefault(values["SWITCH_DEFAULT_KUBECONFIG_CONTEXT"], false),
 			LocalRegistryEnabled:        parseBoolDefault(values["LOCAL_REGISTRY_ENABLED"], true),
 			LocalRegistryStoragePath:    firstNonEmpty(values["LOCAL_REGISTRY_STORAGE_PATH"], filepath.Join(home, ".local", "share", "k3d", "registries", "cloudogu")),
 			LocalRegistryDevName:        firstNonEmpty(values["LOCAL_REGISTRY_DEV_NAME"], "registry-dev.localhost"),
@@ -131,15 +117,10 @@ func resolveFrom(start string) (Paths, bool) {
 		if fileExists(configTemplate) && dirExists(environmentDir) {
 			repoRoot := filepath.Dir(k3dDir)
 			return Paths{
-				K3DDir:          k3dDir,
-				RepoRoot:        repoRoot,
-				GlobalEnvFile:   filepath.Join(k3dDir, "config.env"),
-				ConfigTemplate:  configTemplate,
-				EnvironmentDir:  environmentDir,
-				EcosystemScript: filepath.Join(k3dDir, "ecosystem.sh"),
-				ClusterScript:   filepath.Join(k3dDir, "cluster.sh"),
-				RegistryScript:  filepath.Join(k3dDir, "registry.sh"),
-				InstallScript:   filepath.Join(k3dDir, "install.sh"),
+				K3DDir:         k3dDir,
+				RepoRoot:       repoRoot,
+				GlobalEnvFile:  filepath.Join(k3dDir, "config.env"),
+				EnvironmentDir: environmentDir,
 			}, true
 		}
 
@@ -191,6 +172,61 @@ func decodeIfBase64(value string) string {
 		return value
 	}
 	return string(decoded)
+}
+
+func parseOptionalEnvFile(path string) (map[string]string, error) {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return map[string]string{}, nil
+		}
+		return nil, err
+	}
+	return parseEnvFile(path)
+}
+
+func parseEnvFile(path string) (map[string]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	values := map[string]string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		line = strings.TrimPrefix(line, "export ")
+		key, value, ok := strings.Cut(line, "=")
+		if !ok {
+			continue
+		}
+
+		key = strings.TrimSpace(key)
+		value = strings.TrimSpace(value)
+		value = strings.Trim(value, `"'`)
+		value = expandEnvValue(value)
+		values[key] = value
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return values, nil
+}
+
+func expandEnvValue(value string) string {
+	home, _ := os.UserHomeDir()
+	return os.Expand(value, func(key string) string {
+		if key == "HOME" && home != "" {
+			return home
+		}
+		return os.Getenv(key)
+	})
 }
 
 func fileExists(path string) bool {

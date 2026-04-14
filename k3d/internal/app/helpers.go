@@ -2,15 +2,12 @@ package app
 
 import (
 	"fmt"
-	"net/url"
-	"os"
-	"path/filepath"
+	"io"
 	"strings"
-
-	"github.com/cloudogu/k8s-ecosystem/k3d/internal/system"
+	"text/tabwriter"
 )
 
-func commandOutput(runner system.Runner, name string, args ...string) (string, error) {
+func commandOutput(runner runner, name string, args ...string) (string, error) {
 	out, err := runner.Output(name, args...)
 	if err != nil {
 		return "", err
@@ -22,30 +19,7 @@ func urlFor(fqdn string) string {
 	if fqdn == "" {
 		return ""
 	}
-	u := url.URL{Scheme: "https", Host: fqdn}
-	return u.String()
-}
-
-func requireFile(path string) error {
-	info, err := os.Stat(path)
-	if err != nil {
-		return err
-	}
-	if info.IsDir() {
-		return fmt.Errorf("%s is a directory", filepath.Base(path))
-	}
-	return nil
-}
-
-func requireDir(path string) error {
-	info, err := os.Stat(path)
-	if err != nil {
-		return err
-	}
-	if !info.IsDir() {
-		return fmt.Errorf("%s is not a directory", filepath.Base(path))
-	}
-	return nil
+	return "https://" + fqdn
 }
 
 func validateName(name string) error {
@@ -108,22 +82,6 @@ func nextFreeAPIPort(clusters []clusterListEntry, start int) (int, error) {
 	return 0, fmt.Errorf("no free API port found starting at %d", start)
 }
 
-func lineContainsHost(line, fqdn string) bool {
-	fields := strings.Fields(line)
-	for i, field := range fields {
-		if strings.HasPrefix(field, "#") {
-			return false
-		}
-		if i == 0 {
-			continue
-		}
-		if field == fqdn {
-			return true
-		}
-	}
-	return false
-}
-
 func firstNonEmpty(values ...string) string {
 	for _, value := range values {
 		if strings.TrimSpace(value) != "" {
@@ -131,4 +89,13 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
+}
+
+func printEcosystemTable(w io.Writer, rows [][4]string) {
+	tw := tabwriter.NewWriter(w, 0, 8, 2, ' ', 0)
+	fmt.Fprintln(tw, "NAME\tSTATUS\tURL\tKUBECONFIG")
+	for _, row := range rows {
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", row[0], row[1], row[2], row[3])
+	}
+	_ = tw.Flush()
 }

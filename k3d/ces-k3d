@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BIN="${SCRIPT_DIR}/.bin/ces-k3d"
+
+if [[ ! -x "${BIN}" || "${CES_K3D_REBUILD:-false}" == "true" ]]; then
+  mkdir -p "${SCRIPT_DIR}/.bin"
+  (
+    cd "${SCRIPT_DIR}"
+    go build -o "${BIN}" ./cmd/ces-k3d
+  )
+fi
+
+exec "${BIN}" "$@"

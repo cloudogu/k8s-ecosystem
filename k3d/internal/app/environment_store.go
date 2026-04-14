@@ -6,19 +6,26 @@ import (
 	"path/filepath"
 
 	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
-	"github.com/cloudogu/k8s-ecosystem/k3d/internal/envfiles"
 )
+
+type EnvironmentInstance struct {
+	Name           string
+	EnvFile        string
+	FQDN           string
+	KubeconfigPath string
+	HostIP         string
+}
 
 type environmentStore struct {
 	config config.Config
 }
 
-func newEnvironmentStore(cfg config.Config) EnvironmentStore {
+func newEnvironmentStore(cfg config.Config) *environmentStore {
 	return &environmentStore{config: cfg}
 }
 
 func (s *environmentStore) LoadInstances() ([]EnvironmentInstance, error) {
-	instances, err := envfiles.LoadInstances(s.config.Paths.EnvironmentDir)
+	instances, err := loadInstanceFiles(s.config.Paths.EnvironmentDir)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +45,7 @@ func (s *environmentStore) LoadInstances() ([]EnvironmentInstance, error) {
 }
 
 func (s *environmentStore) Find(name string) (EnvironmentInstance, error) {
-	instance, err := envfiles.FindInstance(s.config.Paths.EnvironmentDir, name)
+	instance, err := findInstanceFile(s.config.Paths.EnvironmentDir, name)
 	if err != nil {
 		return EnvironmentInstance{}, err
 	}
@@ -61,21 +68,21 @@ func (s *environmentStore) CoreDNSManifestPath(name string) string {
 }
 
 func (s *environmentStore) WriteCoreDNSManifest(path, fqdn string) error {
-	if err := os.WriteFile(path, []byte(envfiles.FormatCoreDNSManifest(fqdn)), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(formatCoreDNSManifest(fqdn)), 0o644); err != nil {
 		return fmt.Errorf("write coredns manifest: %w", err)
 	}
 	return nil
 }
 
 func (s *environmentStore) WriteInstanceEnv(path, name, fqdn, hostIP string, apiPort int, kubeconfigPath, corednsManifestPath string) error {
-	if err := os.WriteFile(path, []byte(envfiles.FormatInstanceEnv(name, fqdn, hostIP, apiPort, kubeconfigPath, corednsManifestPath)), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(formatInstanceEnv(name, fqdn, hostIP, apiPort, kubeconfigPath, corednsManifestPath)), 0o644); err != nil {
 		return fmt.Errorf("write instance env: %w", err)
 	}
 	return nil
 }
 
 func (s *environmentStore) LookupValue(instanceEnvFile, key string) (string, error) {
-	values, err := envfiles.ParseFile(instanceEnvFile)
+	values, err := parseEnvFile(instanceEnvFile)
 	if err != nil {
 		return "", err
 	}

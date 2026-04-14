@@ -20,6 +20,7 @@ authorized_keys
 terraform.tfvars
 
 /k3d/config.env
+/k3d/.bin
 /k3d/environments/*.env
 /k3d/environments/*.yaml
 !/k3d/environments/.gitkeep

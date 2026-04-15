@@ -3,6 +3,17 @@
 Dieses Dokument beschreibt eine leichtgewichtige Alternative zur Vagrant-basierten Dev-Box. 
 Statt eine VM zu starten, läuft der Kubernetes-Cluster direkt in Docker über `k3d`.
 
+Wichtig:
+Der `k3d`-Workflow ist für schnelle lokale Entwicklung und iterative Tests gedacht. 
+Er kann nicht alle Szenarien abdecken, die mit der Vagrant-basierten `k3s`-Dev-Box getestet werden können.
+
+Aktuelle Einschränkungen gegenüber dem Vagrant-`k3s`-Cluster:
+
+- es wird nur ein einzelner Node verwendet
+- Storage basiert auf der lokalen Default-StorageClass von `k3s`
+  - PVC-Vergrößerungen werden in diesem Setup nicht unterstützt
+  - Backups mit Velero werden in diesem Setup nicht unterstützt
+
 ## Aktueller Umfang
 
 Der `k3d`-Workflow ist bewusst klein gehalten. Mehrere lokale CES-Instanzen werden über genau eine CLI verwaltet:

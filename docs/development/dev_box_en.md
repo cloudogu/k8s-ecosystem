@@ -3,6 +3,9 @@
 This document contains the necessary information to start the development basebox locally with Vagrant.
 Instructions for building the image for the development basebox can be found [here](./building_basebox_en.md).
 
+For a lightweight local development path without a VM, there is also a `k3d`-based variant:
+[Dev Box with k3d](./dev_box_k3d_en.md).
+
 ### Preconditions
 
 #### Applications

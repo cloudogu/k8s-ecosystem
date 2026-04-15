@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BIN="${SCRIPT_DIR}/.bin/ces-k3d"
+NEEDS_REBUILD="false"
+
+if [[ ! -x "${BIN}" || "${CES_K3D_REBUILD:-false}" == "true" ]]; then
+  NEEDS_REBUILD="true"
+elif find "${SCRIPT_DIR}/cmd" "${SCRIPT_DIR}/internal" -type f -name '*.go' -newer "${BIN}" | read -r _; then
+  NEEDS_REBUILD="true"
+fi
+
+if [[ "${NEEDS_REBUILD}" == "true" ]]; then
+  mkdir -p "${SCRIPT_DIR}/.bin"
+  (
+    cd "${SCRIPT_DIR}"
+    go build -o "${BIN}" ./cmd/ces-k3d
+  )
+fi
+
+exec "${BIN}" "$@"

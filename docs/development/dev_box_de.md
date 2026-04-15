@@ -4,6 +4,9 @@ Dieses Dokument enthält die notwendigen Informationen, um die Entwicklungs-Base
 Eine Anleitung für die Erstellung des Images für die Entwicklungs-Basebox ist [hier](./building_basebox_de.md) zu
 finden.
 
+Für einen leichtgewichtigen lokalen Entwicklungsweg ohne VM gibt es außerdem eine `k3d`-Variante:
+[Dev-Box mit k3d](./dev_box_k3d_de.md).
+
 ### Vorbedingungen
 
 #### Applikationen

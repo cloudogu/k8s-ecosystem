@@ -4,14 +4,16 @@ This document describes a lightweight local development alternative to the Vagra
 
 ## Current scope
 
-The `k3d` path is intended to manage multiple local CES instances through a small wrapper script. It reuses the existing [`installEcosystem.sh`](../../image/scripts/dev/installEcosystem.sh) directly against the matching `kubeconfig`.
+The `k3d` workflow is intentionally small. It manages multiple local CES instances with a single CLI:
 
-Compared to the Vagrant setup, this path currently does not try to reproduce:
+- `create`
+- `start`
+- `stop`
+- `list`
+- `delete`
 
-- the basebox image
-- the node configuration from `nodeconfig/k3sConfig.json`
-
-The previous proxy-registry approach is no longer run inside the cluster here. Instead, a local Docker-based registry stack is used outside the clusters.
+The CLI creates the local `k3d` cluster, writes a dedicated kubeconfig and then bootstraps CES by calling the existing [`image/scripts/dev/installEcosystem.sh`](../../image/scripts/dev/installEcosystem.sh).
+The helper scripts in `image/scripts/dev/` therefore remain the shared installation implementation and are still also used by Vagrant.
 
 ## Prerequisites
 
@@ -36,79 +38,122 @@ Then fill in the credentials in `k3d/config.env`.
 Important notes:
 
 - The file contains shared defaults for all local `k3d` ecosystems.
-- `k3d` starts as a single-node cluster by default (`K3D_SERVER_COUNT=1`, `K3D_AGENT_COUNT=0`).
+- `k3d` uses a single-node cluster by default.
 - Storage uses the default `local-path` storage class that ships with `k3s`.
-- The cluster-internal CES FQDN is rewritten to `ces-loadbalancer.ecosystem.svc.cluster.local` via a mounted `coredns-custom` manifest at cluster creation time, so it survives `k3d stop/start`.
+- Each instance gets:
+  - a dedicated loopback IP from `127.0.0.0/24`
+  - a dedicated Kubernetes API port starting at `6550`
+  - a dedicated kubeconfig in `~/.kube/<fqdn>`
+- The cluster-internal CES FQDN is rewritten to `ces-loadbalancer.ecosystem.svc.cluster.local` via a mounted CoreDNS manifest.
 - By default, a local registry stack with two endpoints is used:
   - one writable dev registry for `docker push` and `helm push`
   - one proxy registry as a pull-through cache for `registry.cloudogu.com`
   - both share the same storage directory
-- The existing `.blueprint-override.yaml` behavior still works because the same blueprint mechanism is used.
-- If the CES should be updated on repeated bootstrap runs, set `FORCE_UPGRADE_ECOSYSTEM="true"` in `k3d/config.env`.
+- `.blueprint-override.yaml` still works because the same blueprint mechanism is used.
+- If CES should be updated on repeated bootstrap runs, set `FORCE_UPGRADE_ECOSYSTEM="true"` in `k3d/config.env`.
 
-You can also manage the registry stack directly:
+## Commands
+
+Change into the `k3d` directory:
 
 ```shell
-k3d/registry.sh start
-k3d/registry.sh status
+cd k3d
+```
+
+Show the available commands:
+
+```shell
+./ces-k3d --help
+```
+
+The public workflow consists of:
+
+```shell
+./ces-k3d create my-ces
+./ces-k3d list
+./ces-k3d start my-ces
+./ces-k3d stop my-ces
+./ces-k3d delete my-ces
 ```
 
 ## Create a new ecosystem
 
-The manager creates the `k3d` cluster, writes a dedicated `kubeconfig` and then installs the CES:
+Create a new local CES instance:
 
 ```shell
-k3d/ecosystem.sh create my-ces
+./ces-k3d create my-ces
 ```
 
-The script assigns these values automatically:
+The CLI assigns these values automatically:
 
 - FQDN: `my-ces.k3ces.localdomain`
 - kubeconfig: `~/.kube/my-ces.k3ces.localdomain`
 - host IP: next free loopback IP from `127.0.0.0/24`
 - Kubernetes API port: next free port starting at `6550`
-- merge into the default kubeconfig: `~/.kube/config` without automatically switching the current context
-- default namespace in the context: `ecosystem`
-- `/etc/hosts` entry via `sudo` as long as `MANAGE_HOSTS_FILE="true"`
-- local registry stack started before cluster creation as long as `LOCAL_REGISTRY_ENABLED="true"`
+- default namespace in the kubeconfig context: `ecosystem`
 
-To see which IP a managed ecosystem uses, run:
+After a successful create, the CLI prints the most relevant follow-up commands, including:
 
-```shell
-k3d/ecosystem.sh list
+- the URL
+- `export KUBECONFIG=...`
+- `kubectl cluster-info`
+- the `/etc/hosts` command for the CES FQDN
+- the local registry endpoints
+
+Example:
+
+```text
+Ecosystem 'dev2' is ready.
+
+URL:
+  https://dev2.k3ces.localdomain
+
+Dedicated kubeconfig:
+  /home/user/.kube/dev2.k3ces.localdomain
+
+Apply kubeconfig:
+  export KUBECONFIG=/home/user/.kube/dev2.k3ces.localdomain
+  kubectl cluster-info
+
+Add to /etc/hosts if needed:
+  sudo sh -c 'echo "127.0.0.3 dev2.k3ces.localdomain" >> /etc/hosts'
+
+Registry stack:
+  push:    localhost:5001
+  consume: k3d-registry-proxy.localhost:5000
 ```
 
 ## Manage ecosystems
 
+List all managed instances:
+
 ```shell
-k3d/ecosystem.sh list
-k3d/ecosystem.sh open my-ces
-k3d/ecosystem.sh stop my-ces
-k3d/ecosystem.sh start my-ces
-k3d/ecosystem.sh delete my-ces
+./ces-k3d list
 ```
 
-`start` and `stop` call the matching `k3d` commands directly. `delete` also removes the managed `kubeconfig` and the generated instance config below `k3d/environments/`.
+The status column reflects the real cluster state:
 
-`open` launches `https://<fqdn>` in the host's default browser.
+- `running`
+- `stopped`
+- `missing`
+- `unknown`
 
-By default the scripts also:
+Start and stop use the matching `k3d` cluster commands and refresh the dedicated kubeconfig on `start`:
 
-- merge the context into `~/.kube/config`
-- update or remove the matching `/etc/hosts` entry
-- start the local proxy registry automatically on `create` and `start`
+```shell
+./ces-k3d stop my-ces
+./ces-k3d start my-ces
+```
 
-You can control this behavior in `k3d/config.env`:
+Delete removes:
 
-- `MERGE_DEFAULT_KUBECONFIG`
-- `SWITCH_DEFAULT_KUBECONFIG_CONTEXT`
-- `DEFAULT_KUBECONFIG_PATH`
-- `MANAGE_HOSTS_FILE`
-- `LOCAL_REGISTRY_ENABLED`
-- `LOCAL_REGISTRY_STORAGE_PATH`
-- `LOCAL_REGISTRY_DEV_PORT`
-- `LOCAL_REGISTRY_PROXY_PORT`
-- `LOCAL_REGISTRY_CLUSTER_PORT`
+- the `k3d` cluster
+- the dedicated kubeconfig
+- the generated instance files under `k3d/environments/`
+
+```shell
+./ces-k3d delete my-ces
+```
 
 ## Registry workflow for local development
 
@@ -120,21 +165,30 @@ The registry stack intentionally exposes two different endpoints:
 This split is intentional:
 
 - local images and OCI charts are pushed to the dev registry
-- CES components and local dogu/chart tests should consume from the proxy registry
+- CES components and local dogu/chart tests consume from the proxy registry
 - if an artifact is not available there locally, the proxy registry pulls it from `registry.cloudogu.com`
 
-To make local artifacts win over upstream, push them into the dev registry under the same repository layout but with dedicated development tags or versions.
+For the normal workflow, no `/etc/hosts` entries are required for the registries:
 
-## Manual low-level scripts
+- host-side access uses `localhost`
+- cluster-side access uses the `k3d-...` container name
 
-The manager uses these helper scripts internally:
+## Certificates
 
-- `k3d/cluster.sh` for cluster creation and kubeconfig handling
-- `k3d/install.sh` for CES bootstrap on an existing cluster
-- `k3d/registry.sh` for the local dev/proxy registry stack
+The k3d workflow does not install the Vagrant certificates from `.vagrant/certs/`.
 
-If you want to rerun the bootstrap for an existing ecosystem, call:
+This is intentional:
 
-```shell
-k3d/install.sh k3d/environments/my-ces.env
-```
+- the Vagrant certificate is issued for `k3ces.localdomain`
+- local k3d instances use per-instance FQDNs such as `dev2.k3ces.localdomain`
+- reusing the Vagrant certificate would cause SAN mismatches
+
+For k3d, the shared installer is executed in a way that avoids injecting the Vagrant certificate. This allows the CES installation to use the matching self-signed certificate flow for the configured instance FQDN.
+
+## Internal implementation notes
+
+The public wrapper is:
+
+- `k3d/ces-k3d`
+
+It rebuilds the Go binary automatically when Go sources below `k3d/cmd` or `k3d/internal` changed.

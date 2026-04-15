@@ -1,17 +1,21 @@
 # Dev-Box mit k3d
 
-Dieses Dokument beschreibt eine leichtgewichtige Alternative zur Vagrant-basierten Dev-Box. Statt eine VM zu starten, läuft der Kubernetes-Cluster direkt in Docker über `k3d`.
+Dieses Dokument beschreibt eine leichtgewichtige Alternative zur Vagrant-basierten Dev-Box. 
+Statt eine VM zu starten, läuft der Kubernetes-Cluster direkt in Docker über `k3d`.
 
 ## Aktueller Umfang
 
-Der `k3d`-Pfad ist dafür gedacht, mehrere lokale CES-Instanzen über einen kleinen Manager zu verwalten. Für den Bootstrap wird das bestehende [`installEcosystem.sh`](../../image/scripts/dev/installEcosystem.sh) direkt gegen die jeweilige `kubeconfig` verwendet.
+Der `k3d`-Workflow ist bewusst klein gehalten. Mehrere lokale CES-Instanzen werden über genau eine CLI verwaltet:
 
-Im Unterschied zum Vagrant-Setup bildet dieser Pfad aktuell nicht nach:
+- `create`
+- `start`
+- `stop`
+- `list`
+- `delete`
 
-- das Basebox-Image
-- die Node-Konfiguration aus `nodeconfig/k3sConfig.json`
+Die CLI erstellt den lokalen `k3d`-Cluster, schreibt eine dedizierte Kubeconfig und bootstrapt anschließend das CES, indem sie das bestehende [`image/scripts/dev/installEcosystem.sh`](../../image/scripts/dev/installEcosystem.sh) aufruft.
+Die Hilfsskripte unter `image/scripts/dev/` bleiben damit die gemeinsame Installationsimplementierung und werden weiterhin auch von Vagrant verwendet.
 
-Der bisherige Proxy-Registry-Ansatz wird hier nicht mehr im Cluster selbst betrieben, sondern als lokaler Docker-basierter Registry-Stack außerhalb der Cluster.
 
 ## Voraussetzungen
 
@@ -36,105 +40,158 @@ Danach die Zugangsdaten in `k3d/config.env` eintragen.
 Wichtige Punkte:
 
 - Die Datei enthält gemeinsame Defaults für alle lokalen `k3d`-Ecosystems.
-- `k3d` startet standardmaessig als Single-Node-Cluster (`K3D_SERVER_COUNT=1`, `K3D_AGENT_COUNT=0`).
+- `k3d` verwendet standardmäßig einen Single-Node-Cluster.
 - Als Storage wird die in `k3s` enthaltene Default-StorageClass `local-path` verwendet.
-- Die cluster-interne CES-FQDN wird über ein beim Cluster-Create gemountetes `coredns-custom`-Manifest auf `ces-loadbalancer.ecosystem.svc.cluster.local` umgeschrieben und bleibt dadurch auch nach `k3d stop/start` erhalten.
+- Jede Instanz bekommt:
+  - eine eigene Loopback-IP aus `127.0.0.0/24`
+  - einen eigenen Kubernetes-API-Port ab `6550`
+  - eine eigene Kubeconfig in `~/.kube/<fqdn>`
+- Die cluster-interne CES-FQDN wird über ein gemountetes CoreDNS-Manifest auf `ces-loadbalancer.ecosystem.svc.cluster.local` umgeschrieben.
 - Standardmäßig wird ein lokaler Registry-Stack mit zwei Endpunkten verwendet:
   - eine schreibbare Dev-Registry für `docker push` und `helm push`
   - eine Proxy-Registry als Pull-Through-Cache für `registry.cloudogu.com`
   - beide teilen sich dasselbe Storage-Verzeichnis
-- Das bestehende `.blueprint-override.yaml`-Verhalten funktioniert weiter, weil derselbe Blueprint-Mechanismus verwendet wird.
-- Wenn das CES bei einem erneuten Bootstrap aktualisiert werden soll, kann in `k3d/config.env` `FORCE_UPGRADE_ECOSYSTEM="true"` gesetzt werden.
+- `.blueprint-override.yaml` funktioniert weiter, weil derselbe Blueprint-Mechanismus verwendet wird.
+- Wenn das CES bei erneutem Bootstrap aktualisiert werden soll, kann in `k3d/config.env` `FORCE_UPGRADE_ECOSYSTEM="true"` gesetzt werden.
 
-Der Registry-Stack lässt sich auch separat verwalten:
+## Kommandos
+
+In das `k3d`-Verzeichnis wechseln:
 
 ```shell
-k3d/registry.sh start
-k3d/registry.sh status
+cd k3d
+```
+
+Verfügbare Kommandos anzeigen:
+
+```shell
+./ces-k3d --help
+```
+
+Der öffentliche Workflow besteht aus:
+
+```shell
+./ces-k3d create mein-ces
+./ces-k3d list
+./ces-k3d start mein-ces
+./ces-k3d stop mein-ces
+./ces-k3d delete mein-ces
 ```
 
 ## Neues Ecosystem erzeugen
 
-Der Manager erstellt den `k3d`-Cluster, legt eine dedizierte `kubeconfig` an und installiert anschließend das CES:
+Eine neue lokale CES-Instanz wird so erstellt:
 
 ```shell
-k3d/ecosystem.sh create mein-ces
+./ces-k3d create mein-ces
 ```
 
-Dabei werden automatisch vergeben:
+Dabei vergibt die CLI automatisch:
 
 - FQDN: `mein-ces.k3ces.localdomain`
 - Kubeconfig: `~/.kube/mein-ces.k3ces.localdomain`
 - Host-IP: nächste freie Loopback-IP aus `127.0.0.0/24`
 - Kubernetes-API-Port: nächster freier Port ab `6550`
-- Merge in die Standard-Kubeconfig: `~/.kube/config` ohne automatischen Context-Wechsel
-- Default-Namespace im Context: `ecosystem`
-- `/etc/hosts`-Eintrag per `sudo`, sofern `MANAGE_HOSTS_FILE="true"` gesetzt ist
-- lokaler Registry-Stack vor dem Cluster-Create gestartet, sofern `LOCAL_REGISTRY_ENABLED="true"` gesetzt ist
+- Default-Namespace im Kubeconfig-Context: `ecosystem`
 
-Welche IP für ein Ecosystem verwendet wird, zeigt:
+Nach erfolgreichem `create` gibt die CLI die wichtigsten Folgekommandos direkt mit aus, unter anderem:
 
-```shell
-k3d/ecosystem.sh list
+- die URL
+- `export KUBECONFIG=...`
+- `kubectl cluster-info`
+- das `/etc/hosts`-Kommando für die CES-FQDN
+- die lokalen Registry-Endpunkte
+
+Beispiel:
+
+```text
+Ecosystem 'dev2' is ready.
+
+URL:
+  https://dev2.k3ces.localdomain
+
+Dedicated kubeconfig:
+  /home/user/.kube/dev2.k3ces.localdomain
+
+Apply kubeconfig:
+  export KUBECONFIG=/home/user/.kube/dev2.k3ces.localdomain
+  kubectl cluster-info
+
+Add to /etc/hosts if needed:
+  sudo sh -c 'echo "127.0.0.3 dev2.k3ces.localdomain" >> /etc/hosts'
+
+Registry stack:
+  push:    localhost:5001
+  consume: k3d-registry-proxy.localhost:5000
 ```
 
 ## Ecosystems verwalten
 
+Alle verwalteten Instanzen auflisten:
+
 ```shell
-k3d/ecosystem.sh list
-k3d/ecosystem.sh open mein-ces
-k3d/ecosystem.sh stop mein-ces
-k3d/ecosystem.sh start mein-ces
-k3d/ecosystem.sh delete mein-ces
+./ces-k3d list
 ```
 
-`start` und `stop` verwenden direkt die entsprechenden `k3d`-Kommandos. `delete` entfernt zusätzlich die verwaltete `kubeconfig` und die generierte Instanz-Konfiguration unter `k3d/environments/`.
+Die Status-Spalte zeigt den tatsächlichen Clusterzustand:
 
-`open` öffnet `https://<fqdn>` im Standard-Browser des Hosts.
+- `running`
+- `stopped`
+- `missing`
+- `unknown`
 
-Standardmäßig werden dabei außerdem:
+`start` und `stop` verwenden die passenden `k3d`-Clusterkommandos. Bei `start` wird zusätzlich die dedizierte Kubeconfig aktualisiert:
 
-- der Context in `~/.kube/config` eingetragen
-- der zugehörige `/etc/hosts`-Eintrag aktualisiert oder entfernt
-- die lokale Proxy-Registry bei `create` und `start` automatisch gestartet
+```shell
+./ces-k3d stop mein-ces
+./ces-k3d start mein-ces
+```
 
-Dieses Verhalten kann über `k3d/config.env` gesteuert werden:
+`delete` entfernt:
 
-- `MERGE_DEFAULT_KUBECONFIG`
-- `SWITCH_DEFAULT_KUBECONFIG_CONTEXT`
-- `DEFAULT_KUBECONFIG_PATH`
-- `MANAGE_HOSTS_FILE`
-- `LOCAL_REGISTRY_ENABLED`
-- `LOCAL_REGISTRY_STORAGE_PATH`
-- `LOCAL_REGISTRY_DEV_PORT`
-- `LOCAL_REGISTRY_PROXY_PORT`
-- `LOCAL_REGISTRY_CLUSTER_PORT`
+- den `k3d`-Cluster
+- die dedizierte Kubeconfig
+- die generierten Instanzdateien unter `k3d/environments/`
+
+```shell
+./ces-k3d delete mein-ces
+```
 
 ## Registry-Workflow für lokale Entwicklung
 
-Der Registry-Stack liefert zwei verschiedene Endpunkte:
+Der Registry-Stack liefert bewusst zwei verschiedene Endpunkte:
 
 - Push vom Host: `localhost:<LOCAL_REGISTRY_DEV_PORT>`
 - Konsum im Cluster: `k3d-<LOCAL_REGISTRY_PROXY_NAME>:<LOCAL_REGISTRY_CLUSTER_PORT>`
 
-Das ist bewusst getrennt:
+Das ist absichtlich getrennt:
 
 - lokale Images und OCI-Charts werden in die Dev-Registry gepusht
-- CES-Komponenten und lokale Dogu-/Chart-Tests sollen die Proxy-Registry verwenden
+- CES-Komponenten und lokale Dogu-/Chart-Tests konsumieren über die Proxy-Registry
 - wenn ein Artefakt dort nicht lokal vorhanden ist, zieht die Proxy-Registry es von `registry.cloudogu.com`
 
-Damit lokale Artefakte Vorrang vor dem Upstream haben, sollten sie unter derselben Repository-Struktur, aber mit eigenen Dev-Tags/-Versionen in die Dev-Registry gepusht werden.
+Für den normalen Workflow sind keine `/etc/hosts`-Einträge für die Registries nötig:
 
-## Manuelle Low-Level-Skripte
+- auf dem Host wird über `localhost` zugegriffen
+- im Cluster über den `k3d-...`-Containernamen
 
-Die Manager-Skripte verwenden intern diese beiden Hilfsskripte:
+## Zertifikate
 
-- `k3d/cluster.sh` für Cluster-Erzeugung und `kubeconfig`
-- `k3d/install.sh` für den CES-Bootstrap auf einem bestehenden Cluster
-- `k3d/registry.sh` für die lokale Dev-/Proxy-Registry
+Der `k3d`-Workflow installiert keine Vagrant-Zertifikate aus `.vagrant/certs/`.
 
-Falls ein Bootstrap erneut für ein bestehendes Ecosystem ausgeführt werden soll, geht das direkt über:
+Das ist beabsichtigt:
 
-```shell
-k3d/install.sh k3d/environments/mein-ces.env
-```
+- das Vagrant-Zertifikat ist für `k3ces.localdomain` ausgestellt
+- lokale `k3d`-Instanzen verwenden instanzspezifische FQDNs wie `dev2.k3ces.localdomain`
+- eine Wiederverwendung des Vagrant-Zertifikats würde daher zu SAN-Mismatches führen
+
+Für `k3d` wird der gemeinsame Installer deshalb so ausgeführt, dass das Vagrant-Zertifikat nicht injiziert wird. 
+Dadurch kann der zum Instanz-FQDN passende self-signed Zertifikatsfluss verwendet werden.
+
+## Interne Hinweise zur Implementierung
+
+Das Wrapper-Script ist:
+
+- `k3d/ces-k3d`
+
+Er baut das Go-Binary automatisch neu, sobald sich Go-Quellen unter `k3d/cmd` oder `k3d/internal` geändert haben.

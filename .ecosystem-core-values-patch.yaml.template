@@ -1,0 +1,5 @@
+# copy this to .ecosystem-core-values-patch.yaml to patch the default values
+backup:
+  enabled: true
+monitoring:
+  enabled: true

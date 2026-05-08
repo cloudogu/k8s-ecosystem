@@ -1,0 +1,4 @@
+# copy this to longhorn-values-patch.yaml to patch the default values
+defaultBackupStore:
+  backupTarget: s3://longhorn@dummyregion/
+  backupTargetCredentialSecret: longhorn-backup-target

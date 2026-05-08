@@ -120,6 +120,30 @@ If this is the case, no further steps are taken.
 This behavior can be disabled via the `forceUpgradeEcosystem` configuration in the `.vagrant.rb` file.
 Then the Helm release `ecosystem-core` and the blueprint will be updated with every `vagrant up`.
 
+#### Patch Ecosystem-Core values
+
+To customize the Ecosystem-Core configuration, a `.ecosystem-core-values-patch.yaml` file can be placed in the root directory.
+If this file exists, it is merged with the default values; overlapping entries are overwritten.
+
+Procedure:
+1. Copy the template:
+   `cp .ecosystem-core-values-patch.yaml.template .ecosystem-core-values-patch.yaml`
+2. Customize the content (e.g., enable backup & monitoring).
+3. Recreate the local cluster with `vagrant destroy -f && vagrant up`.
+   The file is automatically merged into the default values and applied.
+
+#### Patch Longhorn values
+
+To customize the Longhorn configuration, a `.longhorn-values-patch.yaml` file can be placed in the root directory.
+If this file exists, it is merged with the default values; overlapping entries are overwritten.
+
+Procedure:
+1. Copy the template:
+   `cp .longhorn-values-patch.yaml.template .longhorn-values-patch.yaml`
+2. Customize the content (e.g., configure a backup bucket).
+3. Recreate the local cluster with `vagrant destroy -f && vagrant up`.
+   The file is automatically merged into the default values and applied.
+
 #### Blueprint override
 
 To install additional Dogus or special configurations, a file named `.blueprint-override.yaml` can be stored in the root directory.

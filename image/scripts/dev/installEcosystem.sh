@@ -91,7 +91,15 @@ applyResources() {
 
   LONGHORN_VALUES_TEMPLATE=image/scripts/dev/longhorn-values.yaml.tpl
   LONGHORN_VALUES_YAML=image/scripts/dev/.longhorn-values.yaml
-  cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
+  LONGHORN_VALUES_PATCH_YAML=.longhorn-values-patch.yaml
+  # If patch exists, use this
+  if [ -f "$LONGHORN_VALUES_PATCH_YAML" ]; then
+    # override values with patch
+    yq eval-all '. as $item ireduce ({}; . * $item)' ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_PATCH_YAML} \
+      > ${LONGHORN_VALUES_YAML}
+  else
+    cp ${LONGHORN_VALUES_TEMPLATE} ${LONGHORN_VALUES_YAML}
+  fi
   sed --in-place "s|DEFAULTCLASSREPLICACOUNT|${default_class_replica_count}|g" ${LONGHORN_VALUES_YAML}
 
   helm upgrade -i longhorn longhorn/longhorn \
@@ -118,7 +126,15 @@ applyResources() {
   # Install ecosystem-core
   ADDITIONAL_VALUES_TEMPLATE=image/scripts/dev/additionalValues.yaml.tpl
   ADDITIONAL_VALUES_YAML=image/scripts/dev/.additionalValues.yaml
-  cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
+  ECOSYSTEM_CORE_VALUES_PATCH_YAML=.ecosystem-core-values-patch.yaml
+  # If patch exists, use this
+  if [ -f "$ECOSYSTEM_CORE_VALUES_PATCH_YAML" ]; then
+    # override values with patch
+    yq eval-all '. as $item ireduce ({}; . * $item)' ${ADDITIONAL_VALUES_TEMPLATE} ${ECOSYSTEM_CORE_VALUES_PATCH_YAML} \
+      > ${ADDITIONAL_VALUES_YAML}
+  else
+    cp ${ADDITIONAL_VALUES_TEMPLATE} ${ADDITIONAL_VALUES_YAML}
+  fi
   helm upgrade -i ecosystem-core "${helm_registry_schema}://registry.cloudogu.com/${helm_repository_namespace}/ecosystem-core" \
     --values ${ADDITIONAL_VALUES_YAML} \
     --namespace="${CES_NAMESPACE}" \

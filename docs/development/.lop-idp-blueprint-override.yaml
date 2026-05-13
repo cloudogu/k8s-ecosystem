@@ -19,7 +19,7 @@ spec:
           value: "k3ces.localdomain"
         # should be set to "external" for mk-cert
         - key: "certificate/type"
-          value: "external"
+          value: "selfsigned"
         - key: "password-policy/min_length"
           value: "1"
         - key: "password-policy/must_contain_capital_letter"

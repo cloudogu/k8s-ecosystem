@@ -120,6 +120,30 @@ Wenn das der Fall ist, werden keine weiteren Schritte ausgeführt.
 Über die Konfiguration `forceUpgradeEcosystem` in der `.vagrant.rb`-Datei, kann dieses Verhalten deaktiviert werden.
 Dann wird das Helm-Release `ecosystem-core` und das Blueprint bei jedem `vagrant up` aktualisiert.
 
+#### Ecosystem-Core-Values patchen
+
+Um Ecosystem-Core spezieller zu konfigurieren, kann eine Datei `.ecosystem-core-values-patch.yaml` im Root-Verzeichnis abgelegt werden.
+Ist diese Datei vorhanden, wird sie mit den Default-Values gemergt, wobei sich überschneidende Einträge überschrieben werden.
+
+Vorgehen:
+1. Template kopieren:
+   `cp .ecosystem-core-values-patch.yaml.template .ecosystem-core-values-patch.yaml`
+2. Inhalte anpassen (z. B. Backup & Monitoring aktivieren).
+3. Lokales Cluster neu erstellen mit `vagrant destroy -f && vagrant up`.
+   Die Datei wird automatisch in die Default-Values gemergt und angewendet.
+
+#### Longhorn-Values patchen
+
+Um Longhorn spezieller zu konfigurieren, kann eine Datei `.longhorn-values-patch.yaml` im Root-Verzeichnis abgelegt werden.
+Ist diese Datei vorhanden, wird sie mit den Default-Values gemergt, wobei sich überschneidende Einträge überschrieben werden.
+
+Vorgehen:
+1. Template kopieren:
+   `cp .longhorn-values-patch.yaml.template .longhorn-values-patch.yaml`
+2. Inhalte anpassen (z. B. Backup-Bucket konfigurieren).
+3. Lokales Cluster neu erstellen mit `vagrant destroy -f && vagrant up`.
+   Die Datei wird automatisch in die Default-Values gemergt und angewendet.
+
 #### Blueprint-Override
 
 Um weitere Dogus, oder spezielle Config zu installieren kann eine Datei `.blueprint-override.yaml` im Root-Verzeichnis abgelegt werden. 

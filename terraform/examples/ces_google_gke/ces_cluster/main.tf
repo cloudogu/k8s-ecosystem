@@ -3,7 +3,7 @@ locals {
   gke_module_token = module.google_gke.access_token
   gke_module_ca_certificate = base64decode(module.google_gke.ca_certificate)
 
-  kubernetes_version = "1.31"
+  kubernetes_version = "1.33"
   node_count         = 3
 
   helm_registry_schema       = "oci"

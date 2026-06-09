@@ -1,0 +1,13 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: telepresence-netpol
+spec:
+  podSelector:
+    matchLabels:
+      app: traffic-manager
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              telepresence.io/workloadEnabled: "true"

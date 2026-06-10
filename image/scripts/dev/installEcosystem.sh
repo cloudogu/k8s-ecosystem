@@ -142,7 +142,8 @@ applyResources() {
   helm upgrade -i traffic-manager "oci://ghcr.io/telepresenceio/telepresence-oss" \
     --namespace="${CES_NAMESPACE}" \
     --set routeController.enabled=true \
-    --set hostNetwork=true
+    --set hostNetwork=true \
+    --set agent.securityContext.runAsUser=1000
   kubectl apply -f telepresence-netpol.yaml
 
   wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900

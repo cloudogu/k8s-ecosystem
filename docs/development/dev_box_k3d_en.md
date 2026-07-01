@@ -217,7 +217,7 @@ At the same time, it may not be possible to bypass it reliably via Kubernetes an
 
 Workarounds:
 
-- If `slapd` is no longer needed, remove it permanently or at least disable the service, for example with `sudo systemctl disable --now slapd`.
+- If `slapd` is no longer needed, remove it permanently.
 - If `slapd` is still required, temporarily unload the AppArmor profile on the host before starting the local `k3d` environment:
 
 ```shell

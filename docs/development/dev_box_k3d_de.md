@@ -220,7 +220,7 @@ Gleichzeitig lässt es sich dort nicht zuverlässig über Kubernetes-Annotatione
 
 Workarounds:
 
-- Wenn `slapd` nicht mehr gebraucht wird, den Dienst dauerhaft entfernen oder mindestens deaktivieren, zum Beispiel mit `sudo systemctl disable --now slapd`.
+- Wenn `slapd` nicht mehr gebraucht wird, den Dienst dauerhaft entfernen.
 - Wenn `slapd` weiterhin benötigt wird, vor dem Start der lokalen `k3d`-Umgebung auf dem Host das AppArmor-Profil temporär entladen:
 
 ```shell

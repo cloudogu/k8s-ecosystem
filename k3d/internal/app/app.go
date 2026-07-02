@@ -16,6 +16,7 @@ type App struct {
 	cluster   *clusterOps
 	installer *installerOps
 	registry  *registryOps
+	connect   *connectOps
 }
 
 func New() (*App, error) {
@@ -37,8 +38,12 @@ func New() (*App, error) {
 		runner: baseRunner,
 		envs:   application.envs,
 	}
+	application.connect = &connectOps{runner: baseRunner, envs: application.envs}
 	return application, nil
 }
+
+func (a *App) Connect(name string) error { return a.connect.Connect(name) }
+func (a *App) Disconnect() error         { return a.connect.Disconnect() }
 
 func (a *App) List() error {
 	instances, err := a.envs.LoadInstances()
@@ -149,7 +154,11 @@ func (a *App) Start(name string) error {
 		return err
 	}
 
-	return a.cluster.writeKubeconfig(name, instance.KubeconfigPath)
+	if err := a.cluster.writeKubeconfig(name, instance.KubeconfigPath); err != nil {
+		return err
+	}
+
+	return a.Connect(name)
 }
 
 func (a *App) Stop(name string) error {
@@ -165,6 +174,13 @@ func (a *App) Delete(name string) error {
 			return a.runner.Run("k3d", "cluster", "delete", name)
 		}
 		return err
+	}
+
+	currentContext, _ := commandOutput(a.runner, "kubectl", "config", "current-context")
+	if strings.TrimSpace(currentContext) == "k3d-"+name {
+		if err := a.Disconnect(); err != nil {
+			return err
+		}
 	}
 
 	clusterExists, err := a.cluster.exists(name)

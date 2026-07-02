@@ -3,11 +3,13 @@ package app
 import "github.com/alecthomas/kong"
 
 type CLI struct {
-	List   ListCmd   `cmd:"" help:"List managed local k3d ecosystems."`
-	Create CreateCmd `cmd:"" help:"Create a new ecosystem with registries, cluster and LOP installation."`
-	Start  StartCmd  `cmd:"" help:"Start an existing ecosystem and refresh its dedicated kubeconfig."`
-	Stop   StopCmd   `cmd:"" help:"Stop an existing ecosystem cluster."`
-	Delete DeleteCmd `cmd:"" help:"Delete an ecosystem cluster and its generated local files."`
+	List       ListCmd       `cmd:"" help:"List managed local k3d ecosystems."`
+	Create     CreateCmd     `cmd:"" help:"Create a new ecosystem with registries, cluster and LOP installation."`
+	Start      StartCmd      `cmd:"" help:"Start an existing ecosystem and refresh its dedicated kubeconfig."`
+	Stop       StopCmd       `cmd:"" help:"Stop an existing ecosystem cluster."`
+	Delete     DeleteCmd     `cmd:"" help:"Delete an ecosystem cluster and its generated local files."`
+	Connect    ConnectCmd    `cmd:"" help:"Connect to an ecosystem by merging its kubeconfig and switching context. Without a name, shows the current connection."`
+	Disconnect DisconnectCmd `cmd:"" help:"Remove the active k3d context from ~/.kube/config and unset the current context."`
 }
 
 type ListCmd struct{}
@@ -27,6 +29,12 @@ type StopCmd struct {
 type DeleteCmd struct {
 	Name string `arg:"" name:"name" help:"Existing ecosystem name, for example 'dev1'."`
 }
+
+type ConnectCmd struct {
+	Name string `arg:"" name:"name" optional:"" help:"Existing ecosystem name to connect to, for example 'dev1'. If omitted, shows the current connection."`
+}
+
+type DisconnectCmd struct{}
 
 func Parse(args []string) (*App, error) {
 	application, err := New()
@@ -67,8 +75,10 @@ Examples:
 	return application, nil
 }
 
-func (c *ListCmd) Run(application *App) error   { return application.List() }
-func (c *CreateCmd) Run(application *App) error { return application.Create(c.Name) }
-func (c *StartCmd) Run(application *App) error  { return application.Start(c.Name) }
-func (c *StopCmd) Run(application *App) error   { return application.Stop(c.Name) }
-func (c *DeleteCmd) Run(application *App) error { return application.Delete(c.Name) }
+func (c *ListCmd) Run(application *App) error       { return application.List() }
+func (c *CreateCmd) Run(application *App) error     { return application.Create(c.Name) }
+func (c *StartCmd) Run(application *App) error      { return application.Start(c.Name) }
+func (c *StopCmd) Run(application *App) error       { return application.Stop(c.Name) }
+func (c *DeleteCmd) Run(application *App) error     { return application.Delete(c.Name) }
+func (c *ConnectCmd) Run(application *App) error    { return application.Connect(c.Name) }
+func (c *DisconnectCmd) Run(application *App) error { return application.Disconnect() }

@@ -59,3 +59,13 @@ func (r runner) Output(name string, args ...string) ([]byte, error) {
 	}
 	return output, nil
 }
+
+func (r runner) OutputWithEnv(env []string, name string, args ...string) ([]byte, error) {
+	cmd := exec.Command(name, args...)
+	cmd.Env = env
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("%s %v: %w", name, args, err)
+	}
+	return output, nil
+}

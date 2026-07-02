@@ -15,6 +15,14 @@ func commandOutput(runner runner, name string, args ...string) (string, error) {
 	return string(out), nil
 }
 
+func commandOutputWithEnv(runner runner, env []string, name string, args ...string) (string, error) {
+	out, err := runner.OutputWithEnv(env, name, args...)
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
+}
+
 func urlFor(fqdn string) string {
 	if fqdn == "" {
 		return ""

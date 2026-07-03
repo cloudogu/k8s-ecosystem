@@ -144,7 +144,7 @@ applyResources() {
     --set routeController.enabled=true \
     --set hostNetwork=true \
     --set agent.securityContext.runAsUser=1000
-  kubectl apply -f telepresence-netpol.yaml
+  kubectl apply -f image/scripts/dev/telepresence-netpol.yaml -n ecosystem
 
   wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900
 

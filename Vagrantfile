@@ -74,6 +74,7 @@ Vagrant.configure("2") do |config|
       vb.memory = vm_memory
       vb.cpus = vm_cpus
       vb.name = "k3s-main-" + Time.now.to_f.to_s
+      vb.customize ["modifyvm", :id,  "--natdnshostresolver1", "on"]
     end
 
     main.trigger.before :provision do |trigger|
@@ -160,6 +161,7 @@ Vagrant.configure("2") do |config|
         vb.memory = vm_memory
         vb.cpus = vm_cpus
         vb.name = "k3s-worker-#{i}-" + Time.now.to_f.to_s
+        vb.customize ["modifyvm", :id,  "--natdnshostresolver1", "on"]
       end
 
       worker.vm.provision "Wait for k3s-conf service to finish",

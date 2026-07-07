@@ -7,8 +7,20 @@ BLUEPRINT_YAML_TEMPLATE="image/scripts/dev/blueprint.yaml.tpl"
 BLUEPRINT_YAML="image/scripts/dev/.blueprint.yaml"
 BLUEPRINT_OVERRIDE_YAML=".blueprint-override.yaml"
 
+# Check if the mikefarah or kislyuk version of yq is installed
+yq_eval_yaml() {
+  local expr="$1"
+  local file="$2"
+
+  if yq eval '.' "$file" >/dev/null 2>&1; then
+    yq eval "$expr" "$file"
+  else
+    yq -y "$expr" "$file"
+  fi
+}
+
 # Build and apply a .blueprint.yaml with latest dogu versions based on blueprint.yaml.tpl
-# Requires: jq, yq (v4+), curl
+# Requires: jq, yq (mikefarah/yq v4+ or kislyuk/yq v3), curl
 # Args: <dogu_registry_username> <dogu_registry_password> <fqdn>
 patch_and_apply_blueprint_with_latest_versions() {
   local username="$1"
@@ -64,7 +76,7 @@ patch_and_apply_blueprint_with_latest_versions() {
 
   # If we have updates, apply them; otherwise copy template
   if [ -n "$yq_expr" ]; then
-    yq eval "$yq_expr" "$BLUEPRINT_YAML_TEMPLATE" > "$BLUEPRINT_YAML"
+    yq_eval_yaml "$yq_expr" "$BLUEPRINT_YAML_TEMPLATE" > "$BLUEPRINT_YAML"
   else
     cp "$BLUEPRINT_YAML_TEMPLATE" "$BLUEPRINT_YAML"
   fi

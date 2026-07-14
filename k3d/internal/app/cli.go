@@ -8,7 +8,7 @@ type CLI struct {
 	Start      StartCmd      `cmd:"" help:"Start an existing ecosystem and refresh its dedicated kubeconfig."`
 	Stop       StopCmd       `cmd:"" help:"Stop an existing ecosystem cluster."`
 	Delete     DeleteCmd     `cmd:"" help:"Delete an ecosystem cluster and its generated local files."`
-	Connect    ConnectCmd    `cmd:"" help:"Connect to an ecosystem by merging its kubeconfig and switching context. Without a name, shows the current connection."`
+	Connect    ConnectCmd    `cmd:"" help:"Connect to a different ecosystem created by k3d-ces. Without a name, show the current connection."`
 	Disconnect DisconnectCmd `cmd:"" help:"Remove the active k3d context from ~/.kube/config and unset the current context."`
 }
 

@@ -35,7 +35,7 @@ type clusterListEntry struct {
 func (c *clusterOps) exists(name string) (bool, error) {
 	out, err := c.runner.Output("k3d", "cluster", "list", name, "-o", "json")
 	if err != nil {
-		if strings.Contains(err.Error(), "exit status 1") {
+		if isExitCode(err, 1) {
 			return false, nil
 		}
 		return false, err
@@ -51,7 +51,7 @@ func (c *clusterOps) exists(name string) (bool, error) {
 func (c *clusterOps) status(name string) (string, error) {
 	out, err := c.runner.Output("k3d", "cluster", "list", name, "-o", "json")
 	if err != nil {
-		if strings.Contains(err.Error(), "exit status 1") {
+		if isExitCode(err, 1) {
 			return "missing", nil
 		}
 		return "", err

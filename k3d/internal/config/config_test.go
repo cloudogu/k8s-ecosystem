@@ -83,19 +83,32 @@ func TestParseIntDefault(t *testing.T) {
 	}
 }
 
-func TestDecodeIfBase64(t *testing.T) {
+func TestDecodeBase64(t *testing.T) {
 	t.Run("decodes valid base64 strings", func(t *testing.T) {
 		encoded := base64.StdEncoding.EncodeToString([]byte("secret"))
-		got := decodeIfBase64(encoded)
+		got, err := decodeBase64(encoded)
+		if err != nil {
+			t.Fatalf("decodeBase64() error = %v", err)
+		}
 		if got != "secret" {
-			t.Fatalf("decodeIfBase64() = %q, want %q", got, "secret")
+			t.Fatalf("decodeBase64() = %q, want %q", got, "secret")
 		}
 	})
 
-	t.Run("returns original value for invalid base64", func(t *testing.T) {
-		got := decodeIfBase64("not-base64")
-		if got != "not-base64" {
-			t.Fatalf("decodeIfBase64() = %q, want original", got)
+	t.Run("returns empty string for empty value", func(t *testing.T) {
+		got, err := decodeBase64("")
+		if err != nil {
+			t.Fatalf("decodeBase64() error = %v", err)
+		}
+		if got != "" {
+			t.Fatalf("decodeBase64() = %q, want empty string", got)
+		}
+	})
+
+	t.Run("errors on invalid base64", func(t *testing.T) {
+		_, err := decodeBase64("not-base64!!!")
+		if err == nil {
+			t.Fatal("decodeBase64() expected error for invalid base64")
 		}
 	})
 }
@@ -127,9 +140,9 @@ func TestParseEnvFile(t *testing.T) {
 			t.Fatalf("os.WriteFile() error = %v", err)
 		}
 
-		values, err := parseEnvFile(path)
+		values, err := ParseEnvFile(path)
 		if err != nil {
-			t.Fatalf("parseEnvFile() error = %v", err)
+			t.Fatalf("ParseEnvFile() error = %v", err)
 		}
 		if values["KUBECONFIG_DIRECTORY"] != filepath.Join(tempDir, ".kube") {
 			t.Fatalf("KUBECONFIG_DIRECTORY = %q", values["KUBECONFIG_DIRECTORY"])

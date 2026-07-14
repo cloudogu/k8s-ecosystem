@@ -1,13 +1,18 @@
 package app
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
 )
+
+// ErrInstanceNotFound indicates that no environment file exists for the requested instance name.
+var ErrInstanceNotFound = errors.New("instance not found")
 
 type instanceFile struct {
 	Name           string
@@ -17,40 +22,7 @@ type instanceFile struct {
 	HostIP         string
 }
 
-func parseEnvFile(path string) (map[string]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	values := map[string]string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-
-		line = strings.TrimPrefix(line, "export ")
-		key, value, ok := strings.Cut(line, "=")
-		if !ok {
-			continue
-		}
-
-		key = strings.TrimSpace(key)
-		value = strings.TrimSpace(value)
-		value = strings.Trim(value, `"'`)
-		value = expandEnvValue(value)
-		values[key] = value
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return values, nil
-}
+var parseEnvFile = config.ParseEnvFile
 
 func loadInstanceFiles(environmentDir string) ([]instanceFile, error) {
 	matches, err := filepath.Glob(filepath.Join(environmentDir, "*.env"))
@@ -84,7 +56,7 @@ func findInstanceFile(environmentDir, name string) (instanceFile, error) {
 	values, err := parseEnvFile(instance)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return instanceFile{}, fmt.Errorf("ecosystem %q not found", name)
+			return instanceFile{}, fmt.Errorf("ecosystem %q not found: %w", name, ErrInstanceNotFound)
 		}
 		return instanceFile{}, err
 	}
@@ -121,14 +93,4 @@ data:
   ces-fqdn.override: |
     rewrite name exact %s ces-loadbalancer.ecosystem.svc.cluster.local
 `, fqdn)
-}
-
-func expandEnvValue(value string) string {
-	home, _ := os.UserHomeDir()
-	return os.Expand(value, func(key string) string {
-		if key == "HOME" && home != "" {
-			return home
-		}
-		return os.Getenv(key)
-	})
 }

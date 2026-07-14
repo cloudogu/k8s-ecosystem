@@ -24,6 +24,8 @@ terraform.tfvars
 /k3d/environments/*.env
 /k3d/environments/*.yaml
 !/k3d/environments/.gitkeep
+/.kube/
+/k3d/.kube/
 
 # generated values file for longhorn
 .longhorn-values.yaml

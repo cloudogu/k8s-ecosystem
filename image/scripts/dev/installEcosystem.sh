@@ -139,6 +139,13 @@ applyResources() {
     --namespace="${CES_NAMESPACE}" \
     --timeout=20m
 
+  helm upgrade -i traffic-manager "oci://ghcr.io/telepresenceio/telepresence-oss" \
+    --namespace="${CES_NAMESPACE}" \
+    --set routeController.enabled=true \
+    --set hostNetwork=true \
+    --set agent.securityContext.runAsUser=1000
+  kubectl apply -f image/scripts/dev/telepresence-netpol.yaml -n ecosystem
+
   wait_for_component_healthy "k8s-dogu-operator" "ecosystem" 900
 
   # Apply blueprint with latest dogu versions

@@ -1,0 +1,26 @@
+# example to setup with lop-idp and dogu V3 features
+skipPreconditionValidation: false
+components:
+  k8s-service-discovery:
+    valuesObject:
+      exposition:
+        exposePorts: true
+        discoverServices: true
+        discoverExpositionCR: true
+  lop-idp:
+    valuesObject:
+      ldap:
+        secrets:
+          initialAdminPasswordSecretRef:
+            create: false
+            name: initial-admin-password
+            passwordKey: admin-password
+      cas:
+        configuration:
+          normal:
+            allow_local_urls: "true"
+use-lop-idp: true
+defaultConfig:
+  env:
+    initialDomain: "k3ces.localdomain"
+    initialFQDN: "k3ces.localdomain"

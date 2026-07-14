@@ -33,7 +33,11 @@ terraform.tfvars
 .additionalValues.yaml
 # generated blueprint file
 .blueprint.yaml
+
+# override and patch files
 .blueprint-override.yaml
+.longhorn-values-patch.yaml
+.ecosystem-core-values-patch.yaml
 
 **/gcp_sa.json
 **/.terraform

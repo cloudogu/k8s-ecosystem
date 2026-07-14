@@ -203,3 +203,26 @@ The public wrapper is:
 - `k3d/ces-k3d`
 
 It rebuilds the Go binary automatically when Go sources below `k3d/cmd` or `k3d/internal` changed.
+
+## Troubleshooting: Host LDAP, `slapd`, and AppArmor
+
+If the host was prepared for Harbor user creation in the past, `slapd` is often still installed locally.
+That daemon typically starts automatically on every boot.
+
+In the `k3d` setup this can cause an LDAP pod to fail during startup with `permission denied`, for example when the startup script runs `slapadd`.
+
+In this case, the cause is a host AppArmor profile for `slapd` at `/etc/apparmor.d/usr.sbin.slapd`.
+In nested `k3d` setups, that host profile can affect the container.
+At the same time, it may not be possible to bypass it reliably via Kubernetes annotations or an unconfined AppArmor profile entry in the pod.
+
+Workarounds:
+
+- If `slapd` is no longer needed, remove it permanently.
+- If `slapd` is still required, temporarily unload the AppArmor profile on the host before starting the local `k3d` environment:
+
+```shell
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.slapd
+```
+
+Then restart the `k3d` cluster or the affected LDAP pod.
+After a host reboot or after AppArmor profiles are loaded again, the issue may reappear.

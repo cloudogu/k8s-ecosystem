@@ -49,7 +49,7 @@ func (a *App) Disconnect() error         { return a.connect.Disconnect() }
 func (a *App) List() error {
 	instances, err := a.envs.LoadInstances()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load instances: %w", err)
 	}
 
 	rows := make([][4]string, 0, len(instances))
@@ -83,7 +83,7 @@ func (a *App) Create(name string) error {
 
 	exists, err := a.cluster.exists(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check cluster existence: %w", err)
 	}
 	if exists {
 		return fmt.Errorf("k3d cluster %q already exists", name)
@@ -91,7 +91,7 @@ func (a *App) Create(name string) error {
 
 	clusters, err := a.cluster.list()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list clusters: %w", err)
 	}
 
 	hostIP, err := nextFreeHostIP(clusters)
@@ -139,12 +139,15 @@ func (a *App) Create(name string) error {
 // provisionEcosystem creates the registry, cluster, and installed ecosystem for an already-written instance env file.
 func (a *App) provisionEcosystem(name, envFile string) error {
 	if err := a.registry.ensure(); err != nil {
-		return err
+		return fmt.Errorf("failed to ensure local registry: %w", err)
 	}
 	if err := a.cluster.createFromEnvFile(envFile); err != nil {
-		return err
+		return fmt.Errorf("failed to create k3d cluster: %w", err)
 	}
-	return a.installer.install(name)
+	if err := a.installer.install(name); err != nil {
+		return fmt.Errorf("failed to install ecosystem: %w", err)
+	}
+	return nil
 }
 
 // cleanupFailedCreate removes anything Create may have produced for name before it failed,
@@ -161,31 +164,31 @@ func (a *App) cleanupFailedCreate(name, envFile, corednsManifestPath, kubeconfig
 }
 
 func (a *App) Start(name string) error {
-	if err := a.registry.ensure(); err != nil {
-		return err
-	}
-	if err := a.runner.Run("k3d", "cluster", "start", name); err != nil {
-		return err
-	}
-
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if errors.Is(err, ErrInstanceNotFound) {
-			fmt.Fprintf(os.Stdout, "Cluster %q started but is not managed by ces-k3d — no kubeconfig written.\n", name)
-			return nil
-		}
-		return err
+		return fmt.Errorf("failed to find ecosystem: %w", err)
+	}
+
+	if err := a.registry.ensure(); err != nil {
+		return fmt.Errorf("failed to ensure local registry: %w", err)
+	}
+	if err := a.runner.Run("k3d", "cluster", "start", name); err != nil {
+		return fmt.Errorf("failed to start k3d cluster: %w", err)
 	}
 
 	if err := a.cluster.writeKubeconfig(name, instance.KubeconfigPath); err != nil {
-		return err
+		return fmt.Errorf("failed to write kubeconfig: %w", err)
 	}
 
 	return a.Connect(name)
 }
 
 func (a *App) Stop(name string) error {
-	return a.runner.Run("k3d", "cluster", "stop", name)
+	if err := a.runner.Run("k3d", "cluster", "stop", name); err != nil {
+		return fmt.Errorf("failed to stop cluster: %w", err)
+	}
+
+	return nil
 }
 
 func (a *App) Delete(name string) error {
@@ -208,11 +211,11 @@ func (a *App) Delete(name string) error {
 
 	clusterExists, err := a.cluster.exists(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check cluster existence: %w", err)
 	}
 	if clusterExists {
 		if err := a.runner.Run("k3d", "cluster", "delete", name); err != nil {
-			return err
+			return fmt.Errorf("failed to delete k3d cluster: %w", err)
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -61,6 +62,11 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("decode registry proxy password (must be base64-encoded, see config.env.template): %w", err)
 	}
 
+	localRegistryEnabled, err := strconv.ParseBool(FirstNonEmpty(values["LOCAL_REGISTRY_ENABLED"], "true"))
+	if err != nil {
+		return Config{}, fmt.Errorf("failed to parse LOCAL_REGISTRY_ENABLED: %w", err)
+	}
+
 	cfg := Config{
 		Paths: paths,
 		Global: Global{
@@ -68,7 +74,7 @@ func Load() (Config, error) {
 			KubeconfigDirectory:         FirstNonEmpty(values["KUBECONFIG_DIRECTORY"], filepath.Join(home, ".kube")),
 			APIStartPort:                parseIntDefault(FirstNonEmpty(os.Getenv("K3D_API_PORT_START"), values["K3D_API_PORT_START"]), 6550),
 			DefaultNamespace:            FirstNonEmpty(values["CES_NAMESPACE"], "ecosystem"),
-			LocalRegistryEnabled:        parseBoolDefault(values["LOCAL_REGISTRY_ENABLED"], true),
+			LocalRegistryEnabled:        localRegistryEnabled,
 			LocalRegistryStoragePath:    FirstNonEmpty(values["LOCAL_REGISTRY_STORAGE_PATH"], filepath.Join(home, ".local", "share", "k3d", "registries", "cloudogu")),
 			LocalRegistryDevName:        FirstNonEmpty(values["LOCAL_REGISTRY_DEV_NAME"], "registry-dev.localhost"),
 			LocalRegistryDevPort:        FirstNonEmpty(values["LOCAL_REGISTRY_DEV_PORT"], "5001"),
@@ -144,20 +150,6 @@ func FirstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
-}
-
-func parseBoolDefault(value string, fallback bool) bool {
-	if value == "" {
-		return fallback
-	}
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "1", "true", "yes", "on":
-		return true
-	case "0", "false", "no", "off":
-		return false
-	default:
-		return fallback
-	}
 }
 
 func parseIntDefault(value string, fallback int) int {

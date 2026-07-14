@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - a local `k3d` development workflow for creating and managing CES test environments with local k3d-clusters.
 
+## [v6.0.1] - 2026-06-02
+### Changed
+- [#142] activate Cilium NetworkPolicy in terraform module
+
 ## [v6.0.0] - 2026-04-13
 ### Changed
  - [#137] prepare modules for using with ecosystem-core v4

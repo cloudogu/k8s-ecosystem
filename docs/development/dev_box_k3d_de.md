@@ -10,9 +10,10 @@ Er kann nicht alle Szenarien abdecken, die mit der Vagrant-basierten `k3s`-Dev-B
 Aktuelle Einschränkungen gegenüber dem Vagrant-`k3s`-Cluster:
 
 - es wird nur ein einzelner Node verwendet
-- Storage basiert auf der lokalen Default-StorageClass von `k3s`
+- Storage basiert auf der lokalen Default-StorageClass `local-path` von `k3s` (node-lokaler Storage)
   - PVC-Vergrößerungen werden in diesem Setup nicht unterstützt
   - Backups mit Velero werden in diesem Setup nicht unterstützt
+  - storage-zentrische Workloads, insbesondere CES-Backup & -Restore, funktionieren mit node-lokalem Storage voraussichtlich nicht zuverlässig
 
 ## Aktueller Umfang
 
@@ -37,6 +38,9 @@ Die Hilfsskripte unter `image/scripts/dev/` bleiben damit die gemeinsame Install
 - `curl`
 - `jq`
 - `yq`
+
+> **Hinweis zu Versionen:** Verwende möglichst aktuelle Versionen der genannten Tools.
+> Insbesondere mit älteren `helm`-3.x-Versionen kam es zu Problemen beim Bootstrap; empfohlen wird eine aktuelle `helm`-4.x-Version.
 
 ## Einmalige Konfiguration
 
@@ -206,3 +210,26 @@ Das Wrapper-Script ist:
 - `k3d/ces-k3d`
 
 Er baut das Go-Binary automatisch neu, sobald sich Go-Quellen unter `k3d/cmd` oder `k3d/internal` geändert haben.
+
+## Troubleshooting: LDAP, `slapd` und AppArmor auf dem Host
+
+Wenn der Host vor längerer Zeit einmal für das Anlegen eines Harbor-Benutzers vorbereitet wurde, ist dort oft noch `slapd` installiert.
+Der Dienst startet dann typischerweise bei jedem Rechnerstart automatisch.
+
+Im `k3d`-Setup kann das dazu führen, dass ein LDAP-Pod schon beim Start mit `permission denied` fehlschlägt, zum Beispiel wenn das Startskript `slapadd` ausführt.
+
+Ursache ist in diesem Fall ein AppArmor-Profil auf dem Host für `slapd` unter `/etc/apparmor.d/usr.sbin.slapd`.
+Im verschachtelten `k3d`-Setup greift dieses Host-Profil bis in den Container hinein.
+Gleichzeitig lässt es sich dort nicht zuverlässig über Kubernetes-Annotationen oder einen unconfined-AppArmor-Profileintrag im Pod umgehen.
+
+Workarounds:
+
+- Wenn `slapd` nicht mehr gebraucht wird, den Dienst dauerhaft entfernen.
+- Wenn `slapd` weiterhin benötigt wird, vor dem Start der lokalen `k3d`-Umgebung auf dem Host das AppArmor-Profil temporär entladen:
+
+```shell
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.slapd
+```
+
+Danach den `k3d`-Cluster bzw. den betroffenen LDAP-Pod erneut starten.
+Nach einem Neustart des Hosts oder einem erneuten Laden der AppArmor-Profile kann das Problem wieder auftreten.

@@ -58,9 +58,9 @@ fi
 			input  string
 			status clusterStatus
 		}{
-			{name: "running", input: "present", status: "running"},
-			{name: "stopped", input: "stopped", status: "stopped"},
-			{name: "missing", input: "missing", status: "missing"},
+			{name: "running", input: "present", status: statusRunning},
+			{name: "stopped", input: "stopped", status: statusStopped},
+			{name: "missing", input: "missing", status: statusMissing},
 		}
 
 		for _, tt := range tests {

@@ -101,11 +101,19 @@ func nextFreeAPIPort(clusters []clusterListEntry, start int) (int, error) {
 	return 0, fmt.Errorf("no free API port found starting at %d", start)
 }
 
-func printEcosystemTable(w io.Writer, rows [][4]string) {
+// ecosystemListing is a single row of the `list` command output.
+type ecosystemListing struct {
+	Name           string
+	Status         clusterStatus
+	URL            string
+	KubeconfigPath string
+}
+
+func printEcosystemTable(w io.Writer, listings []ecosystemListing) {
 	tw := tabwriter.NewWriter(w, 0, 8, 2, ' ', 0)
 	fmt.Fprintln(tw, "NAME\tSTATUS\tURL\tKUBECONFIG")
-	for _, row := range rows {
-		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", row[0], row[1], row[2], row[3])
+	for _, listing := range listings {
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", listing.Name, listing.Status, listing.URL, listing.KubeconfigPath)
 	}
 	_ = tw.Flush()
 }

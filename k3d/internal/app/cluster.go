@@ -16,6 +16,16 @@ type clusterOps struct {
 	registry *registryOps
 }
 
+// clusterStatus is the lifecycle state of a k3d cluster as derived from `k3d cluster list`.
+type clusterStatus string
+
+const (
+	statusRunning clusterStatus = "running"
+	statusStopped clusterStatus = "stopped"
+	statusMissing clusterStatus = "missing"
+	statusUnknown clusterStatus = "unknown"
+)
+
 type clusterListEntry struct {
 	Name           string `json:"name"`
 	ServersRunning int    `json:"serversRunning"`
@@ -48,11 +58,11 @@ func (c *clusterOps) exists(name string) (bool, error) {
 	return len(rows) > 0, nil
 }
 
-func (c *clusterOps) status(name string) (string, error) {
+func (c *clusterOps) status(name string) (clusterStatus, error) {
 	out, err := c.runner.Output("k3d", "cluster", "list", name, "-o", "json")
 	if err != nil {
 		if isExitCode(err, 1) {
-			return "missing", nil
+			return statusMissing, nil
 		}
 		return "", err
 	}
@@ -62,12 +72,12 @@ func (c *clusterOps) status(name string) (string, error) {
 		return "", err
 	}
 	if len(rows) == 0 {
-		return "missing", nil
+		return statusMissing, nil
 	}
 	if rows[0].ServersRunning > 0 {
-		return "running", nil
+		return statusRunning, nil
 	}
-	return "stopped", nil
+	return statusStopped, nil
 }
 
 func (c *clusterOps) list() ([]clusterListEntry, error) {

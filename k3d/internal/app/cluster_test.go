@@ -56,7 +56,7 @@ fi
 		tests := []struct {
 			name   string
 			input  string
-			status string
+			status clusterStatus
 		}{
 			{name: "running", input: "present", status: "running"},
 			{name: "stopped", input: "stopped", status: "stopped"},

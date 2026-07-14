@@ -52,22 +52,22 @@ func (a *App) List() error {
 		return fmt.Errorf("failed to load instances: %w", err)
 	}
 
-	rows := make([][4]string, 0, len(instances))
+	listings := make([]ecosystemListing, 0, len(instances))
 	for _, instance := range instances {
 		status, err := a.cluster.status(instance.Name)
 		if err != nil {
-			status = "unknown"
+			status = statusUnknown
 		}
 
-		rows = append(rows, [4]string{
-			instance.Name,
-			status,
-			urlFor(instance.FQDN),
-			instance.KubeconfigPath,
+		listings = append(listings, ecosystemListing{
+			Name:           instance.Name,
+			Status:         status,
+			URL:            urlFor(instance.FQDN),
+			KubeconfigPath: instance.KubeconfigPath,
 		})
 	}
 
-	printEcosystemTable(os.Stdout, rows)
+	printEcosystemTable(os.Stdout, listings)
 	return nil
 }
 

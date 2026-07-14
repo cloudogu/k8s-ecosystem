@@ -1,10 +1,10 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
 )
@@ -43,25 +43,25 @@ func New() (*App, error) {
 func (a *App) List() error {
 	instances, err := a.envs.LoadInstances()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load instances: %w", err)
 	}
 
-	rows := make([][4]string, 0, len(instances))
+	listings := make([]ecosystemListing, 0, len(instances))
 	for _, instance := range instances {
 		status, err := a.cluster.status(instance.Name)
 		if err != nil {
-			status = "unknown"
+			status = statusUnknown
 		}
 
-		rows = append(rows, [4]string{
-			instance.Name,
-			status,
-			urlFor(instance.FQDN),
-			instance.KubeconfigPath,
+		listings = append(listings, ecosystemListing{
+			Name:           instance.Name,
+			Status:         status,
+			URL:            urlFor(instance.FQDN),
+			KubeconfigPath: instance.KubeconfigPath,
 		})
 	}
 
-	printEcosystemTable(os.Stdout, rows)
+	printEcosystemTable(os.Stdout, listings)
 	return nil
 }
 
@@ -77,7 +77,7 @@ func (a *App) Create(name string) error {
 
 	exists, err := a.cluster.exists(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check cluster existence: %w", err)
 	}
 	if exists {
 		return fmt.Errorf("k3d cluster %q already exists", name)
@@ -85,7 +85,7 @@ func (a *App) Create(name string) error {
 
 	clusters, err := a.cluster.list()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list clusters: %w", err)
 	}
 
 	hostIP, err := nextFreeHostIP(clusters)
@@ -108,13 +108,13 @@ func (a *App) Create(name string) error {
 		return err
 	}
 	if err := a.registry.ensure(); err != nil {
-		return err
+		return fmt.Errorf("failed to ensure local registry: %w", err)
 	}
 	if err := a.cluster.createFromEnvFile(envFile); err != nil {
-		return err
+		return fmt.Errorf("failed to create k3d cluster: %w", err)
 	}
 	if err := a.installer.install(name); err != nil {
-		return err
+		return fmt.Errorf("failed to install ecosystem: %w", err)
 	}
 
 	fmt.Fprintf(os.Stdout, "Ecosystem '%s' is ready.\n\n", name)
@@ -134,26 +134,31 @@ func (a *App) Create(name string) error {
 }
 
 func (a *App) Start(name string) error {
-	if err := a.registry.ensure(); err != nil {
-		return err
-	}
-	if err := a.runner.Run("k3d", "cluster", "start", name); err != nil {
-		return err
-	}
-
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if os.IsNotExist(err) || strings.Contains(err.Error(), "not found") {
-			return nil
-		}
-		return err
+		return fmt.Errorf("failed to find ecosystem: %w", err)
 	}
 
-	return a.cluster.writeKubeconfig(name, instance.KubeconfigPath)
+	if err := a.registry.ensure(); err != nil {
+		return fmt.Errorf("failed to ensure local registry: %w", err)
+	}
+	if err := a.runner.Run("k3d", "cluster", "start", name); err != nil {
+		return fmt.Errorf("failed to start k3d cluster: %w", err)
+	}
+
+	if err := a.cluster.writeKubeconfig(name, instance.KubeconfigPath); err != nil {
+		return fmt.Errorf("failed to write kubeconfig: %w", err)
+	}
+
+	return nil
 }
 
 func (a *App) Stop(name string) error {
-	return a.runner.Run("k3d", "cluster", "stop", name)
+	if err := a.runner.Run("k3d", "cluster", "stop", name); err != nil {
+		return fmt.Errorf("failed to stop cluster: %w", err)
+	}
+
+	return nil
 }
 
 func (a *App) Delete(name string) error {
@@ -161,7 +166,7 @@ func (a *App) Delete(name string) error {
 
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
+		if errors.Is(err, errInstanceNotFound) {
 			return a.runner.Run("k3d", "cluster", "delete", name)
 		}
 		return err
@@ -169,11 +174,11 @@ func (a *App) Delete(name string) error {
 
 	clusterExists, err := a.cluster.exists(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check cluster existence: %w", err)
 	}
 	if clusterExists {
 		if err := a.runner.Run("k3d", "cluster", "delete", name); err != nil {
-			return err
+			return fmt.Errorf("failed to delete k3d cluster: %w", err)
 		}
 	}
 

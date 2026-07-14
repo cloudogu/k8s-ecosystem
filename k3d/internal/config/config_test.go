@@ -36,30 +36,6 @@ func TestResolveFrom(t *testing.T) {
 	})
 }
 
-func TestParseBoolDefault(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		fallback bool
-		want     bool
-	}{
-		{name: "true literal", input: "true", fallback: false, want: true},
-		{name: "yes literal", input: "yes", fallback: false, want: true},
-		{name: "false literal", input: "false", fallback: true, want: false},
-		{name: "empty uses fallback", input: "", fallback: true, want: true},
-		{name: "invalid uses fallback", input: "maybe", fallback: false, want: false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := parseBoolDefault(tt.input, tt.fallback)
-			if got != tt.want {
-				t.Fatalf("parseBoolDefault(%q, %t) = %t, want %t", tt.input, tt.fallback, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestParseIntDefault(t *testing.T) {
 	tests := []struct {
 		name     string

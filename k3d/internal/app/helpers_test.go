@@ -149,8 +149,8 @@ func TestPrintEcosystemTable(t *testing.T) {
 	t.Run("prints header and rows", func(t *testing.T) {
 		var buf bytes.Buffer
 
-		printEcosystemTable(&buf, [][4]string{
-			{"dev1", "running", "https://dev1.example", "/tmp/kubeconfig"},
+		printEcosystemTable(&buf, []ecosystemListing{
+			{Name: "dev1", Status: statusRunning, URL: "https://dev1.example", KubeconfigPath: "/tmp/kubeconfig"},
 		})
 
 		out := buf.String()

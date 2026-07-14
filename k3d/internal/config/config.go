@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -56,6 +57,11 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("resolve home dir: %w", err)
 	}
 
+	localRegistryEnabled, err := strconv.ParseBool(firstNonEmpty(values["LOCAL_REGISTRY_ENABLED"], "true"))
+	if err != nil {
+		return Config{}, fmt.Errorf("failed to parse LOCAL_REGISTRY_ENABLED: %w", err)
+	}
+
 	cfg := Config{
 		Paths: paths,
 		Global: Global{
@@ -63,7 +69,7 @@ func Load() (Config, error) {
 			KubeconfigDirectory:         firstNonEmpty(values["KUBECONFIG_DIRECTORY"], filepath.Join(home, ".kube")),
 			APIStartPort:                parseIntDefault(firstNonEmpty(os.Getenv("K3D_API_PORT_START"), values["K3D_API_PORT_START"]), 6550),
 			DefaultNamespace:            firstNonEmpty(values["CES_NAMESPACE"], "ecosystem"),
-			LocalRegistryEnabled:        parseBoolDefault(values["LOCAL_REGISTRY_ENABLED"], true),
+			LocalRegistryEnabled:        localRegistryEnabled,
 			LocalRegistryStoragePath:    firstNonEmpty(values["LOCAL_REGISTRY_STORAGE_PATH"], filepath.Join(home, ".local", "share", "k3d", "registries", "cloudogu")),
 			LocalRegistryDevName:        firstNonEmpty(values["LOCAL_REGISTRY_DEV_NAME"], "registry-dev.localhost"),
 			LocalRegistryDevPort:        firstNonEmpty(values["LOCAL_REGISTRY_DEV_PORT"], "5001"),
@@ -139,20 +145,6 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
-}
-
-func parseBoolDefault(value string, fallback bool) bool {
-	if value == "" {
-		return fallback
-	}
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "1", "true", "yes", "on":
-		return true
-	case "0", "false", "no", "off":
-		return false
-	default:
-		return fallback
-	}
 }
 
 func parseIntDefault(value string, fallback int) int {

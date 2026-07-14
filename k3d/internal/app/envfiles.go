@@ -2,12 +2,16 @@ package app
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 )
+
+// errInstanceNotFound is returned when no env file exists for a requested ecosystem.
+var errInstanceNotFound = errors.New("not found")
 
 type instanceFile struct {
 	Name           string
@@ -84,7 +88,7 @@ func findInstanceFile(environmentDir, name string) (instanceFile, error) {
 	values, err := parseEnvFile(instance)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return instanceFile{}, fmt.Errorf("ecosystem %q not found", name)
+			return instanceFile{}, fmt.Errorf("ecosystem %q %w", name, errInstanceNotFound)
 		}
 		return instanceFile{}, err
 	}

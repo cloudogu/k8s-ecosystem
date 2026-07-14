@@ -22,7 +22,7 @@ func TestBuildInstallCommand(t *testing.T) {
 			"LOCAL_REGISTRY_PROXY_PORT":   "5002",
 			"LOCAL_REGISTRY_CLUSTER_PORT": "5000",
 			"FQDN":                        "dev2.k3ces.localdomain",
-		})
+		}, true)
 
 		if args[11] != "localhost:5002" {
 			t.Fatalf("helm registry host = %q, want localhost:5002", args[11])
@@ -50,7 +50,7 @@ func TestBuildInstallCommand(t *testing.T) {
 			"HELM_REGISTRY_HOST":         "registry.example.com",
 			"RUNTIME_HELM_REGISTRY_HOST": "runtime.example.com",
 			"HELM_REGISTRY_PLAIN_HTTP":   "false",
-		})
+		}, false)
 
 		if args[11] != "registry.example.com" || args[12] != "runtime.example.com" || args[14] != "false" {
 			t.Fatalf("unexpected registry args = %#v", args[11:15])
@@ -75,7 +75,7 @@ func TestValidateInstallSettings(t *testing.T) {
 			"DOGU_REGISTRY_PASSWORD": "dogu-pass",
 			"KUBECONFIG_PATH":        kubeconfigPath,
 			"LOCAL_REGISTRY_ENABLED": "true",
-		})
+		}, true)
 		if err != nil {
 			t.Fatalf("validateInstallSettings() error = %v", err)
 		}
@@ -97,7 +97,7 @@ func TestValidateInstallSettings(t *testing.T) {
 			"DOGU_REGISTRY_PASSWORD": "dogu-pass",
 			"KUBECONFIG_PATH":        kubeconfigPath,
 			"LOCAL_REGISTRY_ENABLED": "false",
-		})
+		}, false)
 		if err == nil {
 			t.Fatal("validateInstallSettings() expected error")
 		}
@@ -114,7 +114,7 @@ func TestValidateInstallSettings(t *testing.T) {
 			"DOGU_REGISTRY_USERNAME": "dogu-user",
 			"DOGU_REGISTRY_PASSWORD": "dogu-pass",
 			"KUBECONFIG_PATH":        filepath.Join(home, ".kube", "missing"),
-		})
+		}, true)
 		if err == nil {
 			t.Fatal("validateInstallSettings() expected error")
 		}

@@ -13,7 +13,7 @@ type CLI struct {
 type ListCmd struct{}
 
 type CreateCmd struct {
-	Name string `arg:"" name:"name" help:"New ecosystem name, for example 'dev3'."`
+	Name string `arg:"" name:"name" help:"New ecosystem name, for example 'dev1'."`
 }
 
 type StartCmd struct {

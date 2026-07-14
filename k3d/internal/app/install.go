@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
 )
@@ -30,16 +31,31 @@ func (i *installerOps) install(name string) error {
 	}
 
 	values := mergeEnvValues(globalValues, instanceValues)
-	if err := validateInstallSettings(values); err != nil {
+
+	registryEnabled, err := isLocalRegistryEnabled(values)
+	if err != nil {
 		return err
 	}
 
-	args, env := buildInstallCommand(values)
+	if err := validateInstallSettings(values, registryEnabled); err != nil {
+		return err
+	}
+
+	args, env := buildInstallCommand(values, registryEnabled)
 
 	return i.runner.RunInDirWithEnv(i.config.Paths.RepoRoot, env, filepath.Join("image", "scripts", "dev", "installEcosystem.sh"), args...)
 }
 
-func buildInstallCommand(values map[string]string) ([]string, []string) {
+func isLocalRegistryEnabled(values map[string]string) (bool, error) {
+	raw := firstNonEmpty(values["LOCAL_REGISTRY_ENABLED"], "true")
+	enabled, err := strconv.ParseBool(raw)
+	if err != nil {
+		return false, fmt.Errorf("invalid LOCAL_REGISTRY_ENABLED value %q (expected true or false)", raw)
+	}
+	return enabled, nil
+}
+
+func buildInstallCommand(values map[string]string, localRegistryEnabled bool) ([]string, []string) {
 	remoteImageRegistryURL := "https://registry.cloudogu.com"
 	remoteHelmRegistryHost := "registry.cloudogu.com"
 
@@ -50,7 +66,6 @@ func buildInstallCommand(values map[string]string) ([]string, []string) {
 	runtimeHelmRegistryHost := firstNonEmpty(values["RUNTIME_HELM_REGISTRY_HOST"], helmRegistryHost)
 	helmRegistrySchema := firstNonEmpty(values["HELM_REGISTRY_SCHEMA"], "oci")
 	helmRegistryPlainHTTP := firstNonEmpty(values["HELM_REGISTRY_PLAIN_HTTP"], "false")
-	localRegistryEnabled := firstNonEmpty(values["LOCAL_REGISTRY_ENABLED"], "true")
 	localRegistryProxyName := firstNonEmpty(values["LOCAL_REGISTRY_PROXY_NAME"], "registry-proxy.localhost")
 	localRegistryProxyPort := firstNonEmpty(values["LOCAL_REGISTRY_PROXY_PORT"], "5002")
 	localRegistryClusterPort := firstNonEmpty(values["LOCAL_REGISTRY_CLUSTER_PORT"], "5000")
@@ -61,7 +76,7 @@ func buildInstallCommand(values map[string]string) ([]string, []string) {
 	kubeconfigPath := firstNonEmpty(values["KUBECONFIG_PATH"], filepath.Join(os.Getenv("HOME"), ".kube", kubeCtxName))
 	forceUpgradeEcosystem := firstNonEmpty(values["FORCE_UPGRADE_ECOSYSTEM"], "false")
 
-	if localRegistryEnabled == "true" {
+	if localRegistryEnabled {
 		localProxyHost := "localhost:" + localRegistryProxyPort
 		localProxyRuntimeHost := "k3d-" + localRegistryProxyName + ":" + localRegistryClusterPort
 
@@ -106,13 +121,13 @@ func buildInstallCommand(values map[string]string) ([]string, []string) {
 	return args, env
 }
 
-func validateInstallSettings(values map[string]string) error {
+func validateInstallSettings(values map[string]string, localRegistryEnabled bool) error {
 	requiredVars := []string{
 		"DOGU_REGISTRY_USERNAME",
 		"DOGU_REGISTRY_PASSWORD",
 	}
 
-	if firstNonEmpty(values["LOCAL_REGISTRY_ENABLED"], "true") != "true" {
+	if !localRegistryEnabled {
 		requiredVars = append(requiredVars,
 			"IMAGE_REGISTRY_USERNAME",
 			"IMAGE_REGISTRY_PASSWORD",

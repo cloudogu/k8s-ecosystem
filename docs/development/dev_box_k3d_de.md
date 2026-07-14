@@ -10,9 +10,10 @@ Er kann nicht alle Szenarien abdecken, die mit der Vagrant-basierten `k3s`-Dev-B
 Aktuelle Einschränkungen gegenüber dem Vagrant-`k3s`-Cluster:
 
 - es wird nur ein einzelner Node verwendet
-- Storage basiert auf der lokalen Default-StorageClass von `k3s`
+- Storage basiert auf der lokalen Default-StorageClass `local-path` von `k3s` (node-lokaler Storage)
   - PVC-Vergrößerungen werden in diesem Setup nicht unterstützt
   - Backups mit Velero werden in diesem Setup nicht unterstützt
+  - storage-zentrische Workloads, insbesondere CES-Backup & -Restore, funktionieren mit node-lokalem Storage voraussichtlich nicht zuverlässig
 
 ## Aktueller Umfang
 
@@ -37,6 +38,9 @@ Die Hilfsskripte unter `image/scripts/dev/` bleiben damit die gemeinsame Install
 - `curl`
 - `jq`
 - `yq`
+
+> **Hinweis zu Versionen:** Verwende möglichst aktuelle Versionen der genannten Tools.
+> Insbesondere mit älteren `helm`-3.x-Versionen kam es zu Problemen beim Bootstrap; empfohlen wird eine aktuelle `helm`-4.x-Version.
 
 ## Einmalige Konfiguration
 

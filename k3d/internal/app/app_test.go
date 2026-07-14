@@ -58,7 +58,7 @@ func TestAppMethods(t *testing.T) {
 		}
 	})
 
-	t.Run("Start returns nil when env file is missing", func(t *testing.T) {
+	t.Run("Start fails when env file is missing", func(t *testing.T) {
 		cfg := makeTestConfig(t)
 		binDir := t.TempDir()
 		logPath := filepath.Join(t.TempDir(), "start.log")
@@ -88,12 +88,14 @@ printf '%s\n' "$*" >> "`+logPath+`"
 			cluster:  &clusterOps{config: cfg, runner: r, registry: registry},
 		}
 
-		if err := app.Start("dev1"); err != nil {
-			t.Fatalf("Start() error = %v", err)
+		err := app.Start("dev1")
+		if err == nil || !strings.Contains(err.Error(), "not found") {
+			t.Fatalf("Start() error = %v, want an ecosystem-not-found error", err)
 		}
 
-		if out := readFile(t, logPath); !strings.Contains(out, "cluster start dev1") {
-			t.Fatalf("log = %q", out)
+		// Fail-fast: the cluster must not be started before the env file is resolved.
+		if _, statErr := os.Stat(logPath); !os.IsNotExist(statErr) {
+			t.Fatalf("expected no k3d/docker invocation, but log exists: %q", readFile(t, logPath))
 		}
 	})
 

@@ -96,12 +96,12 @@ func buildInstallCommand(values map[string]string) ([]string, []string) {
 		forceUpgradeEcosystem,
 	}
 
-	env := append(os.Environ(),
+	env := []string{
 		"INSTALL_LONGHORN=false",
-		"KUBECONFIG_PATH="+kubeconfigPath,
+		"KUBECONFIG_PATH=" + kubeconfigPath,
 		"CERTIFICATE_CRT_FILE=",
 		"CERTIFICATE_KEY_FILE=",
-	)
+	}
 
 	return args, env
 }

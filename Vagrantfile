@@ -206,6 +206,7 @@ Vagrant.configure("2") do |config|
                             helm_registry_username,
                             helm_registry_password,
                             helm_registry_host,
+                            helm_registry_host,
                             helm_registry_schema,
                             helm_registry_plain_http,
                             kube_ctx_name,

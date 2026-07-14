@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -110,15 +111,12 @@ func (a *App) Create(name string) error {
 		return err
 	}
 	if err := a.envs.WriteInstanceEnv(envFile, name, fqdn, hostIP, apiPort, kubeconfigPath, corednsManifestPath); err != nil {
+		_ = a.envs.Remove(corednsManifestPath)
 		return err
 	}
-	if err := a.registry.ensure(); err != nil {
-		return err
-	}
-	if err := a.cluster.createFromEnvFile(envFile); err != nil {
-		return err
-	}
-	if err := a.installer.install(name); err != nil {
+
+	if err := a.provisionEcosystem(name, envFile); err != nil {
+		a.cleanupFailedCreate(name, envFile, corednsManifestPath, kubeconfigPath)
 		return err
 	}
 
@@ -138,6 +136,30 @@ func (a *App) Create(name string) error {
 	return nil
 }
 
+// provisionEcosystem creates the registry, cluster, and installed ecosystem for an already-written instance env file.
+func (a *App) provisionEcosystem(name, envFile string) error {
+	if err := a.registry.ensure(); err != nil {
+		return err
+	}
+	if err := a.cluster.createFromEnvFile(envFile); err != nil {
+		return err
+	}
+	return a.installer.install(name)
+}
+
+// cleanupFailedCreate removes anything Create may have produced for name before it failed,
+// so the same name can be retried without manual intervention.
+func (a *App) cleanupFailedCreate(name, envFile, corednsManifestPath, kubeconfigPath string) {
+	if exists, _ := a.cluster.exists(name); exists {
+		_ = a.runner.Run("k3d", "cluster", "delete", name)
+	}
+	if kubeconfigPath != "" {
+		_ = os.Remove(kubeconfigPath)
+	}
+	_ = a.envs.Remove(corednsManifestPath)
+	_ = a.envs.Remove(envFile)
+}
+
 func (a *App) Start(name string) error {
 	if err := a.registry.ensure(); err != nil {
 		return err
@@ -148,7 +170,8 @@ func (a *App) Start(name string) error {
 
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if os.IsNotExist(err) || strings.Contains(err.Error(), "not found") {
+		if errors.Is(err, ErrInstanceNotFound) {
+			fmt.Fprintf(os.Stdout, "Cluster %q started but is not managed by ces-k3d — no kubeconfig written.\n", name)
 			return nil
 		}
 		return err
@@ -170,7 +193,7 @@ func (a *App) Delete(name string) error {
 
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
+		if errors.Is(err, ErrInstanceNotFound) {
 			return a.runner.Run("k3d", "cluster", "delete", name)
 		}
 		return err

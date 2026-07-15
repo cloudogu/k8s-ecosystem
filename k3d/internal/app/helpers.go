@@ -1,14 +1,33 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"strings"
+	"os/exec"
 	"text/tabwriter"
+
+	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
 )
+
+var firstNonEmpty = config.FirstNonEmpty
+
+// isExitCode reports whether err is an *exec.ExitError with the given exit code.
+func isExitCode(err error, code int) bool {
+	var exitErr *exec.ExitError
+	return errors.As(err, &exitErr) && exitErr.ExitCode() == code
+}
 
 func commandOutput(runner runner, name string, args ...string) (string, error) {
 	out, err := runner.Output(name, args...)
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
+}
+
+func commandOutputWithEnv(runner runner, env []string, name string, args ...string) (string, error) {
+	out, err := runner.OutputWithEnv(env, name, args...)
 	if err != nil {
 		return "", err
 	}
@@ -80,15 +99,6 @@ func nextFreeAPIPort(clusters []clusterListEntry, start int) (int, error) {
 		}
 	}
 	return 0, fmt.Errorf("no free API port found starting at %d", start)
-}
-
-func firstNonEmpty(values ...string) string {
-	for _, value := range values {
-		if strings.TrimSpace(value) != "" {
-			return value
-		}
-	}
-	return ""
 }
 
 // ecosystemListing is a single row of the `list` command output.

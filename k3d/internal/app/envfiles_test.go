@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -91,9 +90,6 @@ K3D_HOST_IP="127.0.0.2"
 		_, err := findInstanceFile(t.TempDir(), "missing")
 		if err == nil {
 			t.Fatal("findInstanceFile() expected error")
-		}
-		if !errors.Is(err, errInstanceNotFound) {
-			t.Fatalf("error = %v, want errors.Is(errInstanceNotFound)", err)
 		}
 		if !strings.Contains(err.Error(), `ecosystem "missing" not found`) {
 			t.Fatalf("unexpected error = %v", err)

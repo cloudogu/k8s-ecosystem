@@ -2,9 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"errors"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
@@ -62,7 +60,7 @@ func (r *registryOps) ensureStarted(name, port, containerName string, extraArgs 
 func (r *registryOps) exists(name string) (bool, error) {
 	out, err := r.runner.Output("k3d", "registry", "list", name, "-o", "json")
 	if err != nil {
-		if strings.Contains(err.Error(), "exit status 1") {
+		if isExitCode(err, 1) {
 			return false, nil
 		}
 		return false, err
@@ -78,7 +76,7 @@ func (r *registryOps) exists(name string) (bool, error) {
 func (r *registryOps) containerStatus(containerName string) (string, error) {
 	out, err := commandOutput(r.runner, "docker", "inspect", "--format", "{{.State.Status}}", containerName)
 	if err != nil {
-		if exitErr := new(exec.ExitError); errors.As(err, &exitErr) {
+		if isExitCode(err, 1) {
 			return "", nil
 		}
 		return "", err

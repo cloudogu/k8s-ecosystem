@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudogu/k8s-ecosystem/k3d/internal/config"
 )
@@ -16,6 +17,7 @@ type App struct {
 	cluster   *clusterOps
 	installer *installerOps
 	registry  *registryOps
+	connect   *connectOps
 }
 
 func New() (*App, error) {
@@ -37,8 +39,12 @@ func New() (*App, error) {
 		runner: baseRunner,
 		envs:   application.envs,
 	}
+	application.connect = &connectOps{runner: baseRunner, envs: application.envs}
 	return application, nil
 }
+
+func (a *App) Connect(name string) error { return a.connect.Connect(name) }
+func (a *App) Disconnect() error         { return a.connect.Disconnect() }
 
 func (a *App) List() error {
 	instances, err := a.envs.LoadInstances()
@@ -105,16 +111,13 @@ func (a *App) Create(name string) error {
 		return err
 	}
 	if err := a.envs.WriteInstanceEnv(envFile, name, fqdn, hostIP, apiPort, kubeconfigPath, corednsManifestPath); err != nil {
+		_ = a.envs.Remove(corednsManifestPath)
 		return err
 	}
-	if err := a.registry.ensure(); err != nil {
-		return fmt.Errorf("failed to ensure local registry: %w", err)
-	}
-	if err := a.cluster.createFromEnvFile(envFile); err != nil {
-		return fmt.Errorf("failed to create k3d cluster: %w", err)
-	}
-	if err := a.installer.install(name); err != nil {
-		return fmt.Errorf("failed to install ecosystem: %w", err)
+
+	if err := a.provisionEcosystem(name, envFile); err != nil {
+		a.cleanupFailedCreate(name, envFile, corednsManifestPath, kubeconfigPath)
+		return err
 	}
 
 	fmt.Fprintf(os.Stdout, "Ecosystem '%s' is ready.\n\n", name)
@@ -131,6 +134,33 @@ func (a *App) Create(name string) error {
 	}
 
 	return nil
+}
+
+// provisionEcosystem creates the registry, cluster, and installed ecosystem for an already-written instance env file.
+func (a *App) provisionEcosystem(name, envFile string) error {
+	if err := a.registry.ensure(); err != nil {
+		return fmt.Errorf("failed to ensure local registry: %w", err)
+	}
+	if err := a.cluster.createFromEnvFile(envFile); err != nil {
+		return fmt.Errorf("failed to create k3d cluster: %w", err)
+	}
+	if err := a.installer.install(name); err != nil {
+		return fmt.Errorf("failed to install ecosystem: %w", err)
+	}
+	return nil
+}
+
+// cleanupFailedCreate removes anything Create may have produced for name before it failed,
+// so the same name can be retried without manual intervention.
+func (a *App) cleanupFailedCreate(name, envFile, corednsManifestPath, kubeconfigPath string) {
+	if exists, _ := a.cluster.exists(name); exists {
+		_ = a.runner.Run("k3d", "cluster", "delete", name)
+	}
+	if kubeconfigPath != "" {
+		_ = os.Remove(kubeconfigPath)
+	}
+	_ = a.envs.Remove(corednsManifestPath)
+	_ = a.envs.Remove(envFile)
 }
 
 func (a *App) Start(name string) error {
@@ -166,10 +196,17 @@ func (a *App) Delete(name string) error {
 
 	instance, err := a.envs.Find(name)
 	if err != nil {
-		if errors.Is(err, errInstanceNotFound) {
+		if errors.Is(err, ErrInstanceNotFound) {
 			return a.runner.Run("k3d", "cluster", "delete", name)
 		}
 		return err
+	}
+
+	currentContext, _ := commandOutput(a.runner, "kubectl", "config", "current-context")
+	if strings.TrimSpace(currentContext) == "k3d-"+name {
+		if err := a.Disconnect(); err != nil {
+			return err
+		}
 	}
 
 	clusterExists, err := a.cluster.exists(name)

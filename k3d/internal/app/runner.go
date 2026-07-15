@@ -28,7 +28,7 @@ func (r runner) RunWithEnv(env []string, name string, args ...string) error {
 	cmd.Stdout = r.stdout
 	cmd.Stderr = r.stderr
 	cmd.Stdin = os.Stdin
-	cmd.Env = env
+	cmd.Env = append(os.Environ(), env...)
 	return cmd.Run()
 }
 
@@ -47,12 +47,22 @@ func (r runner) RunInDirWithEnv(dir string, env []string, name string, args ...s
 	cmd.Stdout = r.stdout
 	cmd.Stderr = r.stderr
 	cmd.Stdin = os.Stdin
-	cmd.Env = env
+	cmd.Env = append(os.Environ(), env...)
 	return cmd.Run()
 }
 
 func (r runner) Output(name string, args ...string) ([]byte, error) {
 	cmd := exec.Command(name, args...)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("%s %v: %w", name, args, err)
+	}
+	return output, nil
+}
+
+func (r runner) OutputWithEnv(env []string, name string, args ...string) ([]byte, error) {
+	cmd := exec.Command(name, args...)
+	cmd.Env = append(os.Environ(), env...)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("%s %v: %w", name, args, err)

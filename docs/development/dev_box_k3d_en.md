@@ -232,7 +232,8 @@ After a host reboot or after AppArmor profiles are loaded again, the issue may r
 
 If the port is not opened, we would get the error: "Connection refused".
 
-ex: for git clone, we get the following error message:
+ex: For scm, when we run the command git clone to clone a repository created in scm,
+we get the following error message:
 
     ssh: connect to host my-ces.k3ces.localdomain port 2222: Connection refused 
     fatal: Konnte nicht vom Remote-Repository lesen.

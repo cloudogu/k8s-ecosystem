@@ -238,7 +238,8 @@ Nach einem Neustart des Hosts oder einem erneuten Laden der AppArmor-Profile kan
 
 Wenn der Port nicht geöffnet ist, würde folgende Fehlermeldung angezeigt werden: "Verbindung abgelehnt"
 
-Beispiel: Beim Befehl „git clone“ wird folgende Fehlermeldung angezeigt:
+Beispiel: Wenn wir in SCM den Befehl „git clone“ ausführen, um ein in SCM erstelltes Repository zu klonen,
+erhalten wir die folgende Fehlermeldung:
 
     ssh: connect to host my-ces.k3ces.localdomain port 2222: Connection refused 
     fatal: Konnte nicht vom Remote-Repository lesen.

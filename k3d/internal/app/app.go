@@ -180,7 +180,7 @@ func (a *App) Start(name string) error {
 		return fmt.Errorf("failed to write kubeconfig: %w", err)
 	}
 
-	return a.Connect(name)
+	return nil
 }
 
 func (a *App) Stop(name string) error {

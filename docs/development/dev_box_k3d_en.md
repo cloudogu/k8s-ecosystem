@@ -230,7 +230,8 @@ After a host reboot or after AppArmor profiles are loaded again, the issue may r
 
 ## Exposing Ports in k3d Clusters
 
-If the port is not opened, we would get the error: Connection refused
+If the port is not opened, we would get the error: "Connection refused".
+
 ex: for git clone, we get the following error message:
 
     ssh: connect to host my-ces.k3ces.localdomain port 2222: Connection refused 

@@ -236,7 +236,7 @@ Nach einem Neustart des Hosts oder einem erneuten Laden der AppArmor-Profile kan
 
 ## Ports freigeben in k3d-Clustern
 
-Wenn der Port nicht geöffnet ist, würde folgende Fehlermeldung angezeigt werden: „Verbindung abgelehnt“
+Wenn der Port nicht geöffnet ist, würde folgende Fehlermeldung angezeigt werden: "Verbindung abgelehnt"
 
 Beispiel: Beim Befehl „git clone“ wird folgende Fehlermeldung angezeigt:
 

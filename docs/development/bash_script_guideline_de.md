@@ -1,0 +1,56 @@
+Im Folgenden finden Sie einige Best Practices für Bash-Skripte.
+
+## Beginnen Sie mit einem Shebang
+
+Die erste Zeile in einem Bash-Skript sollte lauten:
+
+    #!/bin/bash
+
+## Fügen Sie eine Beschreibung hinzu
+
+Fügen Sie am Anfang des Skripts eine Beschreibung ein, wenn dessen Zweck nicht bereits durch den Namen oder Ähnliches eindeutig ersichtlich ist.
+
+## Fehlerbehandlung
+
+Verwende die folgenden „set“-Zeilen, damit dein Skript bei Fehlern beendet wird, anstatt diese zu ignorieren:
+
+    set -o errexit
+Weist Bash an, das Skript sofort zu beenden, wenn ein Befehl einen Exit-Status ungleich Null hat. Du kannst „|| true“ zu Befehlen hinzufügen, bei denen ein Fehlschlag bzw. ein Exit-Code ungleich Null zulässig ist.
+
+    set -o nounset
+Wenn diese Option gesetzt ist, führt der Verweis auf eine Variable, die Sie zuvor nicht definiert haben – mit Ausnahme von $* und $@ –, zu einem Fehler und bewirkt, dass das Programm sofort beendet wird.
+
+    set -o pipefail
+Diese Einstellung verhindert, dass Fehler in einer Pipeline verdeckt werden. Wenn ein Befehl in einer Pipeline fehlschlägt, wird dessen Rückgabecode als Rückgabecode der gesamten Pipeline verwendet.
+
+
+## Fehlerinformationen an stderr ausgeben
+
+Geben Sie alle Fehlerdaten an stderr aus, indem Sie
+
+    >&2
+vor oder hinter „echo“-Befehle setzen.
+
+## Variablen mit ${} verwenden
+
+Verwenden Sie beim Verweisen auf Variablen geschweifte Klammern anstelle von nur $VARIABLE.
+
+## apt-get automatisieren
+
+Die folgenden Zeilen sind nützlich, wenn Software automatisch mit apt-get installiert wird:
+
+    apt-get --assume-yes (oder -y) ...
+Automatische Antwort „yes“ auf Fragen von apt-get
+
+    DEBIAN_FRONTEND=noninteractive apt-get ...
+Sorgt dafür, dass das Frontend überhaupt nicht mit Ihnen interagiert und bei allen Fragen die Standardantworten verwendet werden.
+
+## Temporäre Daten entfernen
+
+Nachdem Sie Installationsdaten an einen temporären Speicherort kopiert und ausgeführt haben, vergessen Sie nicht, diese zu entfernen, wenn Ihre Installation erfolgreich war.
+
+## Weitere Informationen
+
+[Inoffizielle Beschreibung des Bash-Strict-Modus](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
+
+[Bewährte Vorgehensweisen beim Schreiben von Bash-Skripten](http://kvz.io/blog/2013/11/21/bash-best-practices/)

@@ -1,10 +1,14 @@
+# example to setup with lop-idp and dogu V3 features
+skipPreconditionValidation: false
 components:
-  lop-idp:
-    version: 1.1.0
+  k8s-service-discovery:
     valuesObject:
-      defaultConfig:
-        env:
-          initialDomain: "k3ces.localdomain"
+      exposition:
+        exposePorts: true
+        discoverServices: true
+        discoverExpositionCR: true
+  lop-idp:
+    valuesObject:
       ldap:
         secrets:
           initialAdminPasswordSecretRef:
@@ -15,13 +19,8 @@ components:
         configuration:
           normal:
             allow_local_urls: "true"
-  k8s-dogu-operator:
-    valuesObject:
-      controllerManager:
-        env:
-          authRegistrationEnabled: true
-          disablePostfixDependencyCheck: true
-  k8s-auth-registration-crd:
-    version: 1.0.0
-  postfix:
-    version: 3.10.8-3
+use-lop-idp: true
+defaultConfig:
+  env:
+    initialDomain: "k3ces.localdomain"
+    initialFQDN: "k3ces.localdomain"

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - a local `k3d` development workflow for creating and managing CES test environments with local k3d-clusters.
 - [#147] add german docs translations
 - [#151] add bash script guideline
+- [#153] Dogu v3 registry URL for vagrant and k3d environments
 
 ## [v6.0.1] - 2026-06-02
 ### Changed

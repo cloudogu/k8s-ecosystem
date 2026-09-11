@@ -91,11 +91,13 @@ ensure_dogu_registry_secret() {
   local password_decoded
   password_decoded="$(decode_if_b64 "$4")"
   local namespace="$5"
+  local v3url="$6"
   ensure_secret "k8s-dogu-operator-dogu-registry" generic "$namespace" \
     --from-literal=endpoint="$url" \
     --from-literal=urlschema="$urlschema" \
     --from-literal=username="$username" \
-    --from-literal=password="$password_decoded"
+    --from-literal=password="$password_decoded" \
+    --from-literal=v3Endpoint="$v3url"
 }
 
 # ensure_container_registry_secret <docker_server> <username> <password> <namespace>

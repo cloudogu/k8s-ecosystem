@@ -18,6 +18,7 @@ helm_repository_namespace=${2}
 dogu_registry_username=${3}
 dogu_registry_password=${4}
 dogu_registry_url=${5}
+dogu_registry_v3_url=${20}
 dogu_registry_urlschema=${6}
 image_registry_username=${7}
 image_registry_password=${8}
@@ -86,7 +87,9 @@ applyResources() {
     "${dogu_registry_urlschema}" \
     "${dogu_registry_username}" \
     "${dogu_registry_password}" \
-    "${CES_NAMESPACE}"
+    "${CES_NAMESPACE}" \
+    "${dogu_registry_v3_url}" \
+
 
   ensure_container_registry_secret \
     "${image_registry_url}" \

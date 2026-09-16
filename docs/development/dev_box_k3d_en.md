@@ -226,3 +226,31 @@ sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.slapd
 
 Then restart the `k3d` cluster or the affected LDAP pod.
 After a host reboot or after AppArmor profiles are loaded again, the issue may reappear.
+
+
+## Exposing Ports in k3d Clusters
+
+If the port is not opened, we would get the error: "Connection refused".
+
+ex: For scm, when we run the command git clone to clone a repository created in scm,
+we get the following error message:
+
+    ssh: connect to host my-ces.k3ces.localdomain port 2222: Connection refused 
+    fatal: Konnte nicht vom Remote-Repository lesen.
+
+### Solution for an existing cluster
+  k3d provides a command to inject new port mappings into an existing cluster. 
+
+    k3d cluster edit <cluster-name> --port-add "<port>:<port>@loadbalancer"
+
+  ex: For scm , we have to open up port 2222 to successfully execute git clone (using ssh) .
+
+    k3d cluster edit my-ces --port-add "2222:2222@loadbalancer"
+
+Note:   This process will automatically restart the cluster nodes to apply the new settings.
+
+
+### Solution for an new cluster
+  If required, we can also add additional loadbalancer configurations in cluster.go (method: createFromEnvFile) to ensure we do not have to set it up manually:
+  
+![](figures/k3d/loadbalancer_new_port.png)

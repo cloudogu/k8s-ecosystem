@@ -82,7 +82,7 @@ applyResources() {
   login_registry_helm "${helm_registry_host}" "${helm_registry_username}" "${helm_registry_password}" "${helm_registry_plain_http}"
 
   # Ensure Registries
-  ensure_dogu_registry_secret \
+  ensure_dogu_registry_secrets \
     "${dogu_registry_url}" \
     "${dogu_registry_urlschema}" \
     "${dogu_registry_username}" \

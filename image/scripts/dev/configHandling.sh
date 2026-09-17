@@ -82,9 +82,9 @@ get_latest_dogu_version() {
 
 # --- Functions ---
 
-# Create or update the k8s-dogu-operator-dogu-registry Secret in the given namespace.
-# Args: <url> <urlschema> <username> <password> <namespace>
-ensure_dogu_registry_secret() {
+# Create or update the k8s-dogu-operator-dogu-registry and dogu-registry-v3 Secret in the given namespace.
+# Args: <url> <urlschema> <username> <password> <namespace> <v3url>
+ensure_dogu_registry_secrets() {
   local url="$1"
   local urlschema="$2"
   local username="$3"
@@ -96,8 +96,12 @@ ensure_dogu_registry_secret() {
     --from-literal=endpoint="$url" \
     --from-literal=urlschema="$urlschema" \
     --from-literal=username="$username" \
-    --from-literal=password="$password_decoded" \
-    --from-literal=v3Endpoint="$v3url"
+    --from-literal=password="$password_decoded"
+  ensure_secret "dogu-registry-v3" generic "$namespace" \
+  --from-literal=endpoint="$v3url" \
+  --from-literal=urlschema="$urlschema" \
+  --from-literal=username="$username" \
+  --from-literal=password="$password_decoded"
 }
 
 # ensure_container_registry_secret <docker_server> <username> <password> <namespace>

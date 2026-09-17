@@ -60,6 +60,7 @@ func buildInstallCommand(values map[string]string, localRegistryEnabled bool) ([
 	remoteHelmRegistryHost := "registry.cloudogu.com"
 
 	doguRegistryURL := firstNonEmpty(values["DOGU_REGISTRY_URL"], "https://dogu.cloudogu.com/api/v2/dogus")
+	doguRegistryV3URL := firstNonEmpty(values["DOGU_REGISTRY_V3_URL"], "https://dogu.cloudogu.com/api/v3/dogus")
 	doguRegistryURLSchema := firstNonEmpty(values["DOGU_REGISTRY_URLSCHEMA"], "default")
 	imageRegistryURL := firstNonEmpty(values["IMAGE_REGISTRY_URL"], remoteImageRegistryURL)
 	helmRegistryHost := firstNonEmpty(values["HELM_REGISTRY_HOST"], remoteHelmRegistryHost)
@@ -109,6 +110,7 @@ func buildInstallCommand(values map[string]string, localRegistryEnabled bool) ([
 		"1",
 		fqdn,
 		forceUpgradeEcosystem,
+		doguRegistryV3URL,
 	}
 
 	env := []string{

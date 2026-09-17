@@ -17,6 +17,7 @@ forceUpgradeEcosystem = false
 dogu_registry_username = ""
 dogu_registry_password = ""
 dogu_registry_url = ""
+dogu_registry_v3_url = ""
 dogu_registry_urlschema = "default"
 image_registry_url = ""
 image_registry_username = ""
@@ -212,7 +213,8 @@ Vagrant.configure("2") do |config|
                             kube_ctx_name,
                             longhorn_replicas,
                             fqdn,
-                            forceUpgradeEcosystem.to_s
+                            forceUpgradeEcosystem.to_s,
+                            dogu_registry_v3_url,
                       ]
       }
     end

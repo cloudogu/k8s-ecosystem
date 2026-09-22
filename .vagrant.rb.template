@@ -4,6 +4,7 @@
 ####################################################
 
 dogu_registry_url="https://dogu.cloudogu.com/api/v2/dogus"
+dogu_registry_v3_url="https://dogu.cloudogu.com/api/v3/dogus"
 dogu_registry_username=""
 # Password in Base64-encoding
 dogu_registry_password=""

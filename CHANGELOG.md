@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.2.0] - 2026-09-22
+- [#153] add v3 registry URL for vagrant and k3d environments
+
 ## [v6.1.0] - 2026-09-08
 ### Added
 - a local `k3d` development workflow for creating and managing CES test environments with local k3d-clusters.

@@ -233,3 +233,31 @@ sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.slapd
 
 Danach den `k3d`-Cluster bzw. den betroffenen LDAP-Pod erneut starten.
 Nach einem Neustart des Hosts oder einem erneuten Laden der AppArmor-Profile kann das Problem wieder auftreten.
+
+## Ports freigeben in k3d-Clustern
+
+Wenn der Port nicht geöffnet ist, würde folgende Fehlermeldung angezeigt werden: "Verbindung abgelehnt"
+
+Beispiel: Wenn wir in SCM den Befehl „git clone“ ausführen, um ein in SCM erstelltes Repository zu klonen,
+erhalten wir die folgende Fehlermeldung:
+
+    ssh: connect to host my-ces.k3ces.localdomain port 2222: Connection refused 
+    fatal: Konnte nicht vom Remote-Repository lesen.
+
+### Lösung für einen bestehenden Cluster
+
+k3d bietet einen Befehl, mit dem neue Portzuordnungen in einen bestehenden Cluster eingefügt werden können.
+
+    k3d cluster edit <cluster-name> --port-add "<port>:<port>@loadbalancer"
+
+Beispiel: Für SCM müssen wir Port 2222 öffnen, um den Befehl „git clone“ (über SSH) erfolgreich ausführen zu können.
+
+    k3d cluster edit my-ces --port-add "2222:2222@loadbalancer"
+
+Hinweis: Bei diesem Vorgang werden die Clusterknoten automatisch neu gestartet, um die neuen Einstellungen zu übernehmen.
+
+### Lösung für einen neuen Cluster
+
+Bei Bedarf können wir auch zusätzliche Load-Balancer-Konfigurationen in „cluster.go (Methode: createFromEnvFile) “ hinzufügen, um sicherzustellen, dass wir diese nicht manuell einrichten müssen:
+
+![](figures/k3d/loadbalancer_new_port.png)

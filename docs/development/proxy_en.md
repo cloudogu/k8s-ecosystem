@@ -137,4 +137,4 @@ kubectl -n ecosystem patch configmap global-config \
   --type=merge \
   -p "$PATCH"
 ```
-
+Depending on the cluster being used, NetworkPolicies must be created to allow individual Dogus to access the Squid proxy.

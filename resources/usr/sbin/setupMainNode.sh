@@ -40,6 +40,7 @@ INSTALL_K3S_EXEC="${nodeLabelOptions}
  --disable local-storage
  --node-label svccontroller.k3s.cattle.io/enablelb=true
  --disable traefik
+ --disable=gateway-api-crd
  --node-external-ip=${nodeExternalIp}
  --node-ip=${nodeIp}
  --flannel-iface=${flannelInterface}

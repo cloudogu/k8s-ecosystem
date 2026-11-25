@@ -201,7 +201,8 @@ Vagrant.configure("2") do |config|
                             dogu_registry_username,
                             dogu_registry_password,
                             dogu_registry_url,
-                            dogu_registry_urlschema,image_registry_username,
+                            dogu_registry_urlschema,
+                            image_registry_username,
                             image_registry_password,
                             image_registry_url,
                             helm_registry_username,
@@ -215,7 +216,7 @@ Vagrant.configure("2") do |config|
                             fqdn,
                             forceUpgradeEcosystem.to_s,
                             dogu_registry_v3_url,
-                      ]
+                      ].map { |arg| "'#{arg}'" }
       }
     end
   end

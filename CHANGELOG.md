@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.3.0] - 2026-11-25
+### Changed
+- Upgrade k3s to v1.37.2 in dev basebox
+   - Disable the Gateway API default installation
+- Upgrade Ubuntu base image to 24.04.5 in dev basebox
+
 ## [v6.2.0] - 2026-09-22
 - [#153] add v3 registry URL for vagrant and k3d environments
 

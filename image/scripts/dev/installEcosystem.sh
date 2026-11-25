@@ -88,7 +88,7 @@ applyResources() {
     "${dogu_registry_username}" \
     "${dogu_registry_password}" \
     "${CES_NAMESPACE}" \
-    "${dogu_registry_v3_url}" \
+    "${dogu_registry_v3_url}"
 
 
   ensure_container_registry_secret \
